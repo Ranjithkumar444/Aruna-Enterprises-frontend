@@ -20,6 +20,22 @@ const RegisterEmployee = () => {
       >
         Create Employee
       </button>
+      
+      <button 
+      onClick={() => navigate("/admin/employee/get-all-employees")}
+      style={{
+        marginTop: "2rem",
+        padding: "0.6rem 1.5rem",
+        backgroundColor: "#28a745",
+        color: "white",
+        border: "none",
+        borderRadius: "6px",
+        cursor: "pointer",
+        marginLeft: "30px"
+      }}
+      >
+        Get Employee
+      </button>
     </div>
   );
 };

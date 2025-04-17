@@ -8,6 +8,7 @@ import AdminLogin from "./AdminLogin";
 import AdminDashboard from "./AdminDashboard";
 import RegisterEmployee from "./RegisterEmployee";
 import EmployeeRegisterForm from "./EmployeeRegisterForm";
+import EmployeeDetails from "./EmployeeDetails";
 
 const router = createBrowserRouter([
     {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
             {
                 path: "admin/employee/register",
                 element: <EmployeeRegisterForm/>
+            },
+            {
+                path: "admin/employee/get-all-employees",
+                element: <EmployeeDetails/>
             }
         ]
     },

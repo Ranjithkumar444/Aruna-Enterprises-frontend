@@ -155,3 +155,72 @@
     background-color: #0056b3;
   }
   
+
+  .employee-details-container {
+    padding: 2rem;
+    background-color: #f2f2f2;
+    border-radius: 12px;
+    margin: 2rem auto;
+    width: 95%;
+    max-width: 1200px;
+  }
+  
+  .employee-details-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  .employee-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .employee-table th,
+  .employee-table td {
+    border: 1px solid #ccc;
+    padding: 0.75rem;
+    text-align: center;
+  }
+  
+  .employee-table th {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .employee-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+
+  .filters {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+  }
+  
+  .filters select,
+  .filters .filter-btn,
+  .filters .reset-btn {
+    padding: 0.6rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  
+  .filters .filter-btn {
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .filters .reset-btn {
+    background-color: #dc3545;
+    color: white;
+    cursor: pointer;
+  }
+  

@@ -9,6 +9,9 @@ import AdminDashboard from "./AdminDashboard";
 import RegisterEmployee from "./RegisterEmployee";
 import EmployeeRegisterForm from "./EmployeeRegisterForm";
 import EmployeeDetails from "./EmployeeDetails";
+import RegisterAdmins from "./RegisterAdmins";
+import AdminRegisterForm from "./AdminRegisterForm";
+import AdminList from "./AdminList";
 
 const router = createBrowserRouter([
     {
@@ -35,6 +38,15 @@ const router = createBrowserRouter([
             {
                 path: "admin/employee/get-all-employees",
                 element: <EmployeeDetails/>
+            },{
+                path: "admin/dashboard/admin/admins",
+                element: <RegisterAdmins/>
+            },{
+                path: "admin/admins/register",
+                element: <AdminRegisterForm/>
+            },{
+                path: "admin/admins/get-all-admins",
+                element: <AdminList/>
             }
         ]
     },

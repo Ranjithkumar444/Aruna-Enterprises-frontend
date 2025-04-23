@@ -13,7 +13,8 @@ import RegisterAdmins from "./RegisterAdmins";
 import AdminRegisterForm from "./AdminRegisterForm";
 import AdminList from "./AdminList";
 import AttendanceList from "./AttendanceList";
-import UseAttendanceData from "./useAttendanceData";
+
+
 
 const router = createBrowserRouter([
     {
@@ -51,7 +52,7 @@ const router = createBrowserRouter([
                 element: <AdminList/>
             },{
                 path: "admin/dashboard/admin/attendance",
-                
+                element: <AttendanceList/>
             }
         ]
     },

@@ -30,7 +30,7 @@ const AdminDashboard = () => {
 
     return (
         <div style={{ display: "flex", height: "100vh", fontFamily: "sans-serif" }}>
-            {/* Sidebar/Menu */}
+
             <div
                 style={{
                     width: isMenuOpen ? "200px" : "60px",
@@ -90,9 +90,7 @@ const AdminDashboard = () => {
                 </ul>
             </div>
 
-            {/* Main Content */}
             <div style={{ flex: 1, padding: "2rem", position: "relative" }}>
-                {/* Logout button at top right */}
                 <button
                     onClick={handleLogout}
                     style={{
@@ -109,8 +107,6 @@ const AdminDashboard = () => {
                 >
                     Logout
                 </button>
-
-                {/* Welcome message */}
                 <h1 style={{ textAlign: "center", marginTop: "4rem" }}>
                     Hello, Welcome <span style={{ color: "#007bff" }}>{adminName}</span>
                 </h1>

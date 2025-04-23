@@ -17,12 +17,10 @@ const AdminLogin = () => {
             });
     
             const { token, admin } = response.data;
-    
-            // Save token and admin details
+
             localStorage.setItem('adminToken', token);
             localStorage.setItem('adminDetails', JSON.stringify(admin));
-    
-            // Redirect to Admin Dashboard
+ 
             navigate('/admin/dashboard');
         } catch (err) {
             setError('Invalid email or password');

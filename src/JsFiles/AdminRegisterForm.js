@@ -24,8 +24,8 @@ const AdminRegisterForm = () => {
     e.preventDefault();
 
     const token = localStorage.getItem("adminToken");
-    console.log("🔐 Token:", token);
-    console.log("📤 Sending admin data:", admin);
+    console.log(" Token:", token);
+    console.log(" Sending admin data:", admin);
 
     try {
       const response = await axios.post("http://localhost:8080/admin/create", admin, {
@@ -35,17 +35,17 @@ const AdminRegisterForm = () => {
         }
       });
 
-      alert(`✅ Success: ${response.data.firstName} registered!`);
-      navigate("/admin/dashboard"); // or wherever you want to go
+      alert(`Success: ${response.data.firstName} registered!`);
+      navigate("/admin/dashboard"); 
     } catch (error) {
       if (error.response) {
-        console.error("❌ Error Response:", error.response);
-        alert(`❌ ${error.response.data.message || "Something went wrong!"}`);
+        console.error(" Error Response:", error.response);
+        alert(` ${error.response.data.message || "Something went wrong!"}`);
       } else if (error.request) {
-        console.error("❌ No response from server:", error.request);
+        console.error(" No response from server:", error.request);
         alert("No response from server.");
       } else {
-        console.error("❌ Request Error:", error.message);
+        console.error(" Request Error:", error.message);
         alert("Error in request setup.");
       }
     }
@@ -68,7 +68,6 @@ const AdminRegisterForm = () => {
   );
 };
 
-// Inline styles (or you can use a CSS file)
 const containerStyle = {
   maxWidth: "400px",
   margin: "40px auto",

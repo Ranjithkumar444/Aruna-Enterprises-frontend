@@ -12,6 +12,8 @@ import EmployeeDetails from "./EmployeeDetails";
 import RegisterAdmins from "./RegisterAdmins";
 import AdminRegisterForm from "./AdminRegisterForm";
 import AdminList from "./AdminList";
+import AttendanceList from "./AttendanceList";
+import UseAttendanceData from "./useAttendanceData";
 
 const router = createBrowserRouter([
     {
@@ -47,6 +49,9 @@ const router = createBrowserRouter([
             },{
                 path: "admin/admins/get-all-admins",
                 element: <AdminList/>
+            },{
+                path: "admin/dashboard/admin/attendance",
+                
             }
         ]
     },

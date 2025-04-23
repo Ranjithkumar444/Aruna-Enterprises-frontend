@@ -6,8 +6,7 @@ const Headers = () => {
     return (
         <nav className="nav-bar">
             <div className="nav-bar-div">
-                
-                {/* Logo */}
+
                 <div>
                     <img
                         src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
@@ -16,7 +15,6 @@ const Headers = () => {
                     />
                 </div>
 
-                {/* Nav Items */}
                 <div className="nav-items">
                     <Link to="/">Home</Link>
 
@@ -70,7 +68,6 @@ const Headers = () => {
                     </div>
                 </div>
 
-                {/* Admin Button */}
                 <div>
                     <Link to="/admin" className="admin-button">Admin</Link>
                 </div>

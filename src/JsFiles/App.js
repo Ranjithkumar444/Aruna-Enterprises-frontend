@@ -1,17 +1,23 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Headers from "./Header";
 import { Outlet } from 'react-router-dom';
-
+import Body from "./body";
+import { useLocation } from "react-router-dom";
 
 const App = () => {
-    return(
-        <div>
-            <Headers/>
-            <Outlet />
-        </div>
-    )
-}
+  const location = useLocation();
+
+  const hideBodyRoutes = ["/contact"];
+
+  const shouldShowBody = !hideBodyRoutes.includes(location.pathname);
+
+  return (
+    <div>
+      <Headers />
+      <Outlet />
+      {shouldShowBody && <Body />}
+    </div>
+  );
+};
 
 export default App;

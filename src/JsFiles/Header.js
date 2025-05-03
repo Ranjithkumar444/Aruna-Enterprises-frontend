@@ -16,10 +16,10 @@ const Headers = () => {
                 </div>
 
                 <div className="nav-items">
-                    <Link to="/">Home</Link>
+                    <div className="home"><Link to="/">Home</Link></div>
 
                     <div className="dropdown">
-                        <Link to="/products">Products/Services</Link>
+                        <div className="products"><Link to="/products">Products/Services</Link></div>
                         <div className="dropdown-content">
                             <Link to="/products/item1">CardBoard Box</Link>
                             <Link to="/products/item2"></Link>
@@ -27,15 +27,11 @@ const Headers = () => {
                     </div>
 
                     <div className="dropdown">
-                        <Link to="/industries">Industries We Serve</Link>
-                        <div className="dropdown-content">
-                            <Link to="/industries/auto">Bosch</Link>
-                            <Link to="/industries/food">Cutting Edge</Link>
-                        </div>
+                        <div className="industry"><Link to="/industries">Industries We Serve</Link></div>
                     </div>
 
                     <div className="dropdown">
-                        <Link to="/infrastructure">Infrastructure/Units</Link>
+                        <div className="infra"><Link to="/infrastructure">Infrastructure/Units</Link></div>
                         <div className="dropdown-content">
                             <Link to="/infrastructure/unit1">Unit 1</Link>
                             <Link to="/infrastructure/unit2">Unit 2</Link>
@@ -43,7 +39,7 @@ const Headers = () => {
                     </div>
 
                     <div className="dropdown">
-                        <Link to="/quality">Quality & Certification</Link>
+                        <div className="quality"><Link to="/quality">Quality & Certification</Link></div>
                         <div className="dropdown-content">
                             <Link to="/quality/iso">ISO</Link>
                             <Link to="/quality/testing">Testing</Link>
@@ -51,7 +47,7 @@ const Headers = () => {
                     </div>
 
                     <div className="dropdown">
-                        <Link to="/about">About Us</Link>
+                        <div className="aboutus"><Link to="/about">About Us</Link></div>
                         <div className="dropdown-content">
                             <Link to="/about/history">About AE</Link>
                             <Link to="/about/team">Our Team</Link>
@@ -60,7 +56,7 @@ const Headers = () => {
                     </div>
 
                     <div className="dropdown">
-                        <Link to="/contact">Contact Us</Link>
+                        <div className="contact"><Link to="/contact">Contact Us</Link></div>
                         <div className="dropdown-content">
                             <Link to="/contact/email">Email</Link>
                             <Link to="/contact/phone">Phone</Link>

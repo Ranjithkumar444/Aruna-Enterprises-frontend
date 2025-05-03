@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const EmployeeRegisterForm = () => {
+  const navigate = useNavigate();
   const [employee, setEmployee] = useState({
     name: "",
     email: "",
@@ -34,6 +36,7 @@ const EmployeeRegisterForm = () => {
       );
   
       alert(`Success: ${response.data}`);
+      navigate("/admin/dashboard");
     } catch (error) {
       if (error.response) {
         alert(`Error: ${error.response.data}`);

@@ -13,6 +13,7 @@ import RegisterAdmins from "./RegisterAdmins";
 import AdminRegisterForm from "./AdminRegisterForm";
 import AdminList from "./AdminList";
 import AttendanceList from "./AttendanceList";
+import ContactForm from "./ContactForm";
 
 
 
@@ -53,7 +54,10 @@ const router = createBrowserRouter([
             },{
                 path: "admin/dashboard/admin/attendance",
                 element: <AttendanceList/>
-            }
+            },{
+                path: "/contact",
+                element : <ContactForm/>
+            },
         ]
     },
     {

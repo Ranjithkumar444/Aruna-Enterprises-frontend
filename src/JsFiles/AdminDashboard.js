@@ -21,7 +21,6 @@ const AdminDashboard = () => {
     const handleLogout = () => {
         localStorage.removeItem("adminToken");
         localStorage.removeItem("adminDetails");
-        navigate("/admin");
     };
 
     const handleMenuClick = (path) => {

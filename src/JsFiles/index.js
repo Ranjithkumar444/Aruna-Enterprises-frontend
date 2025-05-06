@@ -14,57 +14,82 @@ import AdminRegisterForm from "./AdminRegisterForm";
 import AdminList from "./AdminList";
 import AttendanceList from "./AttendanceList";
 import ContactForm from "./ContactForm";
-
+import AdminApp from "./AdminApp";
 
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element : <App/>,
+        element: <App />,
         errorElement: <NotFound />,
         children: [
             {
-                path: "admin",
-                element: <AdminLogin/>
+                path: "contact",
+                element: <ContactForm />
+            }
+        ]
+    },
+    {
+        path: "/admin",
+        children: [
+            {
+                index: true,
+                element: <AdminLogin /> 
             },
             {
-                path: "admin/dashboard",
-                element: <AdminDashboard/>
+                path: "dashboard",
+                element: <AdminApp />,  
+                children: [
+                    {
+                        index: true,
+                        element: <AdminDashboard /> 
+                    },
+                    {
+                        path: "admin/employee",
+                        element: <RegisterEmployee />
+                    },
+                    {
+                        path: "admin/admins",
+                        element: <RegisterAdmins />
+                    },
+                    {
+                        path: "admin/attendance",
+                        element: <AttendanceList />
+                    },
+                    {
+                        path: "admin/inventory",
+                        element: <div>Inventory Page</div>
+                    },
+                    {
+                        path: "admin/reports",
+                        element: <div>Reports Page</div>
+                    }
+                ]
             },
             {
-                path: "admin/dashboard/admin/employee",
-                element: <RegisterEmployee/>
+                path: "employee/register",
+                element: <EmployeeRegisterForm />
             },
             {
-                path: "admin/employee/register",
-                element: <EmployeeRegisterForm/>
+                path: "employee/get-all-employees",
+                element: <EmployeeDetails />
             },
             {
-                path: "admin/employee/get-all-employees",
-                element: <EmployeeDetails/>
-            },{
-                path: "admin/dashboard/admin/admins",
-                element: <RegisterAdmins/>
-            },{
-                path: "admin/admins/register",
-                element: <AdminRegisterForm/>
-            },{
-                path: "admin/admins/get-all-admins",
-                element: <AdminList/>
-            },{
-                path: "admin/dashboard/admin/attendance",
-                element: <AttendanceList/>
-            },{
-                path: "/contact",
-                element : <ContactForm/>
+                path: "admins/register",
+                element: <AdminRegisterForm />
             },
+            {
+                path: "admins/get-all-admins",
+                element: <AdminList />
+            }
         ]
     },
     {
         path: "*",
-        element: <NotFound /> 
+        element: <NotFound />
     }
-])
+]);
+
 
 const root = createRoot(document.getElementById("root"));
 root.render(

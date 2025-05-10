@@ -23,7 +23,10 @@
     "styled-jsx": "^5.1.7"
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.21",
     "buffer": "^6.0.3",
-    "parcel": "^2.14.4"
+    "parcel": "^2.14.4",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.5"
   }
 }

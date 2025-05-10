@@ -15,6 +15,7 @@ import AdminList from "./AdminList";
 import AttendanceList from "./AttendanceList";
 import ContactForm from "./ContactForm";
 import AdminApp from "./AdminApp";
+import IndustryForm from "./IndustryForm";
 
 
 const router = createBrowserRouter([
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
                     {
                         path: "admin/reports",
                         element: <div>Reports Page</div>
+                    },
+                    {
+                        path: "admin/register-industry",
+                        element: <IndustryForm/>
                     }
                 ]
             },

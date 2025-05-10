@@ -3,6 +3,7 @@ import Headers from "./Header";
 import { Outlet } from 'react-router-dom';
 import Body from "./body";
 import { useLocation } from "react-router-dom";
+import IndustryList from "./IndustryList";
 
 const App = () => {
   const location = useLocation();
@@ -14,7 +15,7 @@ const App = () => {
   return (
     <div>
       <Headers />
-      <Outlet />
+      <Outlet />  
       {shouldShowBody && <Body />}
     </div>
   );

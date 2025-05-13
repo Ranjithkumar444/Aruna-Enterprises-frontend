@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import KanbanBoard from './KanbanBoard';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -109,6 +110,10 @@ const AdminDashboard = () => {
                 <h1 style={{ textAlign: "center", marginTop: "4rem" }}>
                     Hello, Welcome <span style={{ color: "#007bff" }}>{adminName}</span>
                 </h1>
+
+                <div>
+                    <KanbanBoard/>
+                </div>
 
                 <div>
                     <button onClick={() => navigate("admin/register-industry")}>Add Industry</button>

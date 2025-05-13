@@ -75,7 +75,7 @@ const router = createBrowserRouter([
                 path: "employee/register",
                 element: <EmployeeRegisterForm />
             },
-            {
+            {   
                 path: "employee/get-all-employees",
                 element: <EmployeeDetails />
             },

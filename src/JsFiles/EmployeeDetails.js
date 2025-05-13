@@ -19,8 +19,13 @@ const EmployeeDetails = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setEmployees(response.data);
-        setFilteredEmployees(response.data);
+
+        const activeEmployees = response.data.filter(emp => emp.active === true);
+        
+        console.log(activeEmployees);
+
+        setEmployees(activeEmployees);
+        setFilteredEmployees(activeEmployees);
       } catch (error) {
         console.error("Error fetching employees:", error);
         alert("Failed to fetch employee data");
@@ -94,7 +99,7 @@ const EmployeeDetails = () => {
       </div>
 
       {filteredEmployees.length === 0 ? (
-        <p>No employees found.</p>
+        <p>No active employees found.</p>
       ) : (
         <table className="employee-table">
           <thead>

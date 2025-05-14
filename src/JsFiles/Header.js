@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Link } from "react-router-dom";
-
+import "../CssFiles/header.css"
 const Headers = () => {
     return (
         <nav className="nav-bar">

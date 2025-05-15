@@ -16,6 +16,8 @@ import AttendanceList from "./AttendanceList";
 import ContactForm from "./ContactForm";
 import AdminApp from "./AdminApp";
 import IndustryForm from "./IndustryForm";
+import InventoryHome from "./InventoryHome";
+import ReelForm from "./RegisterReelForm";
 
 
 const router = createBrowserRouter([
@@ -59,7 +61,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "admin/inventory",
-                        element: <div>Inventory Page</div>
+                        element: <InventoryHome/>
                     },
                     {
                         path: "admin/reports",
@@ -68,6 +70,9 @@ const router = createBrowserRouter([
                     {
                         path: "admin/register-industry",
                         element: <IndustryForm/>
+                    },{
+                        path: "admin/inventory/create-reel",
+                        element: <ReelForm/>
                     }
                 ]
             },

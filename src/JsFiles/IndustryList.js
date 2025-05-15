@@ -9,8 +9,6 @@ const IndustryList = () => {
       try {
         const response = await axios.get("http://localhost:8080/public/getAllIndustry");
         const industries = response.data;
-
-        // Group industries by sector
         const groupedBySector = industries.reduce((acc, industry) => {
           const { sector } = industry;
           if (!acc[sector]) {
@@ -19,7 +17,7 @@ const IndustryList = () => {
           acc[sector].push(industry);
           return acc;
         }, {});
-
+        console.log(response);
         setIndustriesBySector(groupedBySector);
       } catch (error) {
         console.error("Error fetching industry list:", error);
@@ -35,23 +33,22 @@ const IndustryList = () => {
       <h2 className="industry-heading">Industries We Serve</h2>
 
       <div className="sectors-container">
-        {/* Loop through each sector and display industries */}
         {Object.entries(industriesBySector).map(([sector, industries]) => (
           <div key={sector} className="sector-column">
             <h3 className="sector-heading">{sector}</h3>
             <ul className="industry-list">
               {industries.map((industry) => (
                 <li key={industry.id} className="industry-item">
-                  {/* Display the industry image */}
-                  {industry.industryImage && (
-                    <img
-                      src={`data:image/jpeg;base64,${industry.industryImage}`}
-                      alt={industry.industryName}
-                      className="industry-image"
-                    />
-                  )}
-                  <p className="industry-name">{industry.industryName}</p>
-                </li>
+                {industry.imageUrl && (
+                  <img
+                    src={industry.imageUrl}
+                    alt={industry.industryName}
+                    className="industry-image"
+                  />
+                )}
+                <p className="industry-name">{industry.industryName}</p>
+              </li>
+              
               ))}
             </ul>
           </div>

@@ -26,36 +26,49 @@ const AdminLogin = () => {
             setError('Invalid email or password');
         }
     };
-    
 
     return (
-        <div className="admin-login-container">
-            <h2>Admin Login</h2>
-            <form onSubmit={handleLogin}>
-                <div>
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
+        <div className="login-container">
+            <div className="login-card">
+                <div className="login-header">
+                    <h2>Admin Portal</h2>
+                    <p>Please enter your credentials</p>
                 </div>
+                
+                <form onSubmit={handleLogin} className="login-form">
+                    <div className="form-group">
+                        <label htmlFor="email">Email Address</label>
+                        <input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            required
+                        />
+                        <span className="input-icon">✉</span>
+                    </div>
 
-                <div>
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter your password"
+                            required
+                        />
+                        <span className="input-icon">🔒</span>
+                    </div>
 
-                {error && <p className="error">{error}</p>}
+                    {error && <div className="error-message">{error}</div>}
 
-                <button type="submit">Login</button>
-            </form>
+                    <button type="submit" className="login-button">
+                        Sign In
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };

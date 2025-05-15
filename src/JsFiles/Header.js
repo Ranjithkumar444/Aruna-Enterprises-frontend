@@ -9,7 +9,7 @@ const Headers = () => {
 
                 <div>
                     <img
-                        src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
+                        src="https://res.cloudinary.com/dolgydyvd/image/upload/v1747277626/xdgkktis7vjm811dsvbj.jpg"
                         className="header-logo"
                         alt="logo"
                     />
@@ -35,14 +35,6 @@ const Headers = () => {
                         <div className="dropdown-content">
                             <Link to="/infrastructure/unit1">Unit 1</Link>
                             <Link to="/infrastructure/unit2">Unit 2</Link>
-                        </div>
-                    </div>
-
-                    <div className="dropdown">
-                        <div className="quality"><Link to="/quality">Quality & Certification</Link></div>
-                        <div className="dropdown-content">
-                            <Link to="/quality/iso">ISO</Link>
-                            <Link to="/quality/testing">Testing</Link>
                         </div>
                     </div>
 

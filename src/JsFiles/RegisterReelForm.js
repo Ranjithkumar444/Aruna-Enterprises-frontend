@@ -1,15 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import '../CssFiles/ReelForm.css';
+import "../CssFiles/ReelForm.css"
 
 const ReelForm = () => {
   const [formData, setFormData] = useState({
-    size: '',
-    length: '',
-    width: '',
-    height: '',
     gsm: '',
-    quality: '',
     burstFactor: '',
     deckle: '',
     initialWeight: '',
@@ -18,6 +13,10 @@ const ReelForm = () => {
     supplierName: '',
     createdBy: '',
   });
+
+  const [barcodeId, setBarcodeId] = useState(null);
+  const [barcodeImageUrl, setBarcodeImageUrl] = useState(null);
+  const printRef = useRef();
 
   const token = localStorage.getItem("adminToken");
 
@@ -39,7 +38,7 @@ const ReelForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
+      const response = await axios.post(
         'http://localhost:8080/admin/register-reel',
         formData,
         {
@@ -49,26 +48,51 @@ const ReelForm = () => {
           }
         }
       );
+
+      const id = response.data.barcodeId;
+      setBarcodeId(id);
+
+      // Fetch barcode image
+      const imageResponse = await axios.get(
+        `http://localhost:8080/admin/barcode/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: 'arraybuffer'
+        }
+      );
+
+      const base64Image = btoa(
+        new Uint8Array(imageResponse.data)
+          .reduce((data, byte) => data + String.fromCharCode(byte), '')
+      );
+      const imgSrc = `data:image/png;base64,${base64Image}`;
+      setBarcodeImageUrl(imgSrc);
+
       alert('Reel registered successfully!');
-      setFormData({
-        size: '',
-        length: '',
-        width: '',
-        height: '',
+      setFormData((prev) => ({
         gsm: '',
-        quality: '',
         burstFactor: '',
         deckle: '',
         initialWeight: '',
         unit: '',
         paperType: '',
         supplierName: '',
-        createdBy: formData.createdBy,
-      });
+        createdBy: prev.createdBy,
+      }));
     } catch (error) {
       console.error('Error registering reel:', error);
       alert('Failed to register reel.');
     }
+  };
+
+  const handlePrint = () => {
+    const printContents = printRef.current.innerHTML;
+    const newWindow = window.open('', '', 'width=600,height=600');
+    newWindow.document.write('<html><head><title>Print</title></head><body>');
+    newWindow.document.write(printContents);
+    newWindow.document.write('</body></html>');
+    newWindow.document.close();
+    newWindow.print();
   };
 
   return (
@@ -76,12 +100,7 @@ const ReelForm = () => {
       <h2>Register New Reel</h2>
       <form onSubmit={handleSubmit}>
         {[
-          { label: 'Size', name: 'size', placeholder: 'e.g. A4, A3' },
-          { label: 'Length', name: 'length', placeholder: 'Enter length in cm' },
-          { label: 'Width', name: 'width', placeholder: 'Enter width in cm' },
-          { label: 'Height', name: 'height', placeholder: 'Enter height in cm' },
           { label: 'GSM', name: 'gsm', placeholder: 'e.g. 80, 100, 120' },
-          { label: 'Quality', name: 'quality', placeholder: 'e.g. High, Medium, Low' },
           { label: 'Burst Factor', name: 'burstFactor', placeholder: 'e.g. 25, 30' },
           { label: 'Deckle', name: 'deckle', placeholder: 'Enter deckle size' },
           { label: 'Initial Weight', name: 'initialWeight', placeholder: 'e.g. 500 kg' },
@@ -118,6 +137,24 @@ const ReelForm = () => {
           <button type="submit">Submit</button>
         </div>
       </form>
+
+      {barcodeImageUrl && (
+        <div className="barcode-display" style={{ marginTop: '20px' }}>
+          <h3>Generated Barcode</h3>
+          <div ref={printRef}>
+            <p><strong>Barcode ID:</strong> {barcodeId}</p>
+            <img
+              src={barcodeImageUrl}
+              alt="Reel Barcode"
+              style={{ border: '1px solid #000', width: '300px', height: 'auto' }}
+            />
+          </div>
+          <br />
+          <button onClick={handlePrint} style={{ marginTop: '10px' }}>
+            Print Barcode
+          </button>
+        </div>
+      )}
     </div>
   );
 };

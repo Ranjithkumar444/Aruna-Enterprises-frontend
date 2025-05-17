@@ -111,3 +111,67 @@
     width: 100%;
   }
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .barcode-sticker, .barcode-sticker * {
+    visibility: visible;
+  }
+
+  .barcode-sticker {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4in;
+    height: 2in;
+    padding: 5mm;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    border: 1px solid black;
+  }
+
+  .barcode-sticker img {
+    width: 50%;
+    height: auto;
+    max-height: 100%;
+  }
+
+  .barcode-sticker .details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  @page {
+    size: 4in 2in;
+    margin: 0;
+  }
+}
+
+@media print {
+  @page {
+    size: 4in 2in;
+    margin: 0;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .barcode-display, .barcode-display * {
+    visibility: visible;
+  }
+
+  .barcode-display {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+

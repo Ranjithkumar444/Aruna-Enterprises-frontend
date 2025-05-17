@@ -271,4 +271,13 @@
       transform: translateY(0);
     }
   }
+
+  .dot-purple {
+    background-color: #9b59b6;
+  }
+  
+  .border-purple {
+    border-left: 4px solid #9b59b6;
+  }
+  
   

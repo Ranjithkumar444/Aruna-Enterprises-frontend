@@ -17,8 +17,28 @@ const ReelForm = () => {
   const [barcodeId, setBarcodeId] = useState(null);
   const [barcodeImageUrl, setBarcodeImageUrl] = useState(null);
   const printRef = useRef();
+  const [reelDetails, setReelDetails] = useState(null);
 
   const token = localStorage.getItem("adminToken");
+
+  useEffect(() => {
+    if (barcodeId) {
+      fetchReelDetails(barcodeId);
+    }
+  }, [barcodeId]);
+
+  const fetchReelDetails = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/admin/barcode/details/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      setReelDetails(response.data);
+    } catch (error) {
+      console.error("Error fetching reel details", error);
+    }
+  };
 
   useEffect(() => {
     const adminDetails = JSON.parse(localStorage.getItem('adminDetails'));
@@ -52,7 +72,6 @@ const ReelForm = () => {
       const id = response.data.barcodeId;
       setBarcodeId(id);
 
-      // Fetch barcode image
       const imageResponse = await axios.get(
         `http://localhost:8080/admin/barcode/${id}`,
         {
@@ -104,7 +123,7 @@ const ReelForm = () => {
           { label: 'Burst Factor', name: 'burstFactor', placeholder: 'e.g. 25, 30' },
           { label: 'Deckle', name: 'deckle', placeholder: 'Enter deckle size' },
           { label: 'Initial Weight', name: 'initialWeight', placeholder: 'e.g. 500 kg' },
-          { label: 'Unit', name: 'unit', placeholder: 'e.g. kg, lbs' },
+          { label: 'Unit', name: 'unit', placeholder: 'e.g. A,B' },
           { label: 'Paper Type', name: 'paperType', placeholder: 'e.g. Kraft, Duplex' },
           { label: 'Supplier Name', name: 'supplierName', placeholder: 'Supplier full name' },
         ].map((field) => (
@@ -138,23 +157,54 @@ const ReelForm = () => {
         </div>
       </form>
 
-      {barcodeImageUrl && (
-        <div className="barcode-display" style={{ marginTop: '20px' }}>
-          <h3>Generated Barcode</h3>
-          <div ref={printRef}>
-            <p><strong>Barcode ID:</strong> {barcodeId}</p>
-            <img
-              src={barcodeImageUrl}
-              alt="Reel Barcode"
-              style={{ border: '1px solid #000', width: '300px', height: 'auto' }}
-            />
-          </div>
-          <br />
-          <button onClick={handlePrint} style={{ marginTop: '10px' }}>
-            Print Barcode
-          </button>
-        </div>
-      )}
+      {barcodeImageUrl && reelDetails && (
+  <div className="barcode-display" style={{ marginTop: '20px' }}>
+    <h3>Generated Barcode</h3>
+    <div
+      ref={printRef}
+      style={{
+        width: '384px',
+        height: '192px',
+        padding: '8px',
+        border: '1px solid black',
+        fontFamily: 'Arial, sans-serif',
+        fontSize: '10px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        boxSizing: 'border-box',
+        overflow: 'hidden',
+      }}
+    >
+
+      <img
+        src={barcodeImageUrl}
+        alt="Reel Barcode"
+        style={{ width: '70%', height: 'auto', marginBottom: '2px' }}
+      />
+
+      <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{barcodeId}</div>
+
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+        <span><strong>GSM:</strong> {reelDetails.gsm}</span>
+        <span><strong>Deckle:</strong> {reelDetails.deckle}</span>
+      </div>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+        <span><strong>Weight:</strong> {reelDetails.currentWeight} kg</span>
+        <span><strong>BF:</strong> {reelDetails.burstFactor}</span>
+      </div>
+      <div style={{ width: '100%', textAlign: 'left', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <strong>Supplier:</strong> {reelDetails.supplierName}
+      </div>
+    </div>
+
+    <button onClick={handlePrint} style={{ marginTop: '10px' }}>
+      Print Barcode
+    </button>
+    </div>
+    )}
+        
     </div>
   );
 };

@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { FaHome } from "react-icons/fa";
 import axios from "axios";
-import { SiSolid } from "react-icons/si";
 
 const ContactForm = () => {
   const [name, setName] = useState('');
@@ -26,11 +25,11 @@ const ContactForm = () => {
       const response = await axios.post('http://localhost:8080/public/contact-details', contactInfo);
 
       console.log('Response:', response.data);
-      alert('Contact info submitted successfully');
+      alert(response.data);
     } catch (error) {
       
       console.error('Error:', error.response ? error.response.data : error.message);
-      alert('There was an error submitting your contact info');
+      alert(response.data);
     }
   };
 

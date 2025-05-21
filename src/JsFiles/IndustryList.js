@@ -7,7 +7,8 @@ const IndustryList = () => {
   useEffect(() => {
     const fetchIndustries = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/public/getAllIndustry");
+        console.log(process.env.REACT_APP_API_URL); 
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/public/getAllIndustry`);
         const industries = response.data;
         const groupedBySector = industries.reduce((acc, industry) => {
           const { sector } = industry;

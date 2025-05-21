@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel src/HtmlFiles/index.html",
-    "build": "parcel build src/HtmlFiles/index.html"
+    "build": "parcel build src/HtmlFiles/index.html",
+    "proxy": "http://localhost:8080"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +16,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@hello-pangea/dnd": "^18.0.1",
+    "antd": "^5.25.2",
     "axios": "^1.8.4",
     "npx": "^10.2.2",
     "react": "^19.1.0",

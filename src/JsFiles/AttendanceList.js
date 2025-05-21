@@ -24,7 +24,7 @@ const AttendanceList = () => {
             const token = localStorage.getItem('adminToken');
             
             const response = await axios.get(
-                `http://localhost:8080/admin/attendance-list?date=${formattedDate}`,
+                `${process.env.REACT_APP_API_URL}/admin/attendance-list?date=${formattedDate}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`

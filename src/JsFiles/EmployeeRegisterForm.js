@@ -26,17 +26,18 @@ const EmployeeRegisterForm = () => {
       const token = localStorage.getItem("adminToken");
   
       const response = await axios.post(
-        "http://localhost:8080/admin/register-employee",
+        `${process.env.REACT_APP_API_URL}/admin/register-employee`,
         employee,
         {
           headers: {
             Authorization: `Bearer ${token}`  
           }
         }
+        
       );
-  
-      alert(`Success: ${response.data}`);
-      navigate("/admin/dashboard");
+
+      const employeeId = response.data;
+      navigate(`/admin/dashboard/salary/register/${employeeId}`);
     } catch (error) {
       if (error.response) {
         alert(`Error: ${error.response.data}`);

@@ -18,6 +18,9 @@ import AdminApp from "./AdminApp";
 import IndustryForm from "./IndustryForm";
 import InventoryHome from "./InventoryHome";
 import ReelForm from "./RegisterReelForm";
+import ContactDetails from "./ContactDetails";
+import SalaryRegister from "./SalaryRegister";
+import SalaryDisplay from "./SalaryDisplay.js";
 
 
 const router = createBrowserRouter([
@@ -52,6 +55,10 @@ const router = createBrowserRouter([
                         element: <RegisterEmployee />
                     },
                     {
+                        path: "salary/register/:employeeId",
+                        element: <SalaryRegister/>
+                    },
+                    {
                         path: "admin/admins",
                         element: <RegisterAdmins />
                     },
@@ -64,8 +71,8 @@ const router = createBrowserRouter([
                         element: <InventoryHome/>
                     },
                     {
-                        path: "admin/reports",
-                        element: <div>Reports Page</div>
+                        path: "admin/salary",
+                        element: <SalaryDisplay/>
                     },
                     {
                         path: "admin/register-industry",
@@ -73,6 +80,9 @@ const router = createBrowserRouter([
                     },{
                         path: "admin/inventory/create-reel",
                         element: <ReelForm/>
+                    },{
+                        path: "admin/contact/contactDetails",
+                        element: <ContactDetails/>
                     }
                 ]
             },

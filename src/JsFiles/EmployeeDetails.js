@@ -14,7 +14,7 @@ const EmployeeDetails = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/admin/get-employees", {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/get-employees`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

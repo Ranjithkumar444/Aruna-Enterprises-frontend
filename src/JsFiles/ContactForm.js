@@ -22,7 +22,7 @@ const ContactForm = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:8080/public/contact-details', contactInfo);
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/public/contact-details`, contactInfo);
 
       console.log('Response:', response.data);
       alert(response.data);

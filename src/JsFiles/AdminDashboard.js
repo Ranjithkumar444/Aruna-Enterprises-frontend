@@ -72,12 +72,12 @@ const AdminDashboard = () => {
                         Inventory
                     </li>
                     <li
-                        onClick={() => handleMenuClick("admin/reports")}
+                        onClick={() => handleMenuClick("admin/salary")}
                         style={{ padding: "1rem", cursor: "pointer", borderBottom: "1px solid #555" ,whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",}}
                     >
-                        Reports
+                        salary
                     </li>
                     <li
                         onClick={() => handleMenuClick("admin/admins")}
@@ -117,6 +117,10 @@ const AdminDashboard = () => {
 
                 <div>
                     <button onClick={() => navigate("admin/register-industry")}>Add Industry</button>
+                </div>
+
+                <div>
+                    <button onClick={() => navigate("admin/contact/contactDetails")}>Contact Request</button>
                 </div>
             </div>
 

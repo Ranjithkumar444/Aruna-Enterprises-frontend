@@ -23,8 +23,8 @@ const statusConfig = {
   },
   SHIPPED: {
     title: "Shipped",
-    dotClass: "dot-purple",
-    cardClass: "border-purple",
+    dotClass: "dot-darkgreen",
+    cardClass: "border-darkgreen",
   },
 };
 
@@ -42,10 +42,9 @@ const KanbanBoard = () => {
   useEffect(() => {
     fetchOrders();
 
-    // Optional: Refresh orders every 5 mins
     const intervalId = setInterval(() => {
       fetchOrders();
-    }, 5 * 60 * 1000); // 5 mins
+    }, 5 * 60 * 1000); 
 
     return () => clearInterval(intervalId);
   }, []);
@@ -53,7 +52,7 @@ const KanbanBoard = () => {
   const fetchOrders = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:8080/admin/order/getAllOrders",
+        `${process.env.REACT_APP_API_URL}/admin/order/getAllOrders`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -99,7 +98,7 @@ const KanbanBoard = () => {
       }
   
       await axios.put(
-        `http://localhost:8080/admin/order/${orderId}/status`,
+        `${process.env.REACT_APP_API_URL}/admin/order/${orderId}/status`,
         payload,
         {
           headers: {
@@ -148,18 +147,6 @@ const KanbanBoard = () => {
 
   const getOrdersByStatus = (status) => {
     const now = new Date();
-
-    if (status === "COMPLETED") {
-      return orders.filter((order) => {
-        if (order.status !== "COMPLETED") return false;
-        if (!order.completedAt) return false;
-
-        const completedTime = new Date(order.completedAt);
-        const diffMs = now - completedTime;
-
-        return diffMs < 24 * 60 * 60 * 1000; // Less than 24 hours
-      });
-    }
 
     if (status === "SHIPPED") {
       return orders.filter((order) => {

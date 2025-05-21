@@ -46,7 +46,7 @@ const IndustryForm = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/admin/register-industry",
+        `${process.env.REACT_APP_API_URL}/admin/register-industry`,
         industry,
         {
           headers: {

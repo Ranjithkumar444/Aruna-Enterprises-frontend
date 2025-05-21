@@ -59,7 +59,7 @@ const ReelForm = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:8080/admin/register-reel',
+        `${process.env.REACT_APP_API_URL}/admin/register-reel`,
         formData,
         {
           headers: {
@@ -73,7 +73,7 @@ const ReelForm = () => {
       setBarcodeId(id);
 
       const imageResponse = await axios.get(
-        `http://localhost:8080/admin/barcode/${id}`,
+        `${process.env.REACT_APP_API_URL}/admin/barcode/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: 'arraybuffer'

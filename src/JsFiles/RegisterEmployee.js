@@ -21,7 +21,7 @@ const RegisterEmployee = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:8080/employee/deactivate/${barcodeId}`,
+        `${process.env.REACT_APP_API_URL}/employee/deactivate/${barcodeId}`,
         {},
         {
           headers: {
@@ -167,6 +167,10 @@ const RegisterEmployee = () => {
             onMouseOut={(e) => (e.currentTarget.style.transform = "translateY(0)")}
           >
             Deactivate
+          </button>
+
+          <button onClick={() => (navigate("/admin/dashboard/admin/employee/salary"))}>
+            Salary
           </button>
         </div>
         {message && (

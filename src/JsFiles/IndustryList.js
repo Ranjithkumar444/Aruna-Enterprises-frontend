@@ -7,9 +7,9 @@ const IndustryList = () => {
   useEffect(() => {
     const fetchIndustries = async () => {
       try {
-        console.log(process.env.REACT_APP_API_URL); 
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/public/getAllIndustry`);
         const industries = response.data;
+
         const groupedBySector = industries.reduce((acc, industry) => {
           const { sector } = industry;
           if (!acc[sector]) {
@@ -18,7 +18,7 @@ const IndustryList = () => {
           acc[sector].push(industry);
           return acc;
         }, {});
-        console.log(response);
+
         setIndustriesBySector(groupedBySector);
       } catch (error) {
         console.error("Error fetching industry list:", error);
@@ -31,27 +31,12 @@ const IndustryList = () => {
 
   return (
     <div className="industry-container">
-      <h2 className="industry-heading">Industries We Serve</h2>
+      <h2 className="industry-heading">Industrial Sectors We Serve</h2>
 
       <div className="sectors-container">
-        {Object.entries(industriesBySector).map(([sector, industries]) => (
-          <div key={sector} className="sector-column">
-            <h3 className="sector-heading">{sector}</h3>
-            <ul className="industry-list">
-              {industries.map((industry) => (
-                <li key={industry.id} className="industry-item">
-                {industry.imageUrl && (
-                  <img
-                    src={industry.imageUrl}
-                    alt={industry.industryName}
-                    className="industry-image"
-                  />
-                )}
-                <p className="industry-name">{industry.industryName}</p>
-              </li>
-              
-              ))}
-            </ul>
+        {Object.keys(industriesBySector).map((sector, index) => (
+          <div key={index} className="sector-card">
+            {sector}
           </div>
         ))}
       </div>
@@ -60,3 +45,4 @@ const IndustryList = () => {
 };
 
 export default IndustryList;
+

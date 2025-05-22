@@ -9,7 +9,7 @@ const Headers = () => {
 
                 <div>
                     <img
-                        src="https://res.cloudinary.com/dolgydyvd/image/upload/v1747277626/xdgkktis7vjm811dsvbj.jpg"
+                        src="https://raw.githubusercontent.com/Ranjithkumar444/ArunaEnterprisesImage/refs/heads/main/AE%20Logo.jpeg"
                         className="header-logo"
                         alt="logo"
                     />

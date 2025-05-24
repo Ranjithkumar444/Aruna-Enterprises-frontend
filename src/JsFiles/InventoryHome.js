@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import "../CssFiles/InventoryHome.css"
 
 const InventoryHome = () => {
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ const InventoryHome = () => {
                 },
                 responseType: 'arraybuffer'
             });
-
+            console.log(response)
             const blob = new Blob([response.data], { type: 'image/png' });
             const imageUrl = URL.createObjectURL(blob);
             setBarcodeImage(imageUrl);
@@ -54,27 +55,41 @@ const InventoryHome = () => {
     };
 
     return (
-        <div>
-            <button onClick={() => navigate("/admin/dashboard/admin/inventory/create-reel")}>Create Reel</button>
+        <div className="inventory-home-container">
+            <h2 className="inventory-heading">Inventory Management</h2>
+            <button 
+                className="action-button"
+                onClick={() => navigate("/admin/dashboard/admin/inventory/create-reel")}
+            >
+                Create Reel
+            </button>
             
-            <div style={{ marginTop: '20px' }}>
-                <input
-                    type="text"
-                    value={barcodeId}
-                    onChange={(e) => setBarcodeId(e.target.value)}
-                    placeholder="Enter Barcode ID"
-                />
-                <button onClick={handleGetBarcode}>Get Barcode</button>
-            </div>
-
-            {barcodeImage && (
-                <div style={{ marginTop: '20px' }}>
-                    <img src={barcodeImage} alt="Barcode" style={{ height: "100px" }} />
-                    <div>
-                        <button onClick={handlePrint}>Print Barcode</button>
-                    </div>
+            <div className="barcode-section">
+                <div className="barcode-input-group">
+                    <input
+                        className="barcode-input"
+                        type="text"
+                        value={barcodeId}
+                        onChange={(e) => {
+                            const cleaned = e.target.value.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
+                            setBarcodeId(cleaned);
+                        }}
+                        placeholder="Enter Barcode ID"
+                    />
+                    <button className="action-button" onClick={handleGetBarcode}>Get Barcode</button>
                 </div>
-            )}
+
+                {barcodeImage && (
+                    <div className="barcode-image-container">
+                        <img src={barcodeImage} alt="Barcode" className="barcode-image" />
+                        <div className="barcode-actions">
+                            <button className="action-button print-button" onClick={handlePrint}>
+                                Print Barcode
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

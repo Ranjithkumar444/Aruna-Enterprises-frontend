@@ -21,6 +21,7 @@ import ReelForm from "./RegisterReelForm";
 import ContactDetails from "./ContactDetails";
 import SalaryRegister from "./SalaryRegister";
 import SalaryDisplay from "./SalaryDisplay.js";
+import OrderForm from "./OrderForm.js";
 
 
 const router = createBrowserRouter([
@@ -83,6 +84,9 @@ const router = createBrowserRouter([
                     },{
                         path: "admin/contact/contactDetails",
                         element: <ContactDetails/>
+                    },{
+                        path: "admin/order-create",
+                        element: <OrderForm/>
                     }
                 ]
             },

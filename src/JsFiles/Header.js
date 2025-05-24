@@ -41,17 +41,12 @@ const Headers = () => {
                     <div className="dropdown">
                         <div className="aboutus"><Link to="/about">About Us</Link></div>
                         <div className="dropdown-content">
-                            <Link to="/about/history">About AE</Link>
-                            <Link to="/about/team">Our Team</Link>
-                            <Link to="/about/history">Our History</Link>
                         </div>
                     </div>
 
                     <div className="dropdown">
                         <div className="contact"><Link to="/contact">Contact Us</Link></div>
                         <div className="dropdown-content">
-                            <Link to="/contact/email">Email</Link>
-                            <Link to="/contact/phone">Phone</Link>
                         </div>
                     </div>
                 </div>

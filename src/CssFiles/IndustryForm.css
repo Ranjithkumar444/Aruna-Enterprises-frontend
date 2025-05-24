@@ -1,0 +1,76 @@
+
+.industry-form-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.industry-form-container h2 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+.industry-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.industry-form input {
+    padding: 0.8rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+.industry-form input:focus {
+    outline: none;
+    border-color: #4a6fa5;
+    box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+    background-color: #fff;
+}
+
+.industry-form input::placeholder {
+    color: #95a5a6;
+}
+
+.industry-form button {
+    padding: 0.8rem;
+    background-color: #4a6fa5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.industry-form button:hover {
+    background-color: #3a5a8a;
+    transform: translateY(-2px);
+}
+
+.industry-form button:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .industry-form-container {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .industry-form-container h2 {
+        font-size: 1.5rem;
+    }
+}

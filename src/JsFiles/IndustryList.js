@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "../CssFiles/IndustryList.css";
 
 const IndustryList = () => {
   const [industriesBySector, setIndustriesBySector] = useState({});
@@ -9,6 +10,8 @@ const IndustryList = () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/public/getAllIndustry`);
         const industries = response.data;
+
+        console.log(response)
 
         const groupedBySector = industries.reduce((acc, industry) => {
           const { sector } = industry;
@@ -29,20 +32,24 @@ const IndustryList = () => {
     fetchIndustries();
   }, []);
 
+  const sectors = Object.keys(industriesBySector);
+
+  const duplicatedSectors = [...sectors, ...sectors];
+
   return (
     <div className="industry-container">
       <h2 className="industry-heading">Industrial Sectors We Serve</h2>
-
-      <div className="sectors-container">
-        {Object.keys(industriesBySector).map((sector, index) => (
-          <div key={index} className="sector-card">
-            {sector}
-          </div>
-        ))}
+      <div className="slider-wrapper">
+        <div className="sliding-track">
+          {duplicatedSectors.map((sector, index) => (
+            <div key={index} className="sector-card">
+              {sector}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
 export default IndustryList;
-

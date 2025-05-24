@@ -115,18 +115,22 @@ const AdminDashboard = () => {
                     <KanbanBoard/>
                 </div>
 
-                <div>
-                    <button onClick={() => navigate("admin/register-industry")}>Add Industry</button>
+                <div className="buttons-container">
+                    <div className="buttons-box">
+                        <div className="add-industry-btn">
+                            <button onClick={() => navigate("admin/register-industry")}>Add Industry</button>
+                        </div>
+                        <div className="create-order-btn">
+                            <button onClick={() => navigate("admin/order-create")}>Create Order</button>
+                        </div>
+                        <div className="contact-request-btn">
+                            <button onClick={() => navigate("admin/contact/contactDetails")}>Contact Request</button>
+                        </div>
+                    </div>
                 </div>
-
-                <div>
-                    <button onClick={() => navigate("admin/contact/contactDetails")}>Contact Request</button>
-                </div>
-            </div>
-
-            
+            </div>  
         </div>
     );
 };
 
-export default AdminDashboard;
+export default AdminDashboard; 

@@ -22,6 +22,8 @@ import ContactDetails from "./ContactDetails";
 import SalaryRegister from "./SalaryRegister";
 import SalaryDisplay from "./SalaryDisplay.js";
 import OrderForm from "./OrderForm.js";
+import BoxForm from "./BoxForm.js";
+import AboutUs from "./AboutUs.js";
 
 
 const router = createBrowserRouter([
@@ -31,9 +33,13 @@ const router = createBrowserRouter([
         errorElement: <NotFound />,
         children: [
             {
+                path: "about",
+                element: <AboutUs/>
+            },
+            {
                 path: "contact",
                 element: <ContactForm />
-            }
+            },
         ]
     },
     {
@@ -87,7 +93,11 @@ const router = createBrowserRouter([
                     },{
                         path: "admin/order-create",
                         element: <OrderForm/>
+                    },{
+                        path: "admin/box/boxCreate",
+                        element: <BoxForm/>
                     }
+                    
                 ]
             },
             {
@@ -106,6 +116,7 @@ const router = createBrowserRouter([
                 path: "admins/get-all-admins",
                 element: <AdminList />
             }
+
         ]
     },
     {

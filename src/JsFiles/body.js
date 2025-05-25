@@ -8,6 +8,7 @@ import {
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from 'react-router-dom';
 import IndustryList from "./IndustryList";
+import BoxGallery from "./BoxGallery";
 
 const Body = () => {
   const navigate = useNavigate();
@@ -18,7 +19,8 @@ const Body = () => {
 
   return (
     <div className="main-container">
-      {/* Floating Toolbar */}
+      
+
       <div className="social-toolbar">
         <button className="contact-button" title="Contact Us" onClick={handleContactClick}>
           <FontAwesomeIcon icon={faEnvelope} className="icon" />
@@ -44,6 +46,8 @@ const Body = () => {
         ></iframe>
 
         <IndustryList />
+
+         <BoxGallery/>
       </div>
     </div>
   );

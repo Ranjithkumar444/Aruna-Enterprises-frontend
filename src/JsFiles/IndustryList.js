@@ -47,6 +47,11 @@ const IndustryList = () => {
             </div>
           ))}
         </div>
+        <div className="industry-list">
+          {duplicatedSectors.map((sector,index) => (
+            <div key={index} className="industry-card">{sector}</div>
+          ))}
+        </div>
       </div>
     </div>
   );

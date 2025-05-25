@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "../CssFiles/AboutUs.css";
+import BusinessInfo from "./BusinessInfo";
 
 const AboutUs = () => {
   const visionRef = useRef(null);
@@ -53,10 +54,42 @@ const AboutUs = () => {
               serves clients across multiple industries.
             </p>
             <p className="about-text">
+              Taking advantage of vast industrial experience, cutting-edge production 
+              techniques and total knowledge of the respective domain, we at Aruna 
+              Enterprises have reached new heights of achievement in national markets. 
+              Our company has acquired a competitive edge over competitors by endlessly 
+              manufacturing and supplying superior quality packaging solutions including 
+              Corrugated Boxes/Cartons, Corrugated Sheets, Corrugated Rolls, Printed 
+              Corrugated Boxes, Duplex Corrugated Boxes, Offset Printed Laminated Boxes, 
+              Industrial Packaging Boxes/Cartons, Cardboard Boxes and many more.
+            </p>
+            <p className="about-text">
+              It is our uncompromising commitment and unrelenting endeavors towards 
+              quality that we have gained the maximum trust of customers across the 
+              nation and established a distinguished status in the industry. Our 
+              products are developed by experienced professionals, keeping the specific 
+              demands of clients in mind. We use highly qualitative raw materials sourced 
+              from reliable market dealers who ensure 100% quality.
+            </p>
+            <p className="about-text">
+              Under the visionary leadership of our honorable manager <strong>Mr. M. Munirathnappa</strong>, 
+              we have achieved remarkable growth and earned maximum client support through 
+              sound business acumen, years of industry experience, marketing expertise, and 
+              strong administrative capabilities.
+            </p>
+            <p className="about-text">
               Over the years, we've invested in cutting-edge technology and
               continuous staff training to ensure we remain at the forefront of
               packaging innovation. Our journey reflects our commitment to
               quality, customer satisfaction, and sustainable growth.
+            </p>
+            <p className="about-text">
+              In this competitive market, the standards we maintain in product quality 
+              have kept us ahead of competitors. All our products undergo stringent quality 
+              checks against defined industrial parameters before final packaging and 
+              delivery to customers. Our offerings are recognized for their stiffness, 
+              maximum strength, longer life, heavy load-bearing capacity, dimensional 
+              accuracy, high tear strength and other superior qualities.
             </p>
           </div>
           <div className="about-image">
@@ -117,6 +150,10 @@ const AboutUs = () => {
           </div>
         </section>
 
+        <section>
+          <BusinessInfo/>
+        </section>
+
         <section className="team-section" ref={teamRef}>
           <h2 className="section-title">Our Team</h2>
           <p className="team-description">
@@ -124,6 +161,14 @@ const AboutUs = () => {
             committed to excellence. From our skilled production staff to our
             customer service representatives, each member plays a vital role in
             delivering the quality you expect.
+          </p>
+          <p className="team-description">
+            Our highly talented and hardworking team focuses all their endeavors 
+            to provide desired solutions and the best product range to our customers. 
+            The team cordially performs all operations and assists in completing 
+            targets within predetermined time frames. We regularly conduct training 
+            programs to keep our personnel updated with market preferences and 
+            industry advancements.
           </p>
           <div className="team-grid">
             <div className="team-member">

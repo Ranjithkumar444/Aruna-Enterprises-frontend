@@ -61,7 +61,6 @@ const BoxGallery = () => {
             <div className="overlay">
               <div className="overlay-text">
                 <h4>{box.box}</h4>
-                <p>{box.boxDescription}</p>
               </div>
             </div>
           </div>

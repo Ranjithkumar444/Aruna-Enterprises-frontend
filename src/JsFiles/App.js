@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import Body from "./body";
 import { useLocation } from "react-router-dom";
 import IndustryList from "./IndustryList";
+import Footer from "./Footer";
 
 
 const App = () => {
@@ -18,6 +19,7 @@ const App = () => {
       <Headers />
       <Outlet />  
       {shouldShowBody && <Body />}
+      <Footer/>
     </div>
   );
 };

@@ -126,6 +126,9 @@ const AdminDashboard = () => {
                         <div className="contact-request-btn">
                             <button onClick={() => navigate("admin/contact/contactDetails")}>Contact Request</button>
                         </div>
+                        <div className="box-create-btn">
+                            <button onClick={() => navigate("admin/box/boxCreate")}>Create Box</button>
+                        </div>
                     </div>
                 </div>
             </div>  

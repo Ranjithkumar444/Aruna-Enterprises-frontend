@@ -5,10 +5,11 @@ import Body from "./body";
 import { useLocation } from "react-router-dom";
 import IndustryList from "./IndustryList";
 
+
 const App = () => {
   const location = useLocation();
 
-  const hideBodyRoutes = ["/contact"];
+  const hideBodyRoutes = ["/contact","/about"];
 
   const shouldShowBody = !hideBodyRoutes.includes(location.pathname);
 

@@ -1,0 +1,112 @@
+/* Container Styles */
+.gallery-container {
+  padding: 40px 20px;
+  background-color: #fff;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.gallery-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+/* Filter Buttons */
+.filter-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.filter-button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #e0e0e0;
+  color: #333;
+  font-weight: 500;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.filter-button:hover {
+  background-color: #c5cae9;
+}
+
+.filter-button.active {
+  background-color: #3f51b5;
+  color: white;
+}
+
+/* Responsive Box Grid */
+.box-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Box Card */
+.box-card {
+  flex: 1 1 280px;
+  max-width: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #f0f0f0;
+  transition: transform 0.3s ease;
+}
+
+.box-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Image */
+.box-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Overlay */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  color: white;
+  text-align: center;
+}
+
+.box-card:hover .overlay {
+  opacity: 1;
+}
+
+.overlay-text h4 {
+  margin-bottom: 8px;
+  font-size: 1.3rem;
+}
+
+.overlay-text p {
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .box-card {
+    flex: 1 1 100%;
+  }
+}

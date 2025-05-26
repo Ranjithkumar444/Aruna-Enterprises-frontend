@@ -10,7 +10,7 @@ import Footer from "./Footer";
 const App = () => {
   const location = useLocation();
 
-  const hideBodyRoutes = ["/contact","/about"];
+  const hideBodyRoutes = ["/contact","/about","/industries"];
 
   const shouldShowBody = !hideBodyRoutes.includes(location.pathname);
 

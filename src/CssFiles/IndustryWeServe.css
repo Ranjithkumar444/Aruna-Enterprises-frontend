@@ -1,0 +1,186 @@
+/* IndustryWeServe.css */
+
+/* Base Styles with Smooth Animations */
+.industry-container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  animation: fadeIn 1s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.industry-title {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.industry-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  border-radius: 2px;
+  animation: expandLine 1.2s ease-out 0.5s forwards;
+  transform-origin: center;
+  opacity: 0;
+}
+
+@keyframes expandLine {
+  0% { width: 0; opacity: 0; }
+  100% { width: 80px; opacity: 1; }
+}
+
+.industry-description {
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  color: #555;
+  animation: slideUp 1s ease-out 0.3s both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.industry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.industry-card {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  opacity: 0;
+  transform: translateY(30px);
+  animation: cardEntrance 0.6s ease-out forwards;
+}
+
+@keyframes cardEntrance {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.industry-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.industry-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.5s ease, filter 0.5s ease;
+  filter: brightness(0.9);
+}
+
+.industry-card:hover .industry-image {
+  transform: scale(1.05);
+  filter: brightness(1);
+}
+
+.industry-info {
+  padding: 20px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.9), #fff);
+}
+
+.industry-sector {
+  font-size: 16px;
+  color: #2c3e50;
+  margin: 0;
+  font-weight: 600;
+  text-align: center;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.industry-sector::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: #3498db;
+  transition: width 0.3s ease;
+}
+
+.industry-card:hover .industry-sector::after {
+  width: 50px;
+}
+
+/* Staggered animation for cards */
+.industry-card:nth-child(1) { animation-delay: 0.1s; }
+.industry-card:nth-child(2) { animation-delay: 0.2s; }
+.industry-card:nth-child(3) { animation-delay: 0.3s; }
+.industry-card:nth-child(4) { animation-delay: 0.4s; }
+.industry-card:nth-child(5) { animation-delay: 0.5s; }
+.industry-card:nth-child(6) { animation-delay: 0.6s; }
+.industry-card:nth-child(7) { animation-delay: 0.7s; }
+.industry-card:nth-child(8) { animation-delay: 0.8s; }
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .industry-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .industry-container {
+    padding: 30px 20px;
+  }
+  
+  .industry-title {
+    font-size: 30px;
+  }
+  
+  .industry-description {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .industry-container {
+    padding: 20px 15px;
+  }
+  
+  .industry-title {
+    font-size: 26px;
+  }
+  
+  .industry-description {
+    font-size: 14px;
+    text-align: left;
+  }
+  
+  .industry-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .industry-image {
+    height: 180px;
+  }
+}

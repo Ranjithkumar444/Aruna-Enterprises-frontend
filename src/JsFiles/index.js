@@ -24,6 +24,7 @@ import SalaryDisplay from "./SalaryDisplay.js";
 import OrderForm from "./OrderForm.js";
 import BoxForm from "./BoxForm.js";
 import AboutUs from "./AboutUs.js";
+import IndustryWeServe from "./IndustryWeServe.js";
 
 
 const router = createBrowserRouter([
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
                 path: "contact",
                 element: <ContactForm />
             },
+            {
+                path: "industries",
+                element: <IndustryWeServe/>
+            }
         ]
     },
     {

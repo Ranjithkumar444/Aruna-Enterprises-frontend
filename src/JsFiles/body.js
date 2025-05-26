@@ -47,7 +47,7 @@ const Body = () => {
 
         <IndustryList />
 
-         <BoxGallery/>
+        <BoxGallery/>
       </div>
     </div>
   );

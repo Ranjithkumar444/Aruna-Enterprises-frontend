@@ -6,20 +6,21 @@ import { useLocation } from "react-router-dom";
 import IndustryList from "./IndustryList";
 import Footer from "./Footer";
 
-
 const App = () => {
   const location = useLocation();
 
-  const hideBodyRoutes = ["/contact","/about","/industries"];
+  const hideBodyRoutes = ["/contact", "/about", "/industries", "/products"];
+  const isStaticMatch = hideBodyRoutes.includes(location.pathname);
+  const isSectorRoute = /^\/sector\/[^/]+$/.test(location.pathname);
 
-  const shouldShowBody = !hideBodyRoutes.includes(location.pathname);
+  const shouldShowBody = !isStaticMatch && !isSectorRoute;
 
   return (
     <div>
       <Headers />
-      <Outlet />  
+      <Outlet />
       {shouldShowBody && <Body />}
-      <Footer/>
+      <Footer />
     </div>
   );
 };

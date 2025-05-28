@@ -11,13 +11,7 @@ const BoxGallery = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const response = await axios.get(
-        'http://localhost:8080/admin/box/getAllBoxDetails',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        'http://localhost:8080/public/box/getAllBoxDetails');
       setBoxes(response.data);
       setFilteredBoxes(response.data);
     } catch (error) {

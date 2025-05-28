@@ -40,7 +40,7 @@
 .sector-card {
   min-width: 200px;
   margin-right: 20px;
-  background: linear-gradient(135deg, #e0f7fa, #e1bee7);
+  background: linear-gradient(135deg, #78e6f4, #e1bee7);
   padding: 20px;
   border-radius: 16px;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
@@ -68,7 +68,7 @@
 }
 
 .industry-card {
-  background-color: #ffffff;
+  background-color: #e71919;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   padding: 16px 24px;

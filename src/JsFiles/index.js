@@ -25,6 +25,8 @@ import OrderForm from "./OrderForm.js";
 import BoxForm from "./BoxForm.js";
 import AboutUs from "./AboutUs.js";
 import IndustryWeServe from "./IndustryWeServe.js";
+import BoxSectors from "./BoxSectors.js";
+import SectorDetails from "./SectorDetails.js";
 
 
 const router = createBrowserRouter([
@@ -44,7 +46,14 @@ const router = createBrowserRouter([
             {
                 path: "industries",
                 element: <IndustryWeServe/>
+            },{
+                path: "products",
+                element: <BoxSectors/>
+            },{
+                path: "sector/:sectorName",
+                element: <SectorDetails/>
             }
+            
         ]
     },
     {

@@ -1,7 +1,7 @@
 const AppWithHeader = ({ children }) => {
     return (
       <>
-        <Header /> {/* Your header component */}
+        <Header /> 
         {children}
       </>
     );

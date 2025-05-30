@@ -90,6 +90,10 @@ const InventoryHome = () => {
                     </div>
                 )}
             </div>
+
+            <div className="action-button-reel">
+                <button onClick={() => navigate("reel")}>Reel Stocks</button> 
+            </div>
         </div>
     );
 };

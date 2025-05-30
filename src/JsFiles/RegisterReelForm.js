@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import "../CssFiles/ReelForm.css"
+import "../CssFiles/ReelForm.css";
 
 const ReelForm = () => {
   const [formData, setFormData] = useState({
@@ -158,53 +158,62 @@ const ReelForm = () => {
       </form>
 
       {barcodeImageUrl && reelDetails && (
-  <div className="barcode-display" style={{ marginTop: '20px' }}>
-    <h3>Generated Barcode</h3>
-    <div
-      ref={printRef}
-      style={{
-        width: '384px',
-        height: '192px',
-        padding: '8px',
-        border: '1px solid black',
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '10px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        boxSizing: 'border-box',
-        overflow: 'hidden',
-      }}
-    >
+        <div className="barcode-display" style={{ marginTop: '20px' }}>
+          <h3>Generated Barcode</h3>
+          <div
+            ref={printRef}
+            style={{
+              width: '384px',
+              height: '192px',
+              padding: '8px',
+              border: '1px solid black',
+              fontFamily: 'Arial, sans-serif',
+              fontSize: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              boxSizing: 'border-box',
+              overflow: 'hidden',
+            }}
+          >
+            <div style={{ fontWeight: 'bold', fontSize: '12px', marginBottom: '2px' }}>
+              Aruna Enterprises
+            </div>
 
-      <img
-        src={barcodeImageUrl}
-        alt="Reel Barcode"
-        style={{ width: '70%', height: 'auto', marginBottom: '2px' }}
-      />
+            <img
+              src={barcodeImageUrl}
+              alt="Reel Barcode"
+              style={{ width: '70%', height: 'auto', marginBottom: '2px' }}
+            />
 
-      <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{barcodeId}</div>
+            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{barcodeId}</div>
 
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-        <span><strong>GSM:</strong> {reelDetails.gsm}</span>
-        <span><strong>Deckle:</strong> {reelDetails.deckle}</span>
-      </div>
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-        <span><strong>Weight:</strong> {reelDetails.currentWeight} kg</span>
-        <span><strong>BF:</strong> {reelDetails.burstFactor}</span>
-      </div>
-      <div style={{ width: '100%', textAlign: 'left', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        <strong>Supplier:</strong> {reelDetails.supplierName}
-      </div>
-    </div>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+              <span><strong>GSM:</strong> {reelDetails.gsm}</span>
+              <span><strong>Deckle:</strong> {reelDetails.deckle}</span>
+            </div>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+              <span><strong>Weight:</strong> {reelDetails.currentWeight} kg</span>
+              <span><strong>BF:</strong> {reelDetails.burstFactor}</span>
+            </div>
+            <div style={{
+              width: '100%',
+              textAlign: 'left',
+              marginTop: '2px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
+              <strong>Supplier:</strong> {reelDetails.supplierName}
+            </div>
+          </div>
 
-    <button onClick={handlePrint} style={{ marginTop: '10px' }}>
-      Print Barcode
-    </button>
-    </div>
-    )}
-        
+          <button onClick={handlePrint} style={{ marginTop: '10px' }}>
+            Print Barcode
+          </button>
+        </div>
+      )}
     </div>
   );
 };

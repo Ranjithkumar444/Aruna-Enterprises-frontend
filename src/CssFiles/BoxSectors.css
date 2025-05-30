@@ -1,5 +1,3 @@
-/* BoxSectors.css */
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -71,7 +69,6 @@
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-/* Sector Details Page Styles */
 .back-button {
   background: #3498db;
   color: white;
@@ -127,7 +124,10 @@
   color: #3498db;
 }
 
-/* Responsive adjustments */
+.box-sector-image{
+  margin-left: 200px;
+}
+
 @media (max-width: 768px) {
   .sector-grid, .boxes-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

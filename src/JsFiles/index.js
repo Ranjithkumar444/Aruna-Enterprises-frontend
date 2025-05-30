@@ -27,6 +27,7 @@ import AboutUs from "./AboutUs.js";
 import IndustryWeServe from "./IndustryWeServe.js";
 import BoxSectors from "./BoxSectors.js";
 import SectorDetails from "./SectorDetails.js";
+import ReelsInStock from "./ReelsInStock.js";
 
 
 const router = createBrowserRouter([
@@ -88,8 +89,12 @@ const router = createBrowserRouter([
                         element: <AttendanceList />
                     },
                     {
+                        path: "admin/inventory/reel",
+                        element: <ReelsInStock/>
+                    },
+                    {
                         path: "admin/inventory",
-                        element: <InventoryHome/>
+                        element: <InventoryHome/>,
                     },
                     {
                         path: "admin/salary",

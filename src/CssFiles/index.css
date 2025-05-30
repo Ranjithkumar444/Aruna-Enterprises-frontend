@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: row;
   position: relative;
-  padding-left: 80px; /* to avoid overlap with toolbar */
+  padding-left: 80px; 
 }
 
 .social-toolbar {
@@ -34,9 +34,10 @@
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   margin-bottom: 40px;
+  transform: translate(0, 0);
+  transition: opacity 1.5s ease-out, transform 1.5s ease-out;
 }
 
-/* Contact Button */
 .contact-button {
   display: flex;
   flex-direction: column;
@@ -72,7 +73,6 @@
   letter-spacing: 0.5px;
 }
 
-/* Social Buttons */
 .social-button {
   display: flex;
   align-items: center;
@@ -191,7 +191,7 @@ margin-left: 400px;
 }
 
 .filters .filter-btn {
-  background-color: #28a745;
+  background-color: #1a902c;
   color: white;
   cursor: pointer;
 }
@@ -504,63 +504,49 @@ h2 {
   }
 }
 
-/* Container for the buttons box */
 .buttons-container {
+    margin-top: 3rem;
     display: flex;
     justify-content: center;
-    margin: 20px 0;
 }
 
-/* The box containing both buttons */
 .buttons-box {
     display: flex;
-    gap: 15px; /* Space between buttons */
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    max-width: 800px;
+    padding: 1rem;
     background-color: #f8f9fa;
-    padding: 15px 25px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Style for both buttons */
-.add-industry-btn button,
-.contact-request-btn button {
-    padding: 10px 20px;
+.buttons-box > div {
+    flex: 1 1 200px;
+    display: flex;
+    justify-content: center;
+}
+
+.buttons-box button {
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     border: none;
-    border-radius: 5px;
-    font-weight: 500;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.95rem;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-/* Individual button colors */
-.add-industry-btn button {
-    background-color: #4a6fa5;
-    color: white;
-}
-
-.contact-request-btn button {
-    background-color: #28a745;
-    color: white;
-}
-
-/* Hover effects */
-.add-industry-btn button:hover {
-    background-color: #3a5a8a;
+.buttons-box button:hover {
+    background: linear-gradient(135deg, #0056b3, #003d80);
     transform: translateY(-2px);
 }
 
-.contact-request-btn button:hover {
-    background-color: #218838;
-    transform: translateY(-2px);
-}
-
-/* Active/click effects */
-.add-industry-btn button:active,
-.contact-request-btn button:active {
-    transform: translateY(0);
-}
 
 @media (max-width: 600px) {
     .buttons-box {

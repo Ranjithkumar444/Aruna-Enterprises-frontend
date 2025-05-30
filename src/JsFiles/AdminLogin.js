@@ -46,7 +46,7 @@ const AdminLogin = () => {
                             placeholder="Enter your email"
                             required
                         />
-                        <span className="input-icon">✉</span>
+                        <span className="input-icon"></span>
                     </div>
 
                     <div className="form-group">
@@ -59,7 +59,7 @@ const AdminLogin = () => {
                             placeholder="Enter your password"
                             required
                         />
-                        <span className="input-icon">🔒</span>
+                        <span className="input-icon"></span>
                     </div>
 
                     {error && <div className="error-message">{error}</div>}

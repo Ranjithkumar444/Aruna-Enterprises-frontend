@@ -1,8 +1,23 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "../CssFiles/header.css"
+import "../CssFiles/header.css";
+
 const Headers = () => {
+    const [showAdmin, setShowAdmin] = useState(false);
+
+    useEffect(() => {
+        const handleKeyPress = (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "a") {
+                setShowAdmin(true);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyPress);
+        return () => {
+            window.removeEventListener("keydown", handleKeyPress);
+        };
+    }, []);
+
     return (
         <nav className="nav-bar">
             <div className="nav-bar-div">
@@ -52,12 +67,13 @@ const Headers = () => {
                 </div>
 
                 <div>
-                    <Link to="/admin" className="admin-button">Admin</Link>
+                    {showAdmin && (
+                        <Link to="/admin" className="admin-button">Admin</Link>
+                    )}
                 </div>
             </div>
         </nav>
     );
 };
-
 
 export default Headers;

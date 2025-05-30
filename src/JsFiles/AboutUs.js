@@ -1,14 +1,25 @@
 import React, { useEffect, useRef } from "react";
 import "../CssFiles/AboutUs.css";
+import { useLocation } from "react-router-dom";
 import BusinessInfo from "./BusinessInfo";
 
 const AboutUs = () => {
   const visionRef = useRef(null);
+  const location = useLocation();
   const missionRef = useRef(null);
   const statsRef = useRef(null);
   const teamRef = useRef(null);
+  const historyRef = useRef(null);
+  
 
   useEffect(() => {
+      if (location.hash) {
+      const element = document.getElementById(location.hash.replace('#', ''));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -20,17 +31,17 @@ const AboutUs = () => {
       { threshold: 0.1 }
     );
 
-    [visionRef, missionRef, statsRef, teamRef].forEach((ref) => {
+    [visionRef, missionRef, statsRef, teamRef, historyRef].forEach((ref) => {
       if (ref.current) observer.observe(ref.current);
     });
 
     return () => {
-      [visionRef, missionRef, statsRef, teamRef].forEach((ref) => {
+      [visionRef, missionRef, statsRef, teamRef, historyRef].forEach((ref) => {
         if (ref.current) observer.unobserve(ref.current);
       });
     };
-  }, []);
-
+  }, [location]);
+  
   return (
     <div className="about-container">
       <div className="hero-section">
@@ -43,9 +54,9 @@ const AboutUs = () => {
       </div>
 
       <div className="content-wrapper">
-        <section className="about-section">
+        <section id="history" className="about-section">
           <div className="about-content">
-            <h2 className="section-title">Our Story</h2>
+            <h2 className="section-title">Our History</h2>
             <p className="about-text">
               Established in <strong>2006</strong>, Aruna Enterprises has grown from a small
               packaging workshop to a trusted manufacturer and supplier of
@@ -116,7 +127,7 @@ const AboutUs = () => {
           </div>
         </section>
 
-        <section className="values-section">
+        <section id="visionmission" className="values-section">
           <div className="vision-box" ref={visionRef}>
             <div className="icon-container">
               <svg viewBox="0 0 24 24">
@@ -154,7 +165,7 @@ const AboutUs = () => {
           <BusinessInfo/>
         </section>
 
-        <section className="team-section" ref={teamRef}>
+        <section id="ourteam" className="team-section" ref={teamRef}>
           <h2 className="section-title">Our Team</h2>
           <p className="team-description">
             Behind every box we produce is a team of dedicated professionals

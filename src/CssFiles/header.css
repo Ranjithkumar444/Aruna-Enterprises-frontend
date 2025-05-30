@@ -52,7 +52,6 @@
   background-color: #f5f9ff;
 }
 
-/* Dropdown styles */
 .dropdown {
   position: relative;
 }
@@ -93,7 +92,6 @@
   color: #2c83fb;
 }
 
-/* Admin button styles */
 .admin-button {
   background-color: #2c83fb;
   color: white !important;
@@ -109,7 +107,6 @@
   box-shadow: 0 4px 8px rgba(44, 131, 251, 0.3);
 }
 
-/* Mobile responsiveness */
 @media (max-width: 1024px) {
   .nav-items {
       gap: 10px;

@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import "../CssFiles/BoxSectors.css";
 
 const BoxSectors = () => {
   const [boxData, setBoxData] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+
+    if (location.hash) {
+      const element = document.getElementById(location.hash.replace('#', ''));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
     axios
       .get("http://localhost:8080/public/box/getBoxDetails")
       .then((response) => {
@@ -17,7 +26,7 @@ const BoxSectors = () => {
       .catch((error) => {
         console.error("Error fetching box data:", error);
       });
-  }, []);
+  }, [location]);
 
   const uniqueSectors = Array.from(
     new Map(boxData.map((box) => [box.boxSector, box])).values()
@@ -31,7 +40,8 @@ const BoxSectors = () => {
 
   return (
     <div className="container">
-      <h2 className="heading">Box Sectors</h2>
+      <section id="boxsector">
+        <h2 className="heading">Box Sectors</h2>
 
       <div className="sector-grid">
         {uniqueSectors.map((box) => (
@@ -45,6 +55,12 @@ const BoxSectors = () => {
           </div>
         ))}
       </div>
+      <h2 className="heading">HSN Codes</h2>
+      <div className="box-sector-image">
+        
+        <img src="https://github.com/Ranjithkumar444/ArunaEnterprisesImage/blob/main/Hsncode.png?raw=true"></img>
+      </div>
+      </section>
     </div>
   );
 };

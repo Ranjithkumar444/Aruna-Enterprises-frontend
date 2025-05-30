@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faPhone, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import { FaWhatsapp } from "react-icons/fa";
 import axios from "axios";
 import "../CssFiles/ContactForm.css"
+import { useLocation } from "react-router-dom";
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const ContactForm = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+  const location = useLocation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,6 +24,15 @@ const ContactForm = () => {
       [name]: value
     }));
   };
+
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.getElementById(location.hash.replace('#', ''));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,10 +66,8 @@ const ContactForm = () => {
         </div>
       </section>
 
-      {/* Main Content */}
       <div className="contact-content">
-        {/* Contact Info Section */}
-        <section className="contact-info-section">
+        <section id="location" className="contact-info-section">
           <div className="info-card">
             <div className="info-icon">
               <FontAwesomeIcon icon={faMapMarkerAlt} />
@@ -131,7 +140,6 @@ const ContactForm = () => {
           </div>
         </section>
 
-        {/* Map Section */}
         <section className="map-section">
           <h2>Find Us On Map</h2>
           <div className="map-container">
@@ -156,8 +164,7 @@ const ContactForm = () => {
           </div>
         </section>
 
-        {/* Contact Form Section */}
-        <section className="contact-form-section">
+        <section id="contactus" className="contact-form-section">
           <div className="form-header">
             <div className="form-icon">
               <FontAwesomeIcon icon={faEnvelope} />

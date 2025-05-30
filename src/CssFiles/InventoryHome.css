@@ -17,6 +17,23 @@
   font-weight: 600;
 }
 
+.action-button-reel button{
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.action-button-reel:hover button{
+  background-color: #1e40af;
+}
+
 .action-button {
   background-color: #2563eb;
   color: white;

@@ -9,8 +9,6 @@ import {
 import { Link } from "react-router-dom";
 
 
-
-
 const industriesServed = [
   "Textiles",
   "Building Materials",
@@ -73,10 +71,14 @@ const Footer = () => {
           <ul className="quick-links">
             <li><Link to="/">Home</Link></li>
             <li><Link to="/about">About Us</Link></li>
-            <li><Link to="/facilities">Facilities</Link></li>
-            <li><Link to="/history">History</Link></li>
-            <li><Link to="/social-accountability">Social Accountability</Link></li>
+            <li className="footer-history"><Link to="/about#history">- History</Link></li>
+            <li className="footer-vimi"><Link to="/about#visionmission">- Vision and Mission</Link></li>
+            <li className="footer-vimi"><Link to="/about#ourteam">- Our Team</Link></li>
             <li><Link to="/contact">Contact Us</Link></li>
+            <li className="footer-vimi"><Link to="/contact/#location">- Location</Link></li>
+            <li className="footer-vimi"><Link to="/contact/#contactus">- Contact</Link></li>
+            <li><Link to="/products#boxsector">Box Types</Link></li>
+            
           </ul>
         </div>
       </div>

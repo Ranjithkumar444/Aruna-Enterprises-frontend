@@ -25,7 +25,7 @@ const ContactDetails = () => {
 
   return (
     <div className="container">
-      <h2 className="title">📬 Contact Details</h2>
+      <h2 className="title"> Contact Details</h2>
       <table className="styled-table">
         <thead>
           <tr>

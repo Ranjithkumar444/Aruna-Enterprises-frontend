@@ -1,0 +1,133 @@
+.reel-container {
+  padding: 2rem;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.reel-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.reel-title::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+}
+
+.reel-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.reel-table th {
+  background-color: #f3f4f6;
+  color: #111827;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.reel-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  color: #4b5563;
+}
+
+.reel-table tr:last-child td {
+  border-bottom: none;
+}
+
+.reel-table tr:hover td {
+  background-color: #f0f9ff;
+}
+
+
+.reel-table td:nth-child(5),
+.reel-table td:nth-child(6) {
+  font-family: 'Roboto Mono', monospace;
+  color: #1e40af;
+  font-weight: 500;
+}
+
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status.available {
+  background-color: #e6ffec;
+  color: #22863a;
+}
+
+.status.low {
+  background-color: #fff5b1;
+  color: #735c0f;
+}
+
+.status.out {
+  background-color: #ffeef0;
+  color: #cb2431;
+}
+
+.status.in-use {
+  background-color: #e6ffec;
+  color: #2e7d32;
+}
+
+.status.not-in-use {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+.search-filter-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.search-filter-section input,
+.search-filter-section select {
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-filter-section button {
+  padding: 0.5rem 1rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.search-filter-section button:hover {
+  background-color: #1e40af;
+}

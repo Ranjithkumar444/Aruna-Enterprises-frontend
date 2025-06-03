@@ -33,14 +33,14 @@ const BoxGallery = () => {
   };
 
   return (
-    <div className="gallery-container">
-      <h2 className="gallery-title">A Glimpse into Our Manufacturing brilliance</h2>
+    <div className="manufacturing-gallery-container">
+      <h2 className="manufacturing-gallery-title">A Glimpse into Our Manufacturing Brilliance</h2>
 
-      <div className="filter-buttons">
+      <div className="manufacturing-filter-buttons">
         {['All', 'Punching', 'RSC'].map((type) => (
           <button
             key={type}
-            className={`filter-button ${activeFilter === type ? 'active' : ''}`}
+            className={`manufacturing-filter-btn ${activeFilter === type ? 'manufacturing-active' : ''}`}
             onClick={() => handleFilterChange(type)}
           >
             {type}
@@ -48,12 +48,12 @@ const BoxGallery = () => {
         ))}
       </div>
 
-      <div className="box-grid">
+      <div className="manufacturing-box-grid">
         {filteredBoxes.map((box, index) => (
-          <div className="box-card" key={index}>
-            <img src={box.boxUrl} alt={box.boxType} className="box-image" />
-            <div className="overlay">
-              <div className="overlay-text">
+          <div className="manufacturing-box-card" key={index}>
+            <img src={box.boxUrl} alt={box.boxType} className="manufacturing-box-img" />
+            <div className="manufacturing-overlay">
+              <div className="manufacturing-overlay-content">
                 <h4>{box.box}</h4>
               </div>
             </div>

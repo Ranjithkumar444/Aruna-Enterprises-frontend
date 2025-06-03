@@ -32,7 +32,7 @@ const Body = () => {
         <a href="https://www.instagram.com/arunaenterprisesblr/" target="_blank" rel="noopener noreferrer" className="social-button instagram" title="Instagram">
           <FontAwesomeIcon icon={faInstagram} />
         </a>
-        <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="social-button twitter" title="X">
+        <a href="https://x.com/arunaenterprise" target="_blank" rel="noopener noreferrer" className="social-button twitter" title="X">
           <FontAwesomeIcon icon={faXTwitter} />
         </a>
         <a href="https://wa.me/9538033119" target="_blank" rel="noopener noreferrer" className="social-button whatsapp" title="WhatsApp">

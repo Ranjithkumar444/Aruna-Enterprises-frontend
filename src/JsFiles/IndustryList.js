@@ -33,25 +33,24 @@ const IndustryList = () => {
   }, []);
 
   const sectors = Object.keys(industriesBySector);
-
   const duplicatedSectors = [...sectors, ...sectors];
 
   return (
-    <div className="industry-container">
-      <h2 className="industry-heading">Industrial Sectors We Serve</h2>
-      <div className="slider-wrapper">
-        <div className="sliding-track">
+    <div className="industry-list-container">
+      <h2 className="industry-list-heading">Industrial Sectors We Serve</h2>
+      <div className="industry-list-wrapper">
+        <div className="industry-list-track">
           {duplicatedSectors.map((sector, index) => (
-            <div key={index} className="sector-card">
+            <div key={index} className="industry-list-sector">
               {sector}
             </div>
           ))}
         </div>
-        <div className="industry-list">
-          {duplicatedSectors.map((sector,index) => (
-            <div key={index} className="industry-card">{sector}</div>
-          ))}
-        </div>
+      </div>
+      <div className="industry-list-items">
+        {sectors.map((sector, index) => (
+          <div key={index} className="industry-list-item">{sector}</div>
+        ))}
       </div>
     </div>
   );

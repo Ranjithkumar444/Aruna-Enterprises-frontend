@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../CssFiles/header.css";
-
+import { useNavigate } from "react-router-dom";
 const Headers = () => {
     const [showAdmin, setShowAdmin] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleKeyPress = (e) => {
@@ -23,7 +24,8 @@ const Headers = () => {
             <div className="nav-bar-div">
 
                 <div>
-                    <img
+                    <img 
+                        onClick={() => {navigate("/")}}
                         src="https://raw.githubusercontent.com/Ranjithkumar444/ArunaEnterprisesImage/refs/heads/main/AE%20Logo.jpeg"
                         className="header-logo"
                         alt="logo"

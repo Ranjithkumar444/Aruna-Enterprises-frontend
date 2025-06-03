@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate,useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../CssFiles/BoxSectors.css";
 
 const BoxSectors = () => {
@@ -9,7 +9,6 @@ const BoxSectors = () => {
   const location = useLocation();
 
   useEffect(() => {
-
     if (location.hash) {
       const element = document.getElementById(location.hash.replace('#', ''));
       if (element) {
@@ -39,27 +38,27 @@ const BoxSectors = () => {
   };
 
   return (
-    <div className="container">
-      <section id="boxsector">
-        <h2 className="heading">Box Sectors</h2>
+    <div className="box-sectors-container">
+      <section id="boxsector" className="box-sectors-section">
+        <h2 className="box-sectors-heading">Box Sectors</h2>
 
-      <div className="sector-grid">
-        {uniqueSectors.map((box) => (
-          <div
-            key={box.boxSector}
-            className="sector-card"
-            onClick={() => handleSectorClick(box.boxSector)}
-          >
-            <img src={box.url} alt={box.boxSector} className="sector-img" />
-            <h3 className="sector-name">{box.boxSector}</h3>
-          </div>
-        ))}
-      </div>
-      <h2 className="heading">HSN Codes</h2>
-      <div className="box-sector-image">
-        
-        <img src="https://github.com/Ranjithkumar444/ArunaEnterprisesImage/blob/main/Hsncode.png?raw=true"></img>
-      </div>
+        <div className="box-sectors-grid">
+          {uniqueSectors.map((box) => (
+            <div
+              key={box.boxSector}
+              className="box-sector-card"
+              onClick={() => handleSectorClick(box.boxSector)}
+            >
+              <img src={box.url} alt={box.boxSector} className="box-sector-img" />
+              <h3 className="box-sector-name">{box.boxSector}</h3>
+            </div>
+          ))}
+        </div>
+
+        <h2 className="hsn-section-heading">HSN Codes</h2>
+        <div className="hsn-image-container">
+          <img src="https://github.com/Ranjithkumar444/ArunaEnterprisesImage/blob/main/Hsncode.png?raw=true" alt="HSN Codes" />
+        </div>
       </section>
     </div>
   );

@@ -29,7 +29,7 @@ const SalaryRegister = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/admin/salary/add`,
+        "https://arunaenterprises.azurewebsites.net/admin/salary/add",
         {
           employeeId,
           monthlyBaseSalary: parseFloat(monthlyBaseSalary),

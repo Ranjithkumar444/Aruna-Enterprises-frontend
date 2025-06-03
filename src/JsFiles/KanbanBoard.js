@@ -52,7 +52,7 @@ const KanbanBoard = () => {
   const fetchOrders = async () => {
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/admin/order/getAllOrders`,
+        "https://arunaenterprises.azurewebsites.net/admin/order/getAllOrders",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -98,7 +98,7 @@ const KanbanBoard = () => {
       }
   
       await axios.put(
-        `${process.env.REACT_APP_API_URL}/admin/order/${orderId}/status`,
+        "https://arunaenterprises.azurewebsites.net/admin/order/${orderId}/status",
         payload,
         {
           headers: {

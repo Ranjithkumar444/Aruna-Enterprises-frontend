@@ -23,7 +23,7 @@ const BoxForm = () => {
         const token = localStorage.getItem('adminToken');
 
         try {
-            await axios.post(`${process.env.REACT_APP_API_URL}/admin/box/create-box`, formData, {
+            await axios.post("https://arunaenterprises.azurewebsites.net/admin/box/create-box", formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'

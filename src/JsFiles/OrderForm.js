@@ -40,7 +40,7 @@ const OrderForm = () => {
         };
 
         try {
-            await axios.post(`${process.env.REACT_APP_API_URL}/admin/order/create-order`, payload, {
+            await axios.post("https://arunaenterprises.azurewebsites.net/admin/order/create-order", payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'

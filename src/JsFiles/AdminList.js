@@ -8,7 +8,7 @@ const AdminList = () => {
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/get-admins`, {
+        const response = await axios.get("https://arunaenterprises.azurewebsites.net/admin/get-admins", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

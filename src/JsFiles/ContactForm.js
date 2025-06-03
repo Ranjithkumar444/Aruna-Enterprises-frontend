@@ -40,7 +40,7 @@ const ContactForm = () => {
     
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/public/contact-details`,
+        "https://arunaenterprises.azurewebsites.net/public/contact-details",
         formData
       );
       

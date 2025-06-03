@@ -20,7 +20,7 @@ const RegisterEmployee = () => {
 
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/admin/employee/deactivate/${barcodeId}`,
+        `https://arunaenterprises.azurewebsites.net/admin/employee/deactivate/${barcodeId}`,
         {},
         {
           headers: {
@@ -50,7 +50,7 @@ const RegisterEmployee = () => {
 
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/admin/employee/barcode/${barcodeId}`,
+        `https://arunaenterprises.azurewebsites.net/admin/employee/barcode/${barcodeId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

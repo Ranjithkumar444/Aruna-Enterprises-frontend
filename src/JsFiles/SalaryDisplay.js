@@ -18,7 +18,7 @@ const SalaryDisplay = () => {
   useEffect(() => {
     const fetchSalaryData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/salary/monthly`, {
+        const response = await axios.get("https://arunaenterprises.azurewebsites.net/admin/salary/monthly", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSalaryData(response.data);

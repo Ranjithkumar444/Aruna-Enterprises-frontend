@@ -32,7 +32,7 @@ const IndustryForm = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/admin/register-industry`,
+        "https://arunaenterprises.azurewebsites.net/admin/register-industry",
         industry,
         {
           headers: {

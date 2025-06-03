@@ -77,7 +77,7 @@ const AdminDashboard = () => {
                             overflow: "hidden",
                             textOverflow: "ellipsis",}}
                     >
-                        salary
+                        Salary
                     </li>
                     <li
                         onClick={() => handleMenuClick("admin/admins")}

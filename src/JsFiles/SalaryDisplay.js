@@ -11,6 +11,13 @@ const SalaryDisplay = () => {
   const [filterB, setFilterB] = useState('');
   const token = localStorage.getItem("adminToken");
 
+  const monthNames = [
+  '', 
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+
+
   useEffect(() => {
     const fetchSalaryData = async () => {
       try {
@@ -79,6 +86,7 @@ const SalaryDisplay = () => {
               <th>Month</th>
               <th>Year</th>
               <th>Unit</th>
+              <th>BaseSalary</th>
             </tr>
           </thead>
           <tbody>
@@ -93,9 +101,10 @@ const SalaryDisplay = () => {
                 <td className="text-center">
                     {Number(salary.totalOvertimeHours.toFixed(0))}
                 </td>
-                <td className="text-center">{salary.month}</td>
+                <td className="text-center">{monthNames[salary.month]}</td>
                 <td className="text-center">{salary.year}</td>
                 <td className='text-center'>{salary.employee.unit}</td>
+                <td className='text-center'>{salary.monthlyBaseSalary}</td>
               </tr>
             ))}
           </tbody>

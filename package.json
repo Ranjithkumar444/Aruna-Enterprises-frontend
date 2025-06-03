@@ -18,6 +18,7 @@
     "@hello-pangea/dnd": "^18.0.1",
     "antd": "^5.25.2",
     "axios": "^1.8.4",
+    "framer-motion": "^12.15.0",
     "npx": "^10.2.2",
     "react": "^19.1.0",
     "react-datepicker": "^8.3.0",

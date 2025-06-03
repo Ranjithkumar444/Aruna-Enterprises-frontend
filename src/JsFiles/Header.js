@@ -35,22 +35,10 @@ const Headers = () => {
 
                     <div className="dropdown">
                         <div className="products"><Link to="/products">Products/Services</Link></div>
-                        <div className="dropdown-content">
-                            <Link to="/products/item1">CardBoard Box</Link>
-                            <Link to="/products/item2"></Link>
-                        </div>
                     </div>
 
                     <div className="dropdown">
                         <div className="industry"><Link to="/industries">Industries We Serve</Link></div>
-                    </div>
-
-                    <div className="dropdown">
-                        <div className="infra"><Link to="/infrastructure">Infrastructure/Units</Link></div>
-                        <div className="dropdown-content">
-                            <Link to="/infrastructure/unit1">Unit 1</Link>
-                            <Link to="/infrastructure/unit2">Unit 2</Link>
-                        </div>
                     </div>
 
                     <div className="dropdown">

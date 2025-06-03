@@ -68,7 +68,6 @@ const AttendanceList = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        // Filtering is handled in the useEffect above
     };
 
     const handleResetFilters = () => {

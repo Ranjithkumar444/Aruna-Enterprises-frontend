@@ -46,8 +46,10 @@ const Footer = () => {
           <p className="unit-title">Unit 2</p>
           <p>
             UNIT - 2<br />
-            3GR2+RX8, Bengaluru,<br />
-            Karnataka 560090
+            158/2,Shed No 9,Maharudreshwara Nagara,<br />
+            Kempapura Main Road,<br/>
+            Chikkabanavara Post Banglore,
+            Karnataka 560090 
           </p>
         </div>
 

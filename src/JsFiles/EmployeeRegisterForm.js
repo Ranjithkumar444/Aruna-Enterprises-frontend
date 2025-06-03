@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const EmployeeRegisterForm = () => {
   const navigate = useNavigate();
+  const [barcodeInfo, setBarcodeInfo] = useState(null);
   const [employee, setEmployee] = useState({
     name: "",
     email: "",
@@ -33,11 +34,20 @@ const EmployeeRegisterForm = () => {
             Authorization: `Bearer ${token}`  
           }
         }
-        
       );
 
-      const employeeId = response.data;
-      navigate(`/admin/dashboard/salary/register/${employeeId}`);
+      setBarcodeInfo({
+        employeeId: response.data.employeeId,
+        barcodeId: response.data.barcodeId,
+        barcodeImage: response.data.barcodeImageBase64
+      });
+      
+      navigate(`/admin/dashboard/salary/register/${response.data.employeeId}`, {
+        state: {
+          barcodeId: response.data.barcodeId,
+          barcodeImage: response.data.barcodeImageBase64
+        }
+      });
     } catch (error) {
       if (error.response) {
         alert(`Error: ${error.response.data}`);

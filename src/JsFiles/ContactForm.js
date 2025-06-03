@@ -97,9 +97,11 @@ const ContactForm = () => {
               <div className="location-card">
                 <h4>UNIT - 2</h4>
                 <p>
-                  3GR2+RX8,<br />
-                  Bengaluru,<br />
-                  Karnataka 560090
+                  UNIT - 2<br />
+                  158/2,Shed No 9,Maharudreshwara Nagara,<br />
+                  Kempapura Main Road,<br/>
+                  Chikkabanavara Post Banglore,
+                  Karnataka 560090 
                 </p>
                 <a 
                   href="https://maps.google.com/?q=Aruna+Enterprises+Unit+2+Bangalore" 
@@ -120,15 +122,15 @@ const ContactForm = () => {
             <h3>Contact Details</h3>
             <ul className="contact-details">
               <li>
-                <strong>Phone:</strong> +91 918123120809
+                <strong>Phone:</strong> +91 9538033119
               </li>
               <li>
                 <strong>Email:</strong> info@arunaenterprises.com
               </li>
               <li>
-                <strong>WhatsApp:</strong> +91 9876543210
+                <strong>WhatsApp:</strong> +91 9538033119
                 <a 
-                  href="https://wa.me/918123120809" 
+                  href="https://wa.me/9538033119" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="whatsapp-link"

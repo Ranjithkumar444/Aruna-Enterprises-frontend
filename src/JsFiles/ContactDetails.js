@@ -14,6 +14,7 @@ const ContactDetails = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log(response);
         setContactDetail(response.data);
       } catch (error) {
         console.error("Failed to fetch contact details:", error);
@@ -22,6 +23,27 @@ const ContactDetails = () => {
 
     fetchContactDetails();
   }, []);
+
+  const handleReplyStatusChange = async (id, currentStatus) => {
+    try {
+      const newStatus = !currentStatus;
+      await axios.put(
+        `${process.env.REACT_APP_API_URL}/admin/contact/updateReplyStatus/${id}`,
+        { replyStatus: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      setContactDetail(contactDetail.map(contact => 
+        contact.id === id ? { ...contact, replyStatus: newStatus } : contact
+      ));
+    } catch (error) {
+      console.error("Failed to update reply status:", error);
+    }
+  };
 
   return (
     <div className="container">
@@ -33,6 +55,7 @@ const ContactDetails = () => {
             <th>Phone Number</th>
             <th>Email</th>
             <th>Message</th>
+            <th>Replied</th>
           </tr>
         </thead>
         <tbody>
@@ -40,8 +63,15 @@ const ContactDetails = () => {
             <tr key={contact.id}>
               <td>{contact.name}</td>
               <td>{contact.phone}</td>
-              <td>{contact.email}</td>
+              <td>{contact.email || "N/A"}</td>
               <td>{contact.message}</td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={contact.replyStatus || false}
+                  onChange={() => handleReplyStatusChange(contact.id, contact.replyStatus)}
+                />
+              </td>
             </tr>
           ))}
         </tbody>

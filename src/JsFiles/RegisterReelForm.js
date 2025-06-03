@@ -29,7 +29,7 @@ const ReelForm = () => {
 
   const fetchReelDetails = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:8080/admin/barcode/details/${id}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/barcode/details/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         }

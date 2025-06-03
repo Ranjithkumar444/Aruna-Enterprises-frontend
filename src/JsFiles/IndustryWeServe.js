@@ -5,7 +5,7 @@ const IndustryWeServe = () => {
   const [industries, setIndustries] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8080/public/getAllIndustry')
+    fetch(`${process.env.REACT_APP_API_URL}/public/getAllIndustry`)
       .then((response) => response.json())
       .then((data) => setIndustries(data))
       .catch((error) => console.error('Error fetching industries:', error));

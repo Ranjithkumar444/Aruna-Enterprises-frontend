@@ -86,16 +86,16 @@ const Footer = () => {
       </div>
 
       <div className="social-icons">
-        <a href="https://wa.me/your-number" target="_blank" rel="noreferrer">
+        <a href="https://wa.me/9538033119" target="_blank" rel="noreferrer">
           <FaWhatsapp />
         </a>
         <a href="https://facebook.com/yourpage" target="_blank" rel="noreferrer">
           <FaFacebook />
         </a>
-        <a href="https://instagram.com/yourpage" target="_blank" rel="noreferrer">
+        <a href="https://www.instagram.com/arunaenterprisesblr/" target="_blank" rel="noreferrer">
           <FaInstagram />
         </a>
-        <a href="https://x.com/yourpage" target="_blank" rel="noreferrer">
+        <a href="https://x.com/arunaenterprise" target="_blank" rel="noreferrer">
           <FaXTwitter />
         </a>
       </div>

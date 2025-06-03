@@ -17,7 +17,7 @@ const BoxSectors = () => {
     }
 
     axios
-      .get("http://localhost:8080/public/box/getBoxDetails")
+      .get(`${process.env.REACT_APP_API_URL}/public/box/getBoxDetails`)
       .then((response) => {
         setBoxData(response.data);
         console.log(response);

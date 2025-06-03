@@ -22,7 +22,7 @@ const ReelsInStock = () => {
         const token = localStorage.getItem("adminToken");
 
         const response = await axios.get(
-          "http://localhost:8080/admin/inventory/getReelStocks",
+          `${process.env.REACT_APP_API_URL}/admin/inventory/getReelStocks`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -80,7 +80,6 @@ const ReelsInStock = () => {
 
   if (loading) return <p>Loading reels...</p>;
 
-  // Create unique sets for filter dropdowns
   const getUniqueValues = (key) => [...new Set(reels.map((r) => r[key]?.toString()).filter(Boolean))];
 
   return (

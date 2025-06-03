@@ -1,0 +1,53 @@
+.who-we-are-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 60px 80px;
+  background-color: #f4f4f4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.who-we-are-image img {
+  width: 500px;
+  height: 300px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.who-we-are-text {
+  max-width: 700px;
+  opacity: 0;
+  transform: translateX(50px);
+  transition: all 0.8s ease;
+}
+
+.fade-slide-in {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.who-we-are-text h2 {
+  font-size: 36px;
+  margin-bottom: 10px;
+  color: #2b2b2b;
+}
+
+.subtitle {
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 25px;
+  font-style: italic;
+}
+
+.who-we-are-paragraphs p {
+  margin-bottom: 15px;
+  color: #333;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+.who-we-are-paragraphs strong {
+  color: #1e88e5;
+}

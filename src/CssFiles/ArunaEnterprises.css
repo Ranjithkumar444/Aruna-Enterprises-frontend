@@ -1,0 +1,287 @@
+.ae-container {
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+.ae-container-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.ae-hero-banner {
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+              url('https://github.com/Ranjithkumar444/ArunaEnterprisesImage/blob/main/aebanner.jpg?raw=true') center/cover;
+  color: white;
+  padding: 120px 0;
+  text-align: center;
+}
+
+.ae-hero-content h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.ae-hero-content h2 {
+  font-size: 2rem;
+  font-weight: 400;
+  color: #f8f8f8;
+  margin-bottom: 1.5rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.ae-hero-content p {
+  font-size: 1.2rem;
+  max-width: 700px;
+  margin: 0 auto 2rem;
+}
+
+.ae-cta-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ae-cta-button:hover {
+  background-color: #c0392b;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.ae-about-section {
+  padding: 80px 0;
+  background-color: #f9f9f9;
+}
+
+.ae-about-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 50px;
+  color: #2c3e50;
+}
+
+.ae-about-content {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.ae-about-text {
+  flex: 1;
+}
+
+.ae-about-image {
+  flex: 1;
+}
+
+.ae-about-image img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.ae-product-list {
+  columns: 2;
+  margin: 20px 0;
+}
+
+.ae-product-list li {
+  margin-bottom: 10px;
+  position: relative;
+  padding-left: 25px;
+}
+
+.ae-product-list li::before {
+  content: "✓";
+  color: #27ae60;
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.ae-why-choose {
+  padding: 80px 0;
+  background-color: #2c3e50;
+  color: white;
+}
+
+.ae-why-choose h2 {
+  color: white;
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 50px;
+}
+
+.ae-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.ae-benefit-card {
+  background: rgba(255,255,255,0.1);
+  padding: 30px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.ae-benefit-card:hover {
+  transform: translateY(-10px);
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.ae-benefit-icon {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.ae-benefit-card h3 {
+  color: white;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.ae-sustainability {
+  padding: 80px 0;
+  background-color: #f9f9f9;
+}
+
+.ae-sustainability-content {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.ae-sustainability-image {
+  flex: 1;
+}
+
+.ae-sustainability-image img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.ae-sustainability-text {
+  flex: 1;
+}
+
+.ae-sustainability-text h2 {
+  font-size: 2.2rem;
+  color: #27ae60;
+  margin-bottom: 20px;
+}
+
+.ae-services {
+  padding: 80px 0;
+}
+
+.ae-services h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 50px;
+}
+
+.ae-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+.ae-service-card {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  border-top: 4px solid #e74c3c;
+}
+
+.ae-service-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.ae-service-card h3 {
+  color: #2c3e50;
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+}
+
+.ae-leadership {
+  padding: 80px 0;
+  background-color: #f9f9f9;
+}
+
+.ae-leadership-content {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.ae-leadership-text {
+  flex: 1;
+}
+
+.ae-leadership-image {
+  flex: 1;
+}
+
+.ae-leadership-image img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.ae-final-cta {
+  padding: 80px 0;
+  background-color: #e74c3c;
+  color: white;
+  text-align: center;
+}
+
+.ae-final-cta h2 {
+  color: white;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.ae-final-cta p {
+  max-width: 700px;
+  margin: 0 auto 30px;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .ae-hero-content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .ae-hero-content h2 {
+    font-size: 1.5rem;
+  }
+  
+  .ae-about-content, .ae-sustainability-content, .ae-leadership-content {
+    flex-direction: column;
+  }
+  
+  .ae-product-list {
+    columns: 1;
+  }
+  
+  .ae-benefits-grid, .ae-services-grid {
+    grid-template-columns: 1fr;
+  }
+}

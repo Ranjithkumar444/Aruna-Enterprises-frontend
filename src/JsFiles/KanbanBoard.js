@@ -111,7 +111,6 @@ const KanbanBoard = () => {
       fetchOrders();
     } catch (err) {
       console.error("Error updating status:", err);
-      // Show error to user
       alert(`Failed to update status: ${err.response?.data?.message || err.message}`);
     } finally {
       setIsLoading(false);
@@ -156,7 +155,7 @@ const KanbanBoard = () => {
         const shippedTime = new Date(order.shippedAt);
         const diffMs = now - shippedTime;
 
-        return diffMs < 24 * 60 * 60 * 1000; // Less than 24 hours
+        return diffMs < 24 * 60 * 60 * 1000;
       });
     }
 

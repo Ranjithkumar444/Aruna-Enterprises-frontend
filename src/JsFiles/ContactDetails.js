@@ -9,7 +9,7 @@ const ContactDetails = () => {
   useEffect(() => {
     const fetchContactDetails = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/contact/contactDetails`, {
+        const response = await axios.get("https://arunaenterprises.azurewebsites.net/admin/contact/contactDetails", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

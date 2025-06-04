@@ -22,7 +22,7 @@ const ReelsInStock = () => {
         const token = localStorage.getItem("adminToken");
 
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/admin/inventory/getReelStocks`,
+          "https://arunaenterprises.azurewebsites.net/admin/inventory/getReelStocks",
           {
             headers: {
               Authorization: `Bearer ${token}`,

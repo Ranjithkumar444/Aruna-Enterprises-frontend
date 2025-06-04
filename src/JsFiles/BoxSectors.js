@@ -17,7 +17,7 @@ const BoxSectors = () => {
     }
 
     axios
-      .get(`${process.env.REACT_APP_API_URL}/public/box/getBoxDetails`)
+      .get("https://arunaenterprises.azurewebsites.net/public/box/getBoxDetails")
       .then((response) => {
         setBoxData(response.data);
         console.log(response);

@@ -17,7 +17,7 @@ const InventoryHome = () => {
         }
 
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/reel/barcode-image/${barcodeId}`, {
+            const response = await axios.get(`https://arunaenterprises.azurewebsites.net/admin/reel/barcode-image/${barcodeId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

@@ -29,7 +29,7 @@ const ReelForm = () => {
 
   const fetchReelDetails = async (id) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/barcode/details/${id}`, {
+      const response = await axios.get(`https://arunaenterprises.azurewebsites.net/admin/barcode/details/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -59,7 +59,7 @@ const ReelForm = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/admin/register-reel`,
+        "https://arunaenterprises.azurewebsites.net/admin/register-reel",
         formData,
         {
           headers: {
@@ -73,7 +73,7 @@ const ReelForm = () => {
       setBarcodeId(id);
 
       const imageResponse = await axios.get(
-        `${process.env.REACT_APP_API_URL}/admin/barcode/${id}`,
+        `https://arunaenterprises.azurewebsites.net/admin/barcode/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: 'arraybuffer'

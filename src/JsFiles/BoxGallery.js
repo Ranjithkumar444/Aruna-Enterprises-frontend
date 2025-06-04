@@ -11,7 +11,7 @@ const BoxGallery = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/public/box/getAllBoxDetails`);
+        "https://arunaenterprises.azurewebsites.net/public/box/getAllBoxDetails");
       setBoxes(response.data);
       setFilteredBoxes(response.data);
     } catch (error) {

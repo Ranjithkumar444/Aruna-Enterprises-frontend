@@ -11,7 +11,7 @@ const AdminLogin = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/admin/login`, {
+            const response = await axios.post("https://arunaenterprises.azurewebsites.net/admin/login", {
                 email,
                 password,
             });

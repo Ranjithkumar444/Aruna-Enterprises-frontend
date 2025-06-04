@@ -8,7 +8,7 @@ const IndustryList = () => {
   useEffect(() => {
     const fetchIndustries = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/public/getAllIndustry`);
+        const response = await axios.get("https://arunaenterprises.azurewebsites.net/public/getAllIndustry");
         const industries = response.data;
 
         console.log(response)

@@ -28,7 +28,7 @@ const AdminRegisterForm = () => {
     console.log(" Sending admin data:", admin);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/admin/create`, admin, {
+      const response = await axios.post("https://arunaenterprises.azurewebsites.net/admin/create", admin, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"

@@ -27,7 +27,7 @@ const EmployeeRegisterForm = () => {
       const token = localStorage.getItem("adminToken");
   
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/admin/register-employee`,
+        "https://arunaenterprises.azurewebsites.net/admin/register-employee",
         employee,
         {
           headers: {

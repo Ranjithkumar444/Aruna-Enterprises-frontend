@@ -47,8 +47,9 @@ const SalaryDisplay = () => {
 
   return (
     <div className="salary-container">
-      <h1 className="salary-title">Salary Details - {monthNames[salary.month]} {new Date().getFullYear()}</h1>
-
+      <h1 className="salary-title">
+        Salary Details - {salaryData.length > 0 ? monthNames[salaryData[0].month] : 'Unknown'} {new Date().getFullYear()}
+      </h1>
       <div className="filter-section">
         <input
           type="text"

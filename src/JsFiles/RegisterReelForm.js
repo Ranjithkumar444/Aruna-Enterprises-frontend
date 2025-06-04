@@ -184,7 +184,7 @@ const ReelForm = () => {
             <img
               src={barcodeImageUrl}
               alt="Reel Barcode"
-              style={{ width: '70%', height: 'auto', marginBottom: '2px' }}
+              style={{ width: '192px', height: '144px', marginBottom: '2px' }}
             />
 
             <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{barcodeId}</div>

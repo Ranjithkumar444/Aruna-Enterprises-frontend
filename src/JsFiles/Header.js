@@ -8,7 +8,7 @@ const Headers = () => {
 
     useEffect(() => {
         const handleKeyPress = (e) => {
-            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "a") {
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
                 setShowAdmin(true);
             }
         };

@@ -50,10 +50,8 @@ const InventoryHome = () => {
     const handlePrint = () => {
         const printWindow = window.open('', '_blank');
         if (printWindow && barcodeImage && reelDetails) {
-            // Calculate dimensions in pixels for a 2.90 inch x 4.90 inch sticker (assuming 96 DPI for typical web display)
-            // 1 inch = 96 pixels (standard web DPI)
             const stickerWidthPx = 2.90 * 96;
-            const stickerHeightPx = 4.90 * 96;
+            const stickerHeightPx = 4 * 96;
 
             printWindow.document.write(`
                 <html>
@@ -67,42 +65,47 @@ const InventoryHome = () => {
                                 display: flex;
                                 justify-content: center;
                                 align-items: center;
-                                min-height: 100vh; /* Ensure it takes full viewport height for centering */
+                                height: 100vh;
                             }
                             .sticker {
                                 width: ${stickerWidthPx}px;
                                 height: ${stickerHeightPx}px;
-                                border: 1px solid black; /* For visualization, remove in production */
-                                box-sizing: border-box; /* Include padding and border in the element's total width and height */
-                                padding: 5px;
+                                padding: 4px;
+                                box-sizing: border-box;
                                 display: flex;
                                 flex-direction: column;
-                                justify-content: space-between; /* Distribute space between items */
+                                justify-content: flex-start;
                                 align-items: center;
                                 text-align: center;
-                                overflow: hidden; /* Hide overflow if content exceeds sticker size */
+                                overflow: hidden;
+                            }
+                            .company-name {
+                                font-weight: bold;
+                                font-size: 12px;
+                                margin-bottom: 4px;
                             }
                             .barcode-image {
-                                max-width: 90%; /* Adjust as needed */
-                                max-height: 40%; /* Allocate space for the barcode */
+                                max-width: 90%;
+                                max-height: 30%;
                                 object-fit: contain;
-                                margin-bottom: 5px;
+                                margin-bottom: 4px;
                             }
                             .details {
-                                font-size: 0.7em; /* Smaller font for details */
-                                line-height: 1.2;
-                                white-space: nowrap; /* Prevent wrapping for individual lines */
-                                overflow: hidden; /* Hide overflow */
-                                text-overflow: ellipsis; /* Add ellipsis for overflow */
-                                width: 100%; /* Ensure details take full width */
+                                font-size: 8px;
+                                line-height: 1.1;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                width: 100%;
                             }
                             .details p {
-                                margin: 1px 0; /* Tighten line spacing */
+                                margin: 1px 0;
                             }
                         </style>
                     </head>
                     <body>
                         <div class="sticker">
+                            <div class="company-name">Aruna Enterprises</div>
                             <img src="${barcodeImage}" alt="Barcode" class="barcode-image" />
                             <div class="details">
                                 <p><strong>Barcode ID:</strong> ${barcodeId}</p>
@@ -125,7 +128,7 @@ const InventoryHome = () => {
                     </body>
                 </html>
             `);
-            printWindow.document.close(); // Close the document to ensure content is loaded
+            printWindow.document.close();
         } else {
             alert("Barcode image and reel details are not available for printing.");
         }

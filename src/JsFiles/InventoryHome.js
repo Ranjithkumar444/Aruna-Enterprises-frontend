@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "../CssFiles/InventoryHome.css"
 
 const InventoryHome = () => {
@@ -21,21 +21,22 @@ const InventoryHome = () => {
             const response = await axios.get(`https://arunaenterprises.azurewebsites.net/admin/reel/barcode-image/${barcodeId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
+                responseType: 'json',
             });
-            
-            // Convert base64 image data to URL
-            if (response.data.barcodeImage) {
-                const blob = new Blob([new Uint8Array(response.data.barcodeImage)], { type: 'image/png' });
+
+            const data = response.data;
+            setReelData(data);
+
+            if (data.barcodeImage) {
+                const byteArray = new Uint8Array(data.barcodeImage);
+                const blob = new Blob([byteArray], { type: 'image/png' });
                 const imageUrl = URL.createObjectURL(blob);
                 setBarcodeImage(imageUrl);
             }
-            
-            setReelData(response.data);
-
         } catch (error) {
-            console.error("Error fetching barcode image:", error);
-            alert("Failed to fetch barcode image. Make sure the barcode ID is correct.");
+            console.error("Error fetching barcode image and details:", error);
+            alert("Failed to fetch barcode details. Make sure the barcode ID is correct.");
         }
     };
 
@@ -61,30 +62,31 @@ const InventoryHome = () => {
                                 width: 2.9in;
                                 height: 4.9in;
                                 display: flex;
-                                padding: 2px;
+                                flex-direction: row;
                                 box-sizing: border-box;
+                                padding: 4px;
                             }
                             .barcode-column {
-                                width: 60%;
+                                width: 55%;
                                 display: flex;
                                 flex-direction: column;
                                 align-items: center;
                                 justify-content: center;
                             }
-                            .details-column {
-                                width: 40%;
-                                padding-left: 3px;
-                                display: flex;
-                                flex-direction: column;
-                                justify-content: center;
-                            }
                             .barcode-image {
                                 max-width: 100%;
                                 max-height: 1.5in;
-                                margin-bottom: 2px;
+                                margin-bottom: 3px;
+                            }
+                            .details-column {
+                                width: 45%;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                                padding-left: 4px;
                             }
                             .detail-row {
-                                margin-bottom: 1px;
+                                margin-bottom: 2px;
                                 word-break: break-word;
                             }
                             .detail-label {
@@ -95,7 +97,7 @@ const InventoryHome = () => {
                                 font-weight: bold;
                                 font-size: 9px;
                                 text-align: center;
-                                margin-bottom: 3px;
+                                margin-bottom: 4px;
                             }
                         </style>
                     </head>
@@ -104,16 +106,16 @@ const InventoryHome = () => {
                             <div class="barcode-column">
                                 <div class="company-name">ARUNA ENTERPRISES</div>
                                 <img src="${barcodeImage}" class="barcode-image" />
-                                <div>${reelData.barcodeId}</div>
+                                <div>${reelData.barcodeId || ''}</div>
                             </div>
                             <div class="details-column">
-                                <div class="detail-row"><span class="detail-label">Type:</span>${reelData.paperType}</div>
-                                <div class="detail-row"><span class="detail-label">Supplier:</span>${reelData.supplierName}</div>
-                                <div class="detail-row"><span class="detail-label">GSM:</span>${reelData.gsm}</div>
-                                <div class="detail-row"><span class="detail-label">Deckle:</span>${reelData.deckle} mm</div>
-                                <div class="detail-row"><span class="detail-label">Weight:</span>${reelData.currentWeight} ${reelData.unit || 'kg'}</div>
-                                <div class="detail-row"><span class="detail-label">Burst:</span>${reelData.burstFactor}</div>
-                                <div class="detail-row"><span class="detail-label">Status:</span>${reelData.status}</div>
+                                <div class="detail-row"><span class="detail-label">Type:</span>${reelData.paperType || ''}</div>
+                                <div class="detail-row"><span class="detail-label">Supplier:</span>${reelData.supplierName || ''}</div>
+                                <div class="detail-row"><span class="detail-label">GSM:</span>${reelData.gsm || ''}</div>
+                                <div class="detail-row"><span class="detail-label">Deckle:</span>${reelData.deckle || ''} mm</div>
+                                <div class="detail-row"><span class="detail-label">Weight:</span>${reelData.currentWeight || ''} ${reelData.unit || 'kg'}</div>
+                                <div class="detail-row"><span class="detail-label">Burst:</span>${reelData.burstFactor || ''}</div>
+                                <div class="detail-row"><span class="detail-label">Status:</span>${reelData.status || ''}</div>
                             </div>
                         </div>
                         <script>
@@ -138,7 +140,7 @@ const InventoryHome = () => {
             >
                 Create Reel
             </button>
-            
+
             <div className="barcode-section">
                 <div className="barcode-input-group">
                     <input
@@ -155,17 +157,16 @@ const InventoryHome = () => {
                 </div>
 
                 {barcodeImage && reelData && (
-                    <div className="barcode-image-container">
-                        <img src={barcodeImage} alt="Barcode" className="barcode-image" />
-                        <div className="barcode-actions">
-                            <button className="action-button print-button" onClick={handlePrint}>
-                                Print Barcode
-                            </button>
-                        </div>
+                    <div className="barcode-image-container" style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+                        <img src={barcodeImage} alt="Barcode" style={{ maxWidth: '120px', height: 'auto' }} />
                         <div className="reel-details-preview">
-                            <p><strong>Barcode ID:</strong> {reelData.barcodeId}</p>
                             <p><strong>Paper Type:</strong> {reelData.paperType}</p>
                             <p><strong>Supplier:</strong> {reelData.supplierName}</p>
+                            <p><strong>GSM:</strong> {reelData.gsm}</p>
+                            <p><strong>Deckle:</strong> {reelData.deckle} mm</p>
+                            <p><strong>Weight:</strong> {reelData.currentWeight} {reelData.unit || 'kg'}</p>
+                            <p><strong>Burst Factor:</strong> {reelData.burstFactor}</p>
+                            <p><strong>Status:</strong> {reelData.status}</p>
                         </div>
                     </div>
                 )}
@@ -173,6 +174,11 @@ const InventoryHome = () => {
 
             <div className="action-button-reel">
                 <button onClick={() => navigate("reel")}>Reel Stocks</button> 
+                {barcodeImage && reelData && (
+                    <button className="action-button print-button" onClick={handlePrint}>
+                        Print Barcode
+                    </button>
+                )}
             </div>
         </div>
     );

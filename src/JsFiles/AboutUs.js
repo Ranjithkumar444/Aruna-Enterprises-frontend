@@ -83,8 +83,8 @@ const AboutUs = () => {
               from reliable market dealers who ensure 100% quality.
             </p>
             <p className="about-text">
-              Under the visionary leadership of our honorable founder <strong>Mr. M. Munirathnappa</strong>, 
-              and honorable manager <strong>Mr. M. Hemanth Kumar</strong>, we have achieved remarkable growth and earned maximum client support through 
+              Under the visionary leadership of our honorable founder <strong>Mr. M. Munirathnappa</strong> 
+              and honorable manager <strong>Mr. M. Hemanth Kumar</strong>and proprietor <strong>Ms. Aruna </strong>we have achieved remarkable growth and earned maximum client support through 
               sound business acumen, years of industry experience, marketing expertise, and 
               strong administrative capabilities.
             </p>

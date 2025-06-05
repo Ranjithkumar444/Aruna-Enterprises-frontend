@@ -24,7 +24,7 @@ const ArunaEnterprises = () => {
             <div className="ae-about-text">
               <p>From humble beginnings with a single machine, Aruna Enterprises has grown into a trusted name in the packaging industry. We specialize in manufacturing a wide array of products including:</p>
               <ul className="ae-product-list">
-                <li>3 Ply, 5 Ply, and 7 Ply corrugated boxes</li>
+                <li>3 Ply, 5 Ply, 7 and 9 Ply corrugated boxes</li>
                 <li>Corrugated sheets and rolls</li>
                 <li>Custom-printed boxes</li>
                 <li>Duplex corrugated boxes</li>

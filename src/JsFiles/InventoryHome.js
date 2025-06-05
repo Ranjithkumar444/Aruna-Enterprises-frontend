@@ -10,35 +10,39 @@ const InventoryHome = () => {
     const [reelData, setReelData] = useState(null);
 
     const handleGetBarcode = async () => {
-        const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("adminToken");
 
-        if (!barcodeId || !token) {
-            alert("Please provide a Barcode ID and ensure adminToken is present in localStorage.");
-            return;
+    if (!barcodeId || !token) {
+        alert("Please provide a Barcode ID and ensure adminToken is present.");
+        return;
+    }
+
+    try {
+        const response = await axios.get(`https://arunaenterprises.azurewebsites.net/admin/reel/barcode-image/${barcodeId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            responseType: 'json',
+        });
+
+        const data = response.data;
+        setReelData(data);
+
+        if (data.barcodeImage) {
+            const byteArray = new Uint8Array(data.barcodeImage);
+            const blob = new Blob([byteArray], { type: 'image/png' });
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setBarcodeImage(reader.result); 
+            };
+            reader.readAsDataURL(blob);
         }
+    } catch (error) {
+        console.error("Error fetching barcode image and details:", error);
+        alert("Failed to fetch barcode details.");
+    }
+};
 
-        try {
-            const response = await axios.get(`https://arunaenterprises.azurewebsites.net/admin/reel/barcode-image/${barcodeId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                responseType: 'json',
-            });
-
-            const data = response.data;
-            setReelData(data);
-
-            if (data.barcodeImage) {
-                const byteArray = new Uint8Array(data.barcodeImage);
-                const blob = new Blob([byteArray], { type: 'image/png' });
-                const imageUrl = URL.createObjectURL(blob);
-                setBarcodeImage(imageUrl);
-            }
-        } catch (error) {
-            console.error("Error fetching barcode image and details:", error);
-            alert("Failed to fetch barcode details. Make sure the barcode ID is correct.");
-        }
-    };
 
     const handlePrint = () => {
         const printWindow = window.open('', '_blank');

@@ -98,7 +98,7 @@ const KanbanBoard = () => {
       }
   
       await axios.put(
-        "https://arunaenterprises.azurewebsites.net/admin/order/${orderId}/status",
+        `https://arunaenterprises.azurewebsites.net/admin/order/${orderId}/status`,
         payload,
         {
           headers: {

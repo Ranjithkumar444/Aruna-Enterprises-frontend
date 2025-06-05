@@ -7,6 +7,7 @@ const InventoryHome = () => {
     const navigate = useNavigate();
     const [barcodeId, setBarcodeId] = useState('');
     const [barcodeImage, setBarcodeImage] = useState(null);
+    const [reelData, setReelData] = useState(null);
 
     const handleGetBarcode = async () => {
         const token = localStorage.getItem("adminToken");
@@ -20,13 +21,17 @@ const InventoryHome = () => {
             const response = await axios.get(`https://arunaenterprises.azurewebsites.net/admin/reel/barcode-image/${barcodeId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                },
-                responseType: 'arraybuffer'
+                }
             });
-            console.log(response)
-            const blob = new Blob([response.data], { type: 'image/png' });
-            const imageUrl = URL.createObjectURL(blob);
-            setBarcodeImage(imageUrl);
+            
+            // Convert base64 image data to URL
+            if (response.data.barcodeImage) {
+                const blob = new Blob([new Uint8Array(response.data.barcodeImage)], { type: 'image/png' });
+                const imageUrl = URL.createObjectURL(blob);
+                setBarcodeImage(imageUrl);
+            }
+            
+            setReelData(response.data);
 
         } catch (error) {
             console.error("Error fetching barcode image:", error);
@@ -36,12 +41,81 @@ const InventoryHome = () => {
 
     const handlePrint = () => {
         const printWindow = window.open('', '_blank');
-        if (printWindow && barcodeImage) {
+        if (printWindow && barcodeImage && reelData) {
             printWindow.document.write(`
                 <html>
-                    <head><title>Print Barcode</title></head>
-                    <body style="margin:0; padding:0;">
-                        <img src="${barcodeImage}" style="width: 100%;"/>
+                    <head>
+                        <title>Print Barcode</title>
+                        <style>
+                            @page {
+                                size: 2.9in 4.9in;
+                                margin: 0;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                font-family: Arial, sans-serif;
+                                font-size: 8px;
+                            }
+                            .print-container {
+                                width: 2.9in;
+                                height: 4.9in;
+                                display: flex;
+                                padding: 2px;
+                                box-sizing: border-box;
+                            }
+                            .barcode-column {
+                                width: 60%;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                            }
+                            .details-column {
+                                width: 40%;
+                                padding-left: 3px;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                            }
+                            .barcode-image {
+                                max-width: 100%;
+                                max-height: 1.5in;
+                                margin-bottom: 2px;
+                            }
+                            .detail-row {
+                                margin-bottom: 1px;
+                                word-break: break-word;
+                            }
+                            .detail-label {
+                                font-weight: bold;
+                                margin-right: 2px;
+                            }
+                            .company-name {
+                                font-weight: bold;
+                                font-size: 9px;
+                                text-align: center;
+                                margin-bottom: 3px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="print-container">
+                            <div class="barcode-column">
+                                <div class="company-name">ARUNA ENTERPRISES</div>
+                                <img src="${barcodeImage}" class="barcode-image" />
+                                <div>${reelData.barcodeId}</div>
+                            </div>
+                            <div class="details-column">
+                                <div class="detail-row"><span class="detail-label">Type:</span>${reelData.paperType}</div>
+                                <div class="detail-row"><span class="detail-label">Supplier:</span>${reelData.supplierName}</div>
+                                <div class="detail-row"><span class="detail-label">GSM:</span>${reelData.gsm}</div>
+                                <div class="detail-row"><span class="detail-label">Deckle:</span>${reelData.deckle} mm</div>
+                                <div class="detail-row"><span class="detail-label">Weight:</span>${reelData.currentWeight} ${reelData.unit || 'kg'}</div>
+                                <div class="detail-row"><span class="detail-label">Burst:</span>${reelData.burstFactor}</div>
+                                <div class="detail-row"><span class="detail-label">Status:</span>${reelData.status}</div>
+                            </div>
+                        </div>
                         <script>
                             window.onload = function() {
                                 window.print();
@@ -51,6 +125,7 @@ const InventoryHome = () => {
                     </body>
                 </html>
             `);
+            printWindow.document.close();
         }
     };
 
@@ -79,13 +154,18 @@ const InventoryHome = () => {
                     <button className="action-button" onClick={handleGetBarcode}>Get Barcode</button>
                 </div>
 
-                {barcodeImage && (
+                {barcodeImage && reelData && (
                     <div className="barcode-image-container">
                         <img src={barcodeImage} alt="Barcode" className="barcode-image" />
                         <div className="barcode-actions">
                             <button className="action-button print-button" onClick={handlePrint}>
                                 Print Barcode
                             </button>
+                        </div>
+                        <div className="reel-details-preview">
+                            <p><strong>Barcode ID:</strong> {reelData.barcodeId}</p>
+                            <p><strong>Paper Type:</strong> {reelData.paperType}</p>
+                            <p><strong>Supplier:</strong> {reelData.supplierName}</p>
                         </div>
                     </div>
                 )}

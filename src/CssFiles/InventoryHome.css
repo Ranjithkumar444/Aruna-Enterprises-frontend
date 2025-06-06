@@ -99,13 +99,122 @@
   margin-top: 10px;
 }
 
-@media (max-width: 480px) {
-  .barcode-input-group {
-    flex-direction: column;
+/* ==================== RESPONSIVE INVENTORY DESIGN ==================== */
+@media (max-width: 1200px) {
+  .inventory-home-container {
+    max-width: 550px;
+    padding: 25px;
   }
+}
 
-  .action-button {
+@media (max-width: 992px) {
+  .inventory-home-container {
+    margin: 30px auto;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .action-button,
+  .action-button-reel button {
+    padding: 9px 18px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .inventory-home-container {
+    max-width: 90%;
+    padding: 22px;
+    margin: 25px auto;
+    border-radius: 10px;
+  }
+  
+  .inventory-home-container h2 {
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+  
+  .barcode-section {
+    margin-top: 25px;
+  }
+  
+  .barcode-input {
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 576px) {
+  .inventory-home-container {
+    padding: 20px;
+    margin: 20px auto;
+  }
+  
+  .inventory-home-container h2 {
+    font-size: 20px;
+  }
+  
+  .action-button-reel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .action-button,
+  .action-button-reel button {
     width: 100%;
     margin: 5px 0;
+  }
+  
+  .barcode-input {
+    max-width: 100%;
+    padding: 9px 12px;
+  }
+  
+  .barcode-image {
+    height: 90px;
+  }
+}
+
+@media (max-width: 400px) {
+  .inventory-home-container {
+    padding: 18px;
+    margin: 15px auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+  
+  .inventory-home-container h2 {
+    font-size: 18px;
+  }
+  
+  .barcode-input {
+    font-size: 15px;
+  }
+  
+  .action-button,
+  .action-button-reel button {
+    padding: 8px 16px;
+  }
+  
+  .barcode-image {
+    height: 80px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .inventory-home-container {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    max-width: 100%;
+    margin: 0;
+    padding: 15px;
+  }
+  
+  .action-button,
+  .action-button-reel button {
+    display: none;
+  }
+  
+  .barcode-image-container {
+    page-break-inside: avoid;
   }
 }

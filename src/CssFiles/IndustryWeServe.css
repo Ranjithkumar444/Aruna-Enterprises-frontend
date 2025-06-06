@@ -142,23 +142,55 @@
 .industry-card:nth-child(8) { animation-delay: 0.8s; }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+  .industry-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 992px) {
+  .industry-container {
+    padding: 30px 25px;
+  }
+
+  .industry-title {
+    font-size: 32px;
+  }
+
+  .industry-description {
+    font-size: 15px;
+    text-align: center;
+  }
+
   .industry-grid {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+
+  .industry-image {
+    height: 180px;
   }
 }
 
 @media (max-width: 768px) {
   .industry-container {
-    padding: 30px 20px;
+    padding: 24px 20px;
   }
-  
+
   .industry-title {
-    font-size: 30px;
+    font-size: 28px;
   }
-  
+
   .industry-description {
-    font-size: 15px;
+    font-size: 14.5px;
+  }
+
+  .industry-grid {
+    grid-template-columns: repeat(2, 1fr); /* ✅ 2 in a row for mobile/tablet */
+    gap: 20px;
+  }
+
+  .industry-image {
+    height: 160px;
   }
 }
 
@@ -166,21 +198,22 @@
   .industry-container {
     padding: 20px 15px;
   }
-  
+
   .industry-title {
-    font-size: 26px;
+    font-size: 24px;
   }
-  
+
   .industry-description {
     font-size: 14px;
     text-align: left;
   }
-  
+
   .industry-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr); /* ✅ Still 2 in a row even on small phones */
+    gap: 16px;
   }
-  
+
   .industry-image {
-    height: 180px;
+    height: 150px;
   }
 }

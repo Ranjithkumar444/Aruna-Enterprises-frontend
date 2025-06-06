@@ -1,4 +1,6 @@
+/* IndustryWeServe.css */
 
+/* Base Styles with Smooth Animations */
 .industry-container {
   padding: 40px;
   max-width: 1200px;
@@ -129,6 +131,7 @@
   width: 50px;
 }
 
+/* Staggered animation for cards */
 .industry-card:nth-child(1) { animation-delay: 0.1s; }
 .industry-card:nth-child(2) { animation-delay: 0.2s; }
 .industry-card:nth-child(3) { animation-delay: 0.3s; }
@@ -138,154 +141,46 @@
 .industry-card:nth-child(7) { animation-delay: 0.7s; }
 .industry-card:nth-child(8) { animation-delay: 0.8s; }
 
-/* ==================== RESPONSIVE DESIGN ==================== */
-@media (max-width: 1200px) {
-  .industry-container {
-    padding: 40px 30px;
-  }
-  
-  .industry-grid {
-    gap: 25px;
-  }
-  
-  .industry-card {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
-}
-
+/* Responsive Design */
 @media (max-width: 1024px) {
   .industry-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  }
-  
-  .industry-title {
-    font-size: 32px;
-  }
-  
-  .industry-description {
-    margin-bottom: 35px;
-  }
-}
-
-@media (max-width: 900px) {
-  .industry-grid {
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 20px;
-  }
-  
-  .industry-info {
-    padding: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
   .industry-container {
-    padding: 35px 25px;
+    padding: 30px 20px;
   }
   
   .industry-title {
-    font-size: 28px;
-    padding-bottom: 12px;
-  }
-  
-  .industry-title::after {
-    height: 3px;
+    font-size: 30px;
   }
   
   .industry-description {
     font-size: 15px;
-    margin-bottom: 30px;
-  }
-  
-  .industry-image {
-    height: 180px;
-  }
-}
-
-@media (max-width: 600px) {
-  .industry-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
-  
-  .industry-card:hover {
-    transform: translateY(-5px) scale(1.01);
   }
 }
 
 @media (max-width: 480px) {
   .industry-container {
-    padding: 30px 20px;
+    padding: 20px 15px;
   }
   
   .industry-title {
     font-size: 26px;
   }
   
-  .industry-grid {
-    grid-template-columns: 1fr;
-    gap: 25px;
+  .industry-description {
+    font-size: 14px;
+    text-align: left;
   }
   
-  .industry-card {
-    max-width: 350px;
-    margin: 0 auto;
+  .industry-grid {
+    grid-template-columns: 1fr;
   }
   
   .industry-image {
-    height: 160px;
-  }
-}
-
-@media (max-width: 400px) {
-  .industry-container {
-    padding: 25px 15px;
-  }
-  
-  .industry-title {
-    font-size: 24px;
-  }
-  
-  .industry-description {
-    font-size: 14px;
-  }
-  
-  .industry-info {
-    padding: 15px;
-  }
-}
-
-/* Animation adjustments for mobile */
-@media (max-width: 768px) {
-  .industry-card {
-    animation-delay: 0s !important; /* Remove staggered animation on mobile */
-  }
-  
-  .industry-card:hover {
-    transform: none; /* Disable hover effects on touch devices */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  .industry-card:hover .industry-image {
-    transform: none;
-    filter: brightness(0.9);
-  }
-  
-  .industry-card:hover .industry-sector::after {
-    width: 0;
-  }
-}
-
-/* Disable animations for users who prefer reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .industry-container,
-  .industry-title::after,
-  .industry-description,
-  .industry-card {
-    animation: none !important;
-  }
-  
-  .industry-card {
-    opacity: 1;
-    transform: none;
+    height: 180px;
   }
 }

@@ -64,103 +64,13 @@
     transform: translateY(0);
 }
 
-/* ==================== RESPONSIVE FORM DESIGN ==================== */
-@media (max-width: 1200px) {
-  .industry-form-container {
-    max-width: 550px;
-    padding: 1.8rem;
-  }
-}
-
-@media (max-width: 992px) {
-  .industry-form-container {
-    margin: 1.5rem auto;
-  }
-  
-  .industry-form {
-    gap: 1rem;
-  }
-  
-  .industry-form input {
-    padding: 0.7rem 0.9rem;
-  }
-}
-
 @media (max-width: 768px) {
-  .industry-form-container {
-    max-width: 90%;
-    padding: 1.5rem;
-    margin: 1.5rem auto;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-  }
-  
-  .industry-form-container h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1.2rem;
-  }
-  
-  .industry-form button {
-    padding: 0.75rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .industry-form-container {
-    max-width: 95%;
-    padding: 1.3rem;
-    margin: 1.2rem auto;
-    border-radius: 8px;
-  }
-  
-  .industry-form-container h2 {
-    font-size: 1.4rem;
-  }
-  
-  .industry-form input {
-    font-size: 0.95rem;
-    padding: 0.65rem 0.85rem;
-  }
-  
-  .industry-form button {
-    font-size: 0.95rem;
-  }
-}
-
-@media (max-width: 400px) {
-  .industry-form-container {
-    padding: 1.1rem;
-    margin: 1rem auto;
-  }
-  
-  .industry-form-container h2 {
-    font-size: 1.3rem;
-  }
-  
-  .industry-form input {
-    padding: 0.6rem 0.8rem;
-  }
-  
-  .industry-form button:hover {
-    transform: none; /* Remove hover effect on small touch devices */
-  }
-}
-
-/* Print Styles */
-@media print {
-  .industry-form-container {
-    box-shadow: none;
-    border: 1px solid #ddd;
-    max-width: 100%;
-    margin: 0;
-    padding: 1rem;
-  }
-  
-  .industry-form input {
-    background-color: transparent;
-    border: 1px solid #999;
-  }
-  
-  .industry-form button {
-    display: none;
-  }
+    .industry-form-container {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .industry-form-container h2 {
+        font-size: 1.5rem;
+    }
 }

@@ -1,99 +1,91 @@
-/* ==================== FOOTER RESPONSIVE DESIGN ==================== */
-@media (max-width: 1200px) {
-  .footer-sections {
-    gap: 30px;
-  }
-  
-  .footer-section {
-    min-width: 220px;
-  }
+.footer {
+  background-color: #1a1a1a;
+  color: white;
+  padding: 40px 20px;
+  font-family: Arial, sans-serif;
 }
 
-@media (max-width: 992px) {
-  .footer {
-    padding: 35px 20px;
-  }
-  
-  .footer-sections {
-    gap: 25px;
-  }
-  
-  .footer-title {
-    font-size: 18px;
-  }
-  
-  .footer-history,
-  .footer-vimi {
-    margin-left: 15px;
-  }
+.footer-sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: space-between;
+  margin-bottom: 30px;
 }
 
-@media (max-width: 768px) {
-  .footer-sections {
-    flex-direction: column;
-    gap: 30px;
-  }
-  
-  .footer-section {
-    flex: none;
-    width: 100%;
-  }
-  
-  .industries-list {
-    justify-content: flex-start;
-  }
-  
-  .social-icons {
-    justify-content: flex-start;
-  }
-  
-  .footer-history,
-  .footer-vimi {
-    margin-left: 0;
-    margin-top: 15px;
-  }
+.footer-section {
+  flex: 1;
+  min-width: 250px;
 }
 
-@media (max-width: 576px) {
-  .footer {
-    padding: 30px 15px;
-  }
-  
-  .footer-title {
-    font-size: 17px;
-    margin-bottom: 12px;
-  }
-  
-  .industry-tag {
-    padding: 4px 8px;
-    font-size: 12px;
-  }
-  
-  .quick-links li {
-    margin-bottom: 6px;
-  }
-  
-  .social-icons {
-    gap: 15px;
-    font-size: 22px;
-  }
+.footer-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
 }
 
-@media (max-width: 400px) {
-  .footer {
-    padding: 25px 12px;
-  }
-  
-  .industries-list {
-    gap: 6px;
-  }
-  
-  .industry-tag {
-    padding: 3px 6px;
-  }
-  
-  .social-icons {
-    font-size: 20px;
-    gap: 12px;
-  }
+.highlight {
+  color: #4faaff;
+}
+
+.unit-title {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.industries-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.industry-tag {
+  background-color: #2d2d2d;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+
+.quick-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.quick-links li {
+  margin-bottom: 8px;
+}
+
+.quick-links a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.quick-links a:hover {
+  color: #4faaff;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 24px;
+}
+
+.social-icons a {
+  color: white;
+  transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+  color: #4faaff;
+}
+
+.footer-history{
+  margin-left: 20px;
+}
+
+.footer-vimi{
+  margin-left: 20px;
 }

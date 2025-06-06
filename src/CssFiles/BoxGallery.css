@@ -142,145 +142,16 @@
 .manufacturing-box-card:nth-child(5) { animation-delay: 0.5s; }
 .manufacturing-box-card:nth-child(6) { animation-delay: 0.6s; }
 
-/* ==================== RESPONSIVE DESIGN ==================== */
-@media (max-width: 1400px) {
-  .manufacturing-gallery-container {
-    padding: 50px 20px;
-  }
-  
-  .manufacturing-box-grid {
-    gap: 20px;
-  }
-}
-
-@media (max-width: 1200px) {
-  .manufacturing-gallery-title {
-    font-size: 2rem;
-    margin-bottom: 35px;
-  }
-  
-  .manufacturing-box-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  }
-}
-
-@media (max-width: 1024px) {
-  .manufacturing-gallery-container {
-    padding: 45px 15px;
-  }
-  
-  .manufacturing-filter-buttons {
-    gap: 10px;
-    margin-bottom: 25px;
-  }
-  
-  .manufacturing-box-img {
-    height: 180px;
-  }
-}
-
-@media (max-width: 900px) {
-  .manufacturing-box-grid {
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 18px;
-  }
-  
-  .manufacturing-filter-btn {
-    padding: 7px 16px;
-    font-size: 0.85rem;
-  }
-}
-
 @media (max-width: 768px) {
   .manufacturing-gallery-title {
     font-size: 1.8rem;
-    padding-bottom: 12px;
-    margin-bottom: 30px;
-  }
-  
-  .manufacturing-gallery-title::after {
-    width: 70px;
-  }
-  
-  .manufacturing-box-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .manufacturing-box-card:hover {
-    transform: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
-  
-  .manufacturing-overlay {
-    display: none; /* Hide overlay on mobile for better touch experience */
-  }
-}
-
-@media (max-width: 600px) {
-  .manufacturing-gallery-container {
-    padding: 40px 12px;
-  }
-  
-  .manufacturing-box-grid {
-    gap: 15px;
-  }
-  
-  .manufacturing-box-img {
-    height: 160px;
-  }
-}
-
-@media (max-width: 480px) {
-  .manufacturing-gallery-title {
-    font-size: 1.6rem;
   }
   
   .manufacturing-box-grid {
     grid-template-columns: 1fr;
-    max-width: 400px;
-    margin: 0 auto;
-  }
-  
-  .manufacturing-filter-buttons {
-    justify-content: flex-start;
-    padding: 0 10px;
   }
   
   .manufacturing-box-img {
-    height: 200px; /* Taller images for single column layout */
-  }
-}
-
-@media (max-width: 400px) {
-  .manufacturing-gallery-container {
-    padding: 35px 10px;
-  }
-  
-  .manufacturing-gallery-title {
-    font-size: 1.5rem;
-  }
-  
-  .manufacturing-filter-btn {
-    padding: 6px 14px;
-    font-size: 0.8rem;
-  }
-}
-
-/* Animation adjustments */
-@media (max-width: 768px) {
-  .manufacturing-box-card {
-    animation-delay: 0s !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .manufacturing-box-card {
-    animation: none !important;
-    opacity: 1;
-  }
-  
-  .manufacturing-overlay,
-  .manufacturing-overlay-content {
-    transition: none;
+    height: 180px;
   }
 }

@@ -89,9 +89,6 @@ const Footer = () => {
         <a href="https://wa.me/9538033119" target="_blank" rel="noreferrer">
           <FaWhatsapp />
         </a>
-        <a href="https://facebook.com/yourpage" target="_blank" rel="noreferrer">
-          <FaFacebook />
-        </a>
         <a href="https://www.instagram.com/arunaenterprisesblr/" target="_blank" rel="noreferrer">
           <FaInstagram />
         </a>

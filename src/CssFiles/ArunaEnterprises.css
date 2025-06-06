@@ -264,24 +264,96 @@
   font-size: 1.2rem;
 }
 
-@media (max-width: 768px) {
-  .ae-hero-content h1 {
-    font-size: 2.5rem;
-  }
-  
-  .ae-hero-content h2 {
-    font-size: 1.5rem;
-  }
-  
-  .ae-about-content, .ae-sustainability-content, .ae-leadership-content {
+/* Tablet view (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .ae-about-content,
+  .ae-sustainability-content,
+  .ae-leadership-content {
     flex-direction: column;
+    gap: 30px;
   }
-  
+
+  .ae-about-section h2,
+  .ae-services h2,
+  .ae-why-choose h2,
+  .ae-leadership h2 {
+    font-size: 2rem;
+  }
+
+  .ae-hero-content h1 {
+    font-size: 3rem;
+  }
+
+  .ae-hero-content h2 {
+    font-size: 1.75rem;
+  }
+
+  .ae-hero-content p,
+  .ae-final-cta p {
+    font-size: 1.1rem;
+  }
+
+  .ae-benefits-grid,
+  .ae-services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile view (below 480px) */
+@media (max-width: 480px) {
+  .ae-hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .ae-hero-content h2 {
+    font-size: 1.2rem;
+  }
+
+  .ae-hero-content p,
+  .ae-final-cta p {
+    font-size: 1rem;
+  }
+
+  .ae-about-section h2,
+  .ae-services h2,
+  .ae-why-choose h2,
+  .ae-leadership h2,
+  .ae-final-cta h2 {
+    font-size: 1.8rem;
+  }
+
+  .ae-cta-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+
+  .ae-benefit-card h3,
+  .ae-service-card h3 {
+    font-size: 1.2rem;
+  }
+
+  .ae-benefit-card p,
+  .ae-service-card p {
+    font-size: 0.95rem;
+  }
+
+  .ae-container-inner {
+    padding: 0 15px;
+  }
+
+  .ae-about-content,
+  .ae-sustainability-content,
+  .ae-leadership-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+
   .ae-product-list {
     columns: 1;
   }
-  
-  .ae-benefits-grid, .ae-services-grid {
+
+  .ae-benefits-grid,
+  .ae-services-grid {
     grid-template-columns: 1fr;
   }
 }

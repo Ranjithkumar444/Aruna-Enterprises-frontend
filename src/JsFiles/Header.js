@@ -18,6 +18,17 @@ const Headers = () => {
         return () => window.removeEventListener("keydown", handleKeyPress);
     }, []);
 
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+        if (!e.target.closest('.nav-bar-div')) {
+            setMobileMenuOpen(false);
+        }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, []);
+
+
     return (
         <nav className="nav-bar">
             <div className="nav-bar-div">

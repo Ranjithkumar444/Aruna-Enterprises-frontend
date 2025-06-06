@@ -125,7 +125,7 @@ const ContactForm = () => {
                 <strong>Phone:</strong> +91 9538033119
               </li>
               <li>
-                <strong>Email:</strong> info@arunaenterprises.com
+                <strong>Email:</strong> sales@arunaenterprises.com
               </li>
               <li>
                 <strong>WhatsApp:</strong> +91 9538033119

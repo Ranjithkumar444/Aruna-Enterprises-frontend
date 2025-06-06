@@ -51,8 +51,121 @@
     line-height: 1.6;
 }
 
+/* Base container */
+.solution-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Main heading */
+.main-heading {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 50px;
+  font-size: 2.5rem;
+}
+
+/* Grid layout for features */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+/* Feature card styling */
+.feature-card {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+/* Image inside the card */
+.feature-icon img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+/* Card heading */
+.feature-card h2 {
+  color: #3498db;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+/* Card paragraph */
+.feature-card p {
+  color: #7f8c8d;
+  line-height: 1.6;
+}
+
+/* --------- RESPONSIVE DESIGN --------- */
+
+/* Tablets (≤1024px) */
+@media (max-width: 1024px) {
+  .main-heading {
+    font-size: 2.2rem;
+  }
+
+  .feature-icon img {
+    height: 170px;
+  }
+
+  .feature-card h2 {
+    font-size: 1.4rem;
+  }
+}
+
+/* Tablets and larger mobiles (≤768px) */
 @media (max-width: 768px) {
-    .features-grid {
-        grid-template-columns: 1fr;
-    }
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .main-heading {
+    font-size: 2rem;
+  }
+
+  .feature-icon img {
+    height: 160px;
+  }
+
+  .feature-card {
+    padding: 20px;
+  }
+}
+
+/* Small mobiles (≤480px) */
+@media (max-width: 480px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .main-heading {
+    font-size: 1.8rem;
+  }
+
+  .feature-icon img {
+    height: 150px;
+  }
+
+  .feature-card h2 {
+    font-size: 1.3rem;
+  }
+
+  .feature-card p {
+    font-size: 0.95rem;
+  }
 }

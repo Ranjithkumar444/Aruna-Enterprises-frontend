@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../CssFiles/header.css";
-import { useNavigate } from "react-router-dom";
+import { FaBars, FaTimes } from "react-icons/fa"; // For hamburger & close icons
+
 const Headers = () => {
     const [showAdmin, setShowAdmin] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -12,53 +14,34 @@ const Headers = () => {
                 setShowAdmin(true);
             }
         };
-
         window.addEventListener("keydown", handleKeyPress);
-        return () => {
-            window.removeEventListener("keydown", handleKeyPress);
-        };
+        return () => window.removeEventListener("keydown", handleKeyPress);
     }, []);
 
     return (
         <nav className="nav-bar">
             <div className="nav-bar-div">
+                <img 
+                    onClick={() => navigate("/")}
+                    src="https://raw.githubusercontent.com/Ranjithkumar444/ArunaEnterprisesImage/refs/heads/main/AE%20Logo.jpeg"
+                    className="header-logo"
+                    alt="logo"
+                />
 
-                <div>
-                    <img 
-                        onClick={() => {navigate("/")}}
-                        src="https://raw.githubusercontent.com/Ranjithkumar444/ArunaEnterprisesImage/refs/heads/main/AE%20Logo.jpeg"
-                        className="header-logo"
-                        alt="logo"
-                    />
+                {/* Hamburger Icon for Mobile */}
+                <div className="hamburger" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                    {mobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
                 </div>
 
-                <div className="nav-items">
-                    <div className="home"><Link to="/">Home</Link></div>
-
-                    <div className="dropdown">
-                        <div className="products"><Link to="/products">Products/Services</Link></div>
-                    </div>
-
-                    <div className="dropdown">
-                        <div className="industry"><Link to="/industries">Industries We Serve</Link></div>
-                    </div>
-
-                    <div className="dropdown">
-                        <div className="aboutus"><Link to="/about">About Us</Link></div>
-                        <div className="dropdown-content">
-                        </div>
-                    </div>
-
-                    <div className="dropdown">
-                        <div className="contact"><Link to="/contact">Contact Us</Link></div>
-                        <div className="dropdown-content">
-                        </div>
-                    </div>
-                </div>
-
-                <div>
+                {/* Desktop Menu */}
+                <div className={`nav-items ${mobileMenuOpen ? "mobile-active" : ""}`}>
+                    <div><Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link></div>
+                    <div><Link to="/products" onClick={() => setMobileMenuOpen(false)}>Products/Services</Link></div>
+                    <div><Link to="/industries" onClick={() => setMobileMenuOpen(false)}>Industries We Serve</Link></div>
+                    <div><Link to="/about" onClick={() => setMobileMenuOpen(false)}>About Us</Link></div>
+                    <div><Link to="/contact" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link></div>
                     {showAdmin && (
-                        <Link to="/admin" className="admin-button">Admin</Link>
+                        <div><Link to="/admin" onClick={() => setMobileMenuOpen(false)} className="admin-button">Admin</Link></div>
                     )}
                 </div>
             </div>

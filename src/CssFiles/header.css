@@ -106,37 +106,6 @@
   box-shadow: 0 4px 8px rgba(44, 131, 251, 0.3);
 }
 
-@media (max-width: 1024px) {
-  .nav-items {
-      gap: 10px;
-  }
-  
-  .nav-items a {
-      padding: 8px 12px;
-      font-size: 14px;
-  }
-}
-
-@media (max-width: 768px) {
-  .nav-bar-div {
-      flex-direction: column;
-      padding: 15px 0;
-  }
-  
-  .nav-items {
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 15px;
-  }
-  
-  .header-logo {
-      margin-bottom: 10px;
-  }
-  
-  .admin-button {
-      margin-top: 15px;
-  }
-}
   
 .login-container {
     display: flex;
@@ -255,18 +224,6 @@
     transform: translateY(0);
 }
 
-@media (max-width: 480px) {
-    .login-card {
-        max-width: 100%;
-    }
-    
-    .login-header, .login-form {
-        padding: 20px;
-    }
-}
-
-
-
 .add1{
   margin-right: 30px;
 }
@@ -274,4 +231,67 @@
 .add2{
   margin-right: 30px;
 
+}
+
+/* General styling */
+.nav-bar {
+  background-color: #fff;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ccc;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-bar-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-logo {
+  height: 50px;
+  cursor: pointer;
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  cursor: pointer;
+}
+
+/* Navigation Items */
+.nav-items {
+  display: flex;
+  gap: 20px;
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .nav-items {
+    display: none;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    flex-direction: column;
+    background-color: white;
+    padding: 20px;
+    gap: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .nav-items.mobile-active {
+    display: flex;
+  }
+
+  .nav-items a {
+    font-size: 18px;
+    text-decoration: none;
+    color: #333;
+  }
 }

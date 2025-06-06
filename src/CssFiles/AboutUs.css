@@ -145,12 +145,6 @@
   margin-bottom: 60px;
 }
 
-@media (min-width: 768px) {
-  .values-section {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
 .vision-box, .mission-box {
   background: white;
   padding: 40px;
@@ -294,25 +288,139 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
-@media (max-width: 768px) {
+/* --- Medium Screens: Tablets (768px to 1024px) --- */
+@media (max-width: 1024px) {
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
-  
+
   .hero-subtitle {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
-  
+
   .about-section {
     flex-direction: column;
+    gap: 20px;
   }
-  
+
   .image-placeholder {
-    height: 300px;
+    height: 350px;
   }
-  
+
   .section-title {
+    font-size: 2.2rem;
+  }
+
+  .values-section {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 25px 15px;
+  }
+
+  .team-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .team-member {
+    padding: 25px;
+  }
+
+  .vision-box, .mission-box {
+    padding: 30px;
+  }
+
+  .about-text {
+    font-size: 1rem;
+  }
+
+  .team-description {
+    font-size: 1rem;
+  }
+}
+
+/* --- Small Screens: Mobile Devices (<768px) --- */
+@media (max-width: 767px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .content-wrapper {
+    padding: 0 15px;
+  }
+
+  .image-placeholder {
+    height: 250px;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+  .about-section {
+    gap: 15px;
+  }
+
+  .about-text {
+    font-size: 0.95rem;
+  }
+
+  .stat-card {
+    padding: 20px;
+  }
+
+  .stat-number {
     font-size: 2rem;
+  }
+
+  .vision-box, .mission-box {
+    padding: 25px;
+  }
+
+  .vision-box h2, .mission-box h2 {
+    font-size: 1.5rem;
+  }
+
+  .vision-box li, .mission-box li {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+
+  .team-description {
+    text-align: center;
+    font-size: 0.95rem;
+  }
+
+  .team-member {
+    padding: 20px;
+  }
+
+  .member-image {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .hero-title {
+    font-size: 4rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.8rem;
+  }
+
+  .section-title {
+    font-size: 3rem;
+  }
+
+  .about-text, .stat-label, .team-description {
+    font-size: 1.2rem;
   }
 }

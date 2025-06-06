@@ -6,6 +6,7 @@
   background: #fdfdfd;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
 }
 
 .title {
@@ -20,6 +21,7 @@
   font-size: 16px;
   text-align: left;
   background-color: #ffffff;
+  min-width: 600px;
 }
 
 .styled-table thead tr {
@@ -47,4 +49,69 @@
 .styled-table input[type="checkbox"] {
   transform: scale(1.5);
   cursor: pointer;
+}
+
+/* --------- Responsive Media Queries ---------- */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .styled-table {
+    font-size: 14px;
+    min-width: unset;
+  }
+
+  .styled-table th,
+  .styled-table td {
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.3rem;
+  }
+
+  .styled-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .styled-table thead {
+    display: none;
+  }
+
+  .styled-table tbody tr {
+    display: block;
+    margin-bottom: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    padding: 10px;
+  }
+
+  .styled-table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .styled-table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #333;
+  }
+
+  .styled-table input[type="checkbox"] {
+    transform: scale(1.3);
+  }
 }

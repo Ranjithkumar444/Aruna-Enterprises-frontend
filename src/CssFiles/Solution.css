@@ -128,7 +128,7 @@
 }
 
 /* Tablets and larger mobiles (≤768px) */
-@media (max-width: 768px) {
+@media (max-width: 920px) {
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;

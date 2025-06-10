@@ -52,7 +52,7 @@ const KanbanBoard = () => {
   const fetchOrders = async () => {
     try {
       const res = await axios.get(
-        "https://arunaenterprises.azurewebsites.net/admin/order/getAllOrders",
+        "https://arunaenterprises.azurewebsites.net/admin/order/getOrdersByActiveStatus",
         {
           headers: {
             Authorization: `Bearer ${token}`,

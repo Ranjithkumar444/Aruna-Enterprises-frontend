@@ -11,8 +11,6 @@ const IndustryList = () => {
         const response = await axios.get("https://arunaenterprises.azurewebsites.net/public/getAllIndustry");
         const industries = response.data;
 
-        console.log(response)
-
         const groupedBySector = industries.reduce((acc, industry) => {
           const { sector } = industry;
           if (!acc[sector]) {

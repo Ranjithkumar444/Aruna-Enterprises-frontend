@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
+import AccessDeniedMessage from './AccessDeneidMessage';
 
 const AttendanceList = () => {
     const [date, setDate] = useState(new Date());
@@ -13,16 +13,23 @@ const AttendanceList = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [lastUpdated, setLastUpdated] = useState(null);
+    const [hasAccessError, setHasAccessError] = useState(false); 
     const navigate = useNavigate();
 
     const fetchAttendanceData = async (selectedDate) => {
         setLoading(true);
         setError(null);
-        
+        setHasAccessError(false); 
+
         try {
-            const formattedDate = selectedDate.toISOString().split('T')[0];
+            const year = selectedDate.getFullYear();
+            const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+            const day = String(selectedDate.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+
             const token = localStorage.getItem('adminToken');
-            
+
             const response = await axios.get(
                 `https://arunaenterprises.azurewebsites.net/admin/attendance-list?date=${formattedDate}`,
                 {
@@ -31,14 +38,21 @@ const AttendanceList = () => {
                     }
                 }
             );
-            
+            console.log(response);
+
             setAttendanceData(response.data);
             setFilteredData(response.data);
+            setLastUpdated(new Date());
         } catch (err) {
-            setError(err.response?.data?.message || err.message);
+            const errorMessage = err.response?.data?.message || err.message || "An unexpected error occurred.";
+            setError(errorMessage);
+
             if (err.response?.status === 401) {
                 localStorage.removeItem('adminToken');
                 navigate('/admin/login');
+            } else if (err.response?.status === 403) {
+               
+                setHasAccessError(true); 
             }
         } finally {
             setLoading(false);
@@ -47,38 +61,62 @@ const AttendanceList = () => {
 
     useEffect(() => {
         fetchAttendanceData(date);
-    }, [date]);
+        const interval = setInterval(() => {
+            fetchAttendanceData(date);
+        }, 30000); 
 
+        return () => clearInterval(interval); 
+    }, [date]); 
     useEffect(() => {
         const filtered = attendanceData.filter(record => {
-            const matchesSearch = record.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            const matchesSearch = record.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                                record.barcodeId.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesStatus = statusFilter === 'all' || 
+            const matchesStatus = statusFilter === 'all' ||
                                 record.status.toLowerCase() === statusFilter.toLowerCase();
-            
+
             return matchesSearch && matchesStatus;
         });
         setFilteredData(filtered);
-    }, [searchTerm, statusFilter, attendanceData]);
+    }, [searchTerm, statusFilter, attendanceData]); 
 
     const formatTime = (time) => {
         if (!time) return '-';
-        return new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        try {
+            return new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } catch (e) {
+            console.error("Invalid time format:", time, e);
+            return 'Invalid Time';
+        }
     };
 
-    const handleSearch = (e) => {
-        e.preventDefault();
+    const handleRefresh = () => {
+        fetchAttendanceData(date);
     };
 
     const handleResetFilters = () => {
         setSearchTerm('');
         setStatusFilter('all');
     };
+    if (hasAccessError) {
+        return <AccessDeniedMessage/>
+    }
 
     return (
         <div className="attendance-container">
-            <h2>Attendance List</h2>
-            
+            <div className="header-section">
+                <h2>Attendance List</h2>
+                <div className="header-controls">
+                    <button onClick={handleRefresh} className="refresh-btn">
+                        ↻ Refresh
+                    </button>
+                    {lastUpdated && (
+                        <span className="last-updated">
+                            Last updated: {lastUpdated.toLocaleTimeString()}
+                        </span>
+                    )}
+                </div>
+            </div>
+
             <div className="filter-section">
                 <div className="date-filter">
                     <label>Select Date: </label>
@@ -91,7 +129,7 @@ const AttendanceList = () => {
                     />
                 </div>
 
-                <form onSubmit={handleSearch} className="search-form">
+                <div className="search-form">
                     <div className="form-group">
                         <input
                             type="text"
@@ -101,7 +139,7 @@ const AttendanceList = () => {
                             className="search-input"
                         />
                     </div>
-                    
+
                     <div className="form-group">
                         <select
                             value={statusFilter}
@@ -113,15 +151,15 @@ const AttendanceList = () => {
                             <option value="absent">Absent</option>
                         </select>
                     </div>
-                    
+
                     <button type="button" onClick={handleResetFilters} className="reset-btn">
                         Reset Filters
                     </button>
-                </form>
+                </div>
             </div>
-
             {loading && <div className="loading">Loading...</div>}
-            {error && <div className="error">Error: {error}</div>}
+            {error && !hasAccessError && <div className="error">Error: {error}</div>}
+
 
             <div className="summary-stats">
                 <span>Total: {filteredData.length}</span>
@@ -139,6 +177,8 @@ const AttendanceList = () => {
                             <th>Check-In Time</th>
                             <th>Check-Out Time</th>
                             <th>Status</th>
+                            <th>Day Salary</th>
+                            <th>Worked Hours</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -153,11 +193,13 @@ const AttendanceList = () => {
                                     <td className={`status ${record.status.toLowerCase()}`}>
                                         {record.status}
                                     </td>
+                                    <td>₹ {record.daySalary.toFixed(2)}</td>
+                                    <td>{record.overtimeHours.toFixed(2)} hrs</td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="6" className="no-data">
+                                <td colSpan="8" className="no-data">
                                     {loading ? 'Loading...' : 'No matching records found'}
                                 </td>
                             </tr>

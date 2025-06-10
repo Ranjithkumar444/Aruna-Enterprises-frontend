@@ -113,7 +113,7 @@ const EmployeeDetails = () => {
               <th>Phone</th>
               <th>Joined At</th>
               <th>Blood Group</th>
-              <th>Date of Birth</th>
+              <th>Date of Joined</th>
             </tr>
           </thead>
           <tbody>

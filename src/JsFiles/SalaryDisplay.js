@@ -1,40 +1,57 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import "../CssFiles/SalaryDisplay.css";
+import AccessDeniedMessage from './AccessDeneidMessage';
 
 const SalaryDisplay = () => {
   const [salaryData, setSalaryData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filterUnit, setFilterUnit] = useState('');
+  const [hasAccessError, setHasAccessError] = useState(false); 
+  const navigate = useNavigate(); 
+
   const token = localStorage.getItem("adminToken");
 
   const monthNames = [
-    '', 
+    '',
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   useEffect(() => {
     const fetchSalaryData = async () => {
+      setLoading(true);
+      setError(null);
+      setHasAccessError(false);
+
       try {
         const response = await axios.get("https://arunaenterprises.azurewebsites.net/admin/salary/monthly", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSalaryData(response.data);
-        console.log(response)
+        console.log("Salary Data Response:", response);
       } catch (err) {
-        setError('Failed to fetch salary data');
+        const errorMessage = err.response?.data?.message || err.message || "Failed to fetch salary data";
+        setError(errorMessage);
+
+        if (err.response?.status === 401) {
+          localStorage.removeItem('adminToken');
+          navigate('/admin/login'); 
+        } else if (err.response?.status === 403) {
+          setHasAccessError(true); 
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchSalaryData();
-  }, []);
+  }, [token, navigate]); 
 
-  const filteredData = filterUnit 
-    ? salaryData.filter(item => 
+  const filteredData = filterUnit
+    ? salaryData.filter(item =>
         item.unit?.toLowerCase().includes(filterUnit.toLowerCase()))
     : salaryData;
 
@@ -42,8 +59,13 @@ const SalaryDisplay = () => {
     window.print();
   };
 
+  if (hasAccessError) {
+    return <AccessDeniedMessage/>;
+  }
+
   if (loading) return <p className="text-center">Loading salary data...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+  if (error && !hasAccessError) return <p className="text-center text-red-500">{error}</p>;
+
 
   return (
     <div className="salary-container">
@@ -76,24 +98,32 @@ const SalaryDisplay = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((salary, index) => (
-              <tr key={`${salary.employeeId}-${index}`} className="salary-row">
-                <td className="text-center">{index + 1}</td>
-                <td>{salary.name}</td>
-                <td>{salary.barcodeId}</td>
-                <td className="text-center">
-                  ₹{Number(salary.totalSalaryThisMonth.toFixed(0)).toLocaleString()}
-                </td>
-                <td className="text-center">
-                  {Number(salary.totalOvertimeHours.toFixed(0))}
-                </td>
-                <td className='text-center'>{salary.unit}</td>
-                <td className='text-center'>{monthNames[salary.month]}</td>
-                <td className='text-center'>
-                  ₹{Number(salary.monthlyBaseSalary.toFixed(0)).toLocaleString()}
+            {filteredData.length > 0 ? (
+                filteredData.map((salary, index) => (
+                <tr key={`${salary.employeeId}-${index}`} className="salary-row">
+                  <td className="text-center">{index + 1}</td>
+                  <td>{salary.name}</td>
+                  <td>{salary.barcodeId}</td>
+                  <td className="text-center">
+                    ₹{Number(salary.totalSalaryThisMonth).toFixed(2).toLocaleString('en-IN')}
+                  </td>
+                  <td className="text-center">
+                    {Number(salary.totalOvertimeHours).toFixed(2)}
+                  </td>
+                  <td className='text-center'>{salary.unit}</td>
+                  <td className='text-center'>{monthNames[salary.month]}</td>
+                  <td className='text-center'>
+                    ₹{Number(salary.monthlyBaseSalary).toFixed(2).toLocaleString('en-IN')}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="no-data">
+                  {loading ? 'Loading...' : 'No matching records found'}
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

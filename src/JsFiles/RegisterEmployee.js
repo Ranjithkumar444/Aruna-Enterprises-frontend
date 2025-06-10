@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import AccessDeniedMessage from "./AccessDeneidMessage";
 
 const RegisterEmployee = () => {
   const navigate = useNavigate();
@@ -8,8 +9,45 @@ const RegisterEmployee = () => {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [barcodeData, setBarcodeData] = useState(null);
+  const [hasAccessError, setHasAccessError] = useState(false); 
 
   const token = localStorage.getItem("adminToken");
+
+  const handleCreateEmployeeClick = async () => {
+    setHasAccessError(false); 
+    setMessage(""); 
+
+    try {
+      await axios.get(
+        "https://arunaenterprises.azurewebsites.net/admin/get-admins",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      navigate("/admin/employee/register");
+    } catch (error) {
+
+      if (error.response) {
+        if (error.response.status === 401) {
+          
+          localStorage.removeItem('adminToken');
+          navigate('/admin/login');
+        } else if (error.response.status === 403) {
+          setHasAccessError(true); 
+        } else {
+          setMessage(`Error checking permissions: ${error.response.data.message || error.response.statusText}`);
+          setIsError(true);
+        }
+      } else {
+        setMessage("Network error or unhandled error during permission check.");
+        setIsError(true);
+      }
+    }
+  };
+
 
   const handleDeactivate = async () => {
     if (!barcodeId) {
@@ -17,6 +55,7 @@ const RegisterEmployee = () => {
       setIsError(true);
       return;
     }
+    setHasAccessError(false); 
 
     try {
       const response = await axios.put(
@@ -28,16 +67,23 @@ const RegisterEmployee = () => {
           },
         }
       );
-      
+
       setMessage(response.data || "Employee deactivated successfully");
       setIsError(false);
       setBarcodeId("");
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 
-                         error.response?.data || 
+      console.error("Deactivate error:", error);
+      const errorMessage = error.response?.data?.message ||
+                         error.response?.data ||
                          "Error deactivating employee";
       setMessage(errorMessage);
       setIsError(true);
+      if (error.response?.status === 401) {
+          localStorage.removeItem('adminToken');
+          navigate('/admin/login');
+      } else if (error.response?.status === 403) {
+          setHasAccessError(true);
+      }
     }
   };
 
@@ -47,6 +93,7 @@ const RegisterEmployee = () => {
       setIsError(true);
       return;
     }
+    setHasAccessError(false);
 
     try {
       const response = await axios.get(
@@ -55,11 +102,11 @@ const RegisterEmployee = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          responseType: 'blob' 
+          responseType: 'blob'
         }
       );
 
-  
+
       const imageUrl = URL.createObjectURL(response.data);
       setBarcodeData({
         barcodeId,
@@ -68,17 +115,24 @@ const RegisterEmployee = () => {
       setMessage("Barcode fetched successfully");
       setIsError(false);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 
+      console.error("Fetch barcode error:", error);
+      const errorMessage = error.response?.data?.message ||
                          "Error fetching barcode";
       setMessage(errorMessage);
       setIsError(true);
       setBarcodeData(null);
+      if (error.response?.status === 401) {
+          localStorage.removeItem('adminToken');
+          navigate('/admin/login');
+      } else if (error.response?.status === 403) {
+          setHasAccessError(true);
+      }
     }
   };
 
   const handlePrintBarcode = () => {
     if (!barcodeData) return;
-    
+
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
       <html>
@@ -106,6 +160,10 @@ const RegisterEmployee = () => {
     `);
     printWindow.document.close();
   };
+
+  if (hasAccessError) {
+    return <AccessDeniedMessage/>
+  }
 
   return (
     <div
@@ -137,7 +195,7 @@ const RegisterEmployee = () => {
         }}
       >
         <button
-          onClick={() => navigate("/admin/employee/register")}
+          onClick={handleCreateEmployeeClick} 
           style={{
             padding: "0.8rem 2rem",
             backgroundColor: "#28a745",
@@ -259,7 +317,7 @@ const RegisterEmployee = () => {
         </div>
 
         {barcodeData && (
-          <div style={{ 
+          <div style={{
             marginTop: "20px",
             textAlign: "center",
             padding: "20px",
@@ -269,9 +327,9 @@ const RegisterEmployee = () => {
             <div style={{ fontSize: "18px", marginBottom: "10px" }}>
               Barcode ID: {barcodeData.barcodeId}
             </div>
-            <img 
-              src={barcodeData.imageUrl} 
-              alt="Employee Barcode" 
+            <img
+              src={barcodeData.imageUrl}
+              alt="Employee Barcode"
               style={{ maxWidth: "100%", height: "auto", maxHeight: "200px" }}
             />
             <button

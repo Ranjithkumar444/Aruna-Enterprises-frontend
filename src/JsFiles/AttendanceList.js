@@ -79,26 +79,22 @@ const AttendanceList = () => {
     }, [searchTerm, statusFilter, attendanceData]);
 
     const formatTime = (time) => {
-        if (!time) return '-'; 
-        try {
-            const dateObj = new Date(time);
-
-            if (isNaN(dateObj.getTime())) {
-                console.error("Invalid time format detected by Date object:", time);
-                return 'Invalid Time';
-            }
-
-            const istFormatter = new Intl.DateTimeFormat('en-IN', {
-                timeZone: 'Asia/Kolkata', 
-                hour: '2-digit',         
-                minute: '2-digit',       
-                hour12: false           
-            });
-            return istFormatter.format(dateObj);
-        } catch (e) {
-            console.error("Error formatting time:", time, e);
-            return 'Invalid Time';
-        }
+    if (!time) return '-';
+    try {
+        // Parse as UTC and convert to IST
+        const utcDate = new Date(time);
+        const istDate = new Date(utcDate.getTime() + (5.5 * 60 * 60 * 1000));
+        
+        return istDate.toLocaleTimeString('en-IN', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+            timeZone: 'Asia/Kolkata'
+        });
+    } catch (e) {
+        console.error("Error formatting time:", time, e);
+        return 'Invalid Time';
+    }
     };
 
     const handleRefresh = () => {

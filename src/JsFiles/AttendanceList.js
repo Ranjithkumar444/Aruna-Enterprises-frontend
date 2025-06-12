@@ -3,8 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import AccessDeniedMessage from './AccessDeneidMessage';
-
+import AccessDeniedMessage from './AccessDeneidMessage'; 
 
 const AttendanceList = () => {
     const [date, setDate] = useState(new Date());
@@ -62,17 +61,17 @@ const AttendanceList = () => {
         fetchAttendanceData(date);
         const interval = setInterval(() => {
             fetchAttendanceData(date);
-        }, 30000); 
+        }, 30000); // Refreshes every 30 seconds
 
-        return () => clearInterval(interval);
+        return () => clearInterval(interval); // Cleanup on component unmount
     }, [date]);
 
     useEffect(() => {
         const filtered = attendanceData.filter(record => {
             const matchesSearch = record.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                record.barcodeId.toLowerCase().includes(searchTerm.toLowerCase());
+                                 record.barcodeId.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesStatus = statusFilter === 'all' ||
-                record.status.toLowerCase() === statusFilter.toLowerCase();
+                                  record.status.toLowerCase() === statusFilter.toLowerCase();
 
             return matchesSearch && matchesStatus;
         });
@@ -80,18 +79,24 @@ const AttendanceList = () => {
     }, [searchTerm, statusFilter, attendanceData]);
 
     const formatTime = (time) => {
-        if (!time) return '-';
+        if (!time) return '-'; 
         try {
-            const date = new Date(time);
-            const istFormatter = new Intl.DateTimeFormat('en-GB', {
-                timeZone: 'Asia/Kolkata',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
+            const dateObj = new Date(time);
+
+            if (isNaN(dateObj.getTime())) {
+                console.error("Invalid time format detected by Date object:", time);
+                return 'Invalid Time';
+            }
+
+            const istFormatter = new Intl.DateTimeFormat('en-IN', {
+                timeZone: 'Asia/Kolkata', 
+                hour: '2-digit',         
+                minute: '2-digit',       
+                hour12: false           
             });
-            return istFormatter.format(date);
+            return istFormatter.format(dateObj);
         } catch (e) {
-            console.error("Invalid time format:", time, e);
+            console.error("Error formatting time:", time, e);
             return 'Invalid Time';
         }
     };
@@ -119,7 +124,7 @@ const AttendanceList = () => {
                     </button>
                     {lastUpdated && (
                         <span className="last-updated">
-                            Last updated: {lastUpdated.toLocaleTimeString()}
+                            Last updated: {lastUpdated.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false })}
                         </span>
                     )}
                 </div>

@@ -5,6 +5,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import AccessDeniedMessage from './AccessDeneidMessage';
 
+
 const AttendanceList = () => {
     const [date, setDate] = useState(new Date());
     const [attendanceData, setAttendanceData] = useState([]);
@@ -14,13 +15,13 @@ const AttendanceList = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [lastUpdated, setLastUpdated] = useState(null);
-    const [hasAccessError, setHasAccessError] = useState(false); 
+    const [hasAccessError, setHasAccessError] = useState(false);
     const navigate = useNavigate();
 
     const fetchAttendanceData = async (selectedDate) => {
         setLoading(true);
         setError(null);
-        setHasAccessError(false); 
+        setHasAccessError(false);
 
         try {
             const year = selectedDate.getFullYear();
@@ -38,7 +39,6 @@ const AttendanceList = () => {
                     }
                 }
             );
-            console.log(response);
 
             setAttendanceData(response.data);
             setFilteredData(response.data);
@@ -51,8 +51,7 @@ const AttendanceList = () => {
                 localStorage.removeItem('adminToken');
                 navigate('/admin/login');
             } else if (err.response?.status === 403) {
-               
-                setHasAccessError(true); 
+                setHasAccessError(true);
             }
         } finally {
             setLoading(false);
@@ -65,24 +64,32 @@ const AttendanceList = () => {
             fetchAttendanceData(date);
         }, 30000); 
 
-        return () => clearInterval(interval); 
-    }, [date]); 
+        return () => clearInterval(interval);
+    }, [date]);
+
     useEffect(() => {
         const filtered = attendanceData.filter(record => {
             const matchesSearch = record.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                               record.barcodeId.toLowerCase().includes(searchTerm.toLowerCase());
+                record.barcodeId.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesStatus = statusFilter === 'all' ||
-                                record.status.toLowerCase() === statusFilter.toLowerCase();
+                record.status.toLowerCase() === statusFilter.toLowerCase();
 
             return matchesSearch && matchesStatus;
         });
         setFilteredData(filtered);
-    }, [searchTerm, statusFilter, attendanceData]); 
+    }, [searchTerm, statusFilter, attendanceData]);
 
     const formatTime = (time) => {
         if (!time) return '-';
         try {
-            return new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const date = new Date(time);
+            const istFormatter = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Kolkata',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+            return istFormatter.format(date);
         } catch (e) {
             console.error("Invalid time format:", time, e);
             return 'Invalid Time';
@@ -97,8 +104,9 @@ const AttendanceList = () => {
         setSearchTerm('');
         setStatusFilter('all');
     };
+
     if (hasAccessError) {
-        return <AccessDeniedMessage/>
+        return <AccessDeniedMessage />;
     }
 
     return (
@@ -157,9 +165,9 @@ const AttendanceList = () => {
                     </button>
                 </div>
             </div>
+
             {loading && <div className="loading">Loading...</div>}
             {error && !hasAccessError && <div className="error">Error: {error}</div>}
-
 
             <div className="summary-stats">
                 <span>Total: {filteredData.length}</span>

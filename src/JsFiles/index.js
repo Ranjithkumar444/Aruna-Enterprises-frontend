@@ -106,7 +106,12 @@ const router = createBrowserRouter([
                     },{
                         path: "admin/inventory/create-reel",
                         element: <ReelForm/>
-                    },{
+                    },
+                    {
+                        path: "admin/inventory/reel-history/:barcodeId",
+                        element: <ReelHistoryComponent/>
+                    },
+                    {
                         path: "admin/contact/contactDetails",
                         element: <ContactDetails/>
                     },{

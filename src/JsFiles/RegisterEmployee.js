@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import AccessDeniedMessage from './AccessDeniedMessage'; 
+import AccessDeniedMessage from "./AccessDeneidMessage";
+
 const RegisterEmployee = () => {
   const navigate = useNavigate();
   const [barcodeId, setBarcodeId] = useState("");
@@ -159,7 +160,7 @@ const RegisterEmployee = () => {
   };
 
   if (hasAccessError) {
-    return <AccessDeniedMessage />;
+    return <AccessDeniedMessage/>
   }
 
   return (

@@ -28,6 +28,7 @@ import IndustryWeServe from "./IndustryWeServe.js";
 import BoxSectors from "./BoxSectors.js";
 import SectorDetails from "./SectorDetails.js";
 import ReelsInStock from "./ReelsInStock.js";
+import ReelHistoryComponent from "./ReelHistoryComponent.js";
 
 
 const router = createBrowserRouter([

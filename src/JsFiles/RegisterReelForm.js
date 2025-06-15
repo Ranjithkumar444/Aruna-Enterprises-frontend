@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import "../CssFiles/ReelForm.css";
+import { useNavigate } from 'react-router-dom';
 
 const ReelForm = () => {
+  const navigate = useNavigate(); 
   const [formData, setFormData] = useState({
+    reelNo: '',
     gsm: '',
     burstFactor: '',
     deckle: '',
@@ -16,8 +19,10 @@ const ReelForm = () => {
 
   const [barcodeId, setBarcodeId] = useState(null);
   const [barcodeImageUrl, setBarcodeImageUrl] = useState(null);
-  const printRef = useRef();
   const [reelDetails, setReelDetails] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const printRef = useRef();
 
   const token = localStorage.getItem("adminToken");
 
@@ -29,27 +34,34 @@ const ReelForm = () => {
 
   const fetchReelDetails = async (id) => {
     try {
-      const response = await axios.get(`https://arunaenterprises.azurewebsites.net/admin/barcode/details/${id}`, {
+      const response = await axios.get(`https://arunaenterprises.azurewebsites.net/admin/reel/details/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
       });
       setReelDetails(response.data);
+      setError(null);
     } catch (error) {
       console.error("Error fetching reel details", error);
+      setError("Failed to fetch reel details. Please check the reel number or barcode ID.");
     }
   };
 
   useEffect(() => {
     const adminDetails = JSON.parse(localStorage.getItem('adminDetails'));
-    if (adminDetails && adminDetails.email) {
-      setFormData((prev) => ({ ...prev, createdBy: adminDetails.email }));
+    if (adminDetails?.email) {
+      setFormData(prev => ({ ...prev, createdBy: adminDetails.email }));
     }
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    
+    if (['gsm', 'burstFactor', 'deckle', 'initialWeight', 'reelNo'].includes(name)) {
+      if (value && isNaN(value)) return;
+    }
+
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
@@ -57,10 +69,26 @@ const ReelForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+
     try {
+      if (!formData.reelNo || isNaN(Number(formData.reelNo))) {
+        throw new Error("Reel No must be a valid number");
+      }
+
+      const payload = {
+        ...formData,
+        reelNo: Number(formData.reelNo),
+        gsm: Number(formData.gsm),
+        burstFactor: Number(formData.burstFactor),
+        deckle: Number(formData.deckle),
+        initialWeight: Number(formData.initialWeight),
+      };
+
       const response = await axios.post(
         "https://arunaenterprises.azurewebsites.net/admin/register-reel",
-        formData,
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -73,7 +101,7 @@ const ReelForm = () => {
       setBarcodeId(id);
 
       const imageResponse = await axios.get(
-        `https://arunaenterprises.azurewebsites.net/admin/barcode/${id}`,
+        `https://arunaenterprises.azurewebsites.net/admin/reel/barcode-image/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: 'arraybuffer'
@@ -84,32 +112,47 @@ const ReelForm = () => {
         new Uint8Array(imageResponse.data)
           .reduce((data, byte) => data + String.fromCharCode(byte), '')
       );
-      const imgSrc = `data:image/png;base64,${base64Image}`;
-      setBarcodeImageUrl(imgSrc);
+      setBarcodeImageUrl(`data:image/png;base64,${base64Image}`);
 
       alert('Reel registered successfully!');
-      setFormData((prev) => ({
-        gsm: '',
-        burstFactor: '',
-        deckle: '',
-        initialWeight: '',
-        unit: '',
-        paperType: '',
-        supplierName: '',
-        createdBy: prev.createdBy,
-      }));
+      resetForm();
     } catch (error) {
       console.error('Error registering reel:', error);
-      alert('Failed to register reel.');
+      setError(error.response?.data?.message || error.message || 'Failed to register reel');
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const resetForm = () => {
+    setFormData(prev => ({
+      reelNo: '',
+      gsm: '',
+      burstFactor: '',
+      deckle: '',
+      initialWeight: '',
+      unit: '',
+      paperType: '',
+      supplierName: '',
+      createdBy: prev.createdBy,
+    }));
   };
 
   const handlePrint = () => {
     const printContents = printRef.current.innerHTML;
     const newWindow = window.open('', '', 'width=600,height=600');
-    newWindow.document.write('<html><head><title>Print</title></head><body>');
-    newWindow.document.write(printContents);
-    newWindow.document.write('</body></html>');
+    newWindow.document.write(`
+      <html>
+        <head>
+          <title>Print Barcode</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
+            img { max-width: 100%; height: auto; }
+          </style>
+        </head>
+        <body>${printContents}</body>
+      </html>
+    `);
     newWindow.document.close();
     newWindow.print();
   };
@@ -117,26 +160,29 @@ const ReelForm = () => {
   return (
     <div className="form-container">
       <h2>Register New Reel</h2>
+      {error && <div className="error-message">{error}</div>}
+      
       <form onSubmit={handleSubmit}>
         {[
-          { label: 'GSM', name: 'gsm', placeholder: 'e.g. 80, 100, 120' },
-          { label: 'Burst Factor', name: 'burstFactor', placeholder: 'e.g. 25, 30' },
-          { label: 'Deckle', name: 'deckle', placeholder: 'Enter deckle size' },
-          { label: 'Initial Weight', name: 'initialWeight', placeholder: 'e.g. 500 kg' },
-          { label: 'Unit', name: 'unit', placeholder: 'e.g. A,B' },
-          { label: 'Paper Type', name: 'paperType', placeholder: 'e.g. Kraft, Duplex' },
-          { label: 'Supplier Name', name: 'supplierName', placeholder: 'Supplier full name' },
+          { label: 'Reel No', name: 'reelNo', type: 'number', placeholder: 'Enter reel number', required: true },
+          { label: 'GSM', name: 'gsm', type: 'number', placeholder: 'e.g. 80, 100, 120', required: true },
+          { label: 'Burst Factor', name: 'burstFactor', type: 'number', placeholder: 'e.g. 25, 30', required: true },
+          { label: 'Deckle', name: 'deckle', type: 'number', placeholder: 'Enter deckle size', required: true },
+          { label: 'Initial Weight', name: 'initialWeight', type: 'number', placeholder: 'e.g. 500 kg', required: true },
+          { label: 'Unit', name: 'unit', type: 'text', placeholder: 'e.g. A,B', required: true },
+          { label: 'Paper Type', name: 'paperType', type: 'text', placeholder: 'e.g. Kraft, Duplex', required: true },
+          { label: 'Supplier Name', name: 'supplierName', type: 'text', placeholder: 'Supplier full name', required: true },
         ].map((field) => (
           <div key={field.name} className="form-group">
             <label htmlFor={field.name}>{field.label}</label>
             <input
-              type="text"
+              type={field.type}
               id={field.name}
               name={field.name}
               placeholder={field.placeholder}
               value={formData[field.name]}
               onChange={handleChange}
-              required
+              required={field.required}
             />
           </div>
         ))}
@@ -153,63 +199,47 @@ const ReelForm = () => {
         </div>
 
         <div className="form-actions">
-          <button type="submit">Submit</button>
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Submit'}
+          </button>
+          <button type="button" onClick={resetForm} style={{ marginTop: "30px" }}>
+            Reset Form
+          </button>
+
         </div>
       </form>
 
       {barcodeImageUrl && reelDetails && (
-        <div className="barcode-display" style={{ marginTop: '20px' }}>
+        <div className="barcode-display">
           <h3>Generated Barcode</h3>
           <div
             ref={printRef}
-            style={{
-              width: '384px',
-              height: '192px',
-              padding: '8px',
-              border: '1px solid black',
-              fontFamily: 'Arial, sans-serif',
-              fontSize: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              boxSizing: 'border-box',
-              overflow: 'hidden',
-            }}
+            className="barcode-printable"
           >
-            <div style={{ fontWeight: 'bold', fontSize: '12px', marginBottom: '2px' }}>
-              Aruna Enterprises
-            </div>
-
+            <div className="company-name">Aruna Enterprises</div>
             <img
               src={barcodeImageUrl}
               alt="Reel Barcode"
-              style={{ width: '192px', height: '144px', marginBottom: '2px' }}
+              className="barcode-image"
             />
-
-            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{barcodeId}</div>
-
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+            <div className="barcode-id">{barcodeId}</div>
+            <div className="reel-no">
+              <strong>Reel No:</strong> {reelDetails.reelNo || 'N/A'}
+            </div>
+            <div className="details-row">
               <span><strong>GSM:</strong> {reelDetails.gsm}</span>
               <span><strong>Deckle:</strong> {reelDetails.deckle}</span>
             </div>
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+            <div className="details-row">
               <span><strong>Weight:</strong> {reelDetails.currentWeight} kg</span>
               <span><strong>BF:</strong> {reelDetails.burstFactor}</span>
             </div>
-            <div style={{
-              width: '100%',
-              textAlign: 'left',
-              marginTop: '2px',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            }}>
+            <div className="supplier">
               <strong>Supplier:</strong> {reelDetails.supplierName}
             </div>
           </div>
 
-          <button onClick={handlePrint} style={{ marginTop: '10px' }}>
+          <button onClick={handlePrint} className="print-button">
             Print Barcode
           </button>
         </div>

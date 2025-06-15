@@ -30,6 +30,8 @@ const ReelsInStock = () => {
           }
         );
 
+        console.log(response);
+
         const sorted = response.data.sort((a, b) => {
           if (a.status === "IN_USE" && b.status !== "IN_USE") return -1;
           if (a.status !== "IN_USE" && b.status === "IN_USE") return 1;
@@ -152,6 +154,7 @@ const ReelsInStock = () => {
           <thead>
             <tr>
               <th>Barcode ID</th>
+              <th>Reel No</th>
               <th>GSM</th>
               <th>BF</th>
               <th>Deckle</th>
@@ -167,6 +170,7 @@ const ReelsInStock = () => {
             {filteredReels.map((reel) => (
               <tr key={reel.id}>
                 <td>{reel.barcodeId}</td>
+                <td>{reel.reelNo}</td>
                 <td>{reel.gsm}</td>
                 <td>{reel.burstFactor}</td>
                 <td>{reel.deckle}</td>

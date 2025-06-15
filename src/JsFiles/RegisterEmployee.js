@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import AccessDeniedMessage from "./AccessDeneidMessage";
-
+import AccessDeniedMessage from './AccessDeniedMessage'; 
 const RegisterEmployee = () => {
   const navigate = useNavigate();
   const [barcodeId, setBarcodeId] = useState("");
@@ -26,17 +25,15 @@ const RegisterEmployee = () => {
           },
         }
       );
-
       navigate("/admin/employee/register");
     } catch (error) {
 
       if (error.response) {
         if (error.response.status === 401) {
-          
           localStorage.removeItem('adminToken');
           navigate('/admin/login');
         } else if (error.response.status === 403) {
-          setHasAccessError(true); 
+          setHasAccessError(true);
         } else {
           setMessage(`Error checking permissions: ${error.response.data.message || error.response.statusText}`);
           setIsError(true);
@@ -93,7 +90,7 @@ const RegisterEmployee = () => {
       setIsError(true);
       return;
     }
-    setHasAccessError(false);
+    setHasAccessError(false); 
 
     try {
       const response = await axios.get(
@@ -162,7 +159,7 @@ const RegisterEmployee = () => {
   };
 
   if (hasAccessError) {
-    return <AccessDeniedMessage/>
+    return <AccessDeniedMessage />;
   }
 
   return (
@@ -195,7 +192,7 @@ const RegisterEmployee = () => {
         }}
       >
         <button
-          onClick={handleCreateEmployeeClick} 
+          onClick={handleCreateEmployeeClick}
           style={{
             padding: "0.8rem 2rem",
             backgroundColor: "#28a745",

@@ -10,7 +10,7 @@ const statusConfig = {
     title: "To Do",
     dotClass: "dot-blue",
     cardClass: "border-blue",
-  },
+  },  
   IN_PROGRESS: {
     title: "In Progress",
     dotClass: "dot-yellow",
@@ -46,23 +46,26 @@ const KanbanBoard = () => {
       fetchOrders();
     }, 5 * 60 * 1000); 
 
-    return () => clearInterval(intervalId);
+    return () => clearInterval(intervalId); 
   }, []);
 
   const fetchOrders = async () => {
     try {
+      setIsLoading(true); 
       const res = await axios.get(
-        "https://arunaenterprises.azurewebsites.net/admin/order/getOrdersByActiveStatus",
+        "https://arunaenterprises.azurewebsites.net/admin/order/getAllOrders", 
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      console.log(res);
+      console.log("Fetched orders:", res.data);
       setOrders(res.data);
     } catch (err) {
       console.error("Error fetching orders:", err);
+    } finally {
+      setIsLoading(false); 
     }
   };
 
@@ -70,6 +73,17 @@ const KanbanBoard = () => {
     const { destination, source, draggableId } = result;
     if (!destination || destination.droppableId === source.droppableId) return;
 
+    if (source.droppableId === "SHIPPED") {
+      console.warn("Cannot drag orders out of the Shipped column.");
+      fetchOrders(); 
+      return;
+    }
+    if (destination.droppableId === "SHIPPED" && source.droppableId !== "COMPLETED") {
+        console.warn("Orders can only be dragged to 'Shipped' from 'Completed'.");
+        fetchOrders(); 
+        return;
+    }
+    
     const orderId = draggableId;
     const status = destination.droppableId;
 
@@ -77,7 +91,7 @@ const KanbanBoard = () => {
       setSelectedOrderId(orderId);
       setDestinationStatus(status);
       setShowConfirmModal(true);
-    } else if (status === "SHIPPED" && source.droppableId === "COMPLETED") {
+    } else if (status === "SHIPPED") { 
       setSelectedOrderId(orderId);
       setDestinationStatus(status);
       setShowShippingModal(true);
@@ -90,7 +104,7 @@ const KanbanBoard = () => {
     try {
       setIsLoading(true);
       const payload = { 
-        status: status === "IN_PROGRESS" ? "IN_PROGRESS" : status 
+        status: status 
       };
       
       if (transportNumber) {
@@ -108,7 +122,7 @@ const KanbanBoard = () => {
         }
       );
   
-      fetchOrders();
+      fetchOrders(); 
     } catch (err) {
       console.error("Error updating status:", err);
       alert(`Failed to update status: ${err.response?.data?.message || err.message}`);
@@ -145,17 +159,23 @@ const KanbanBoard = () => {
   };
 
   const getOrdersByStatus = (status) => {
-    const now = new Date();
+    const now = new Date(); 
 
     if (status === "SHIPPED") {
       return orders.filter((order) => {
         if (order.status !== "SHIPPED") return false;
-        if (!order.shippedAt) return false;
+        
+        if (!order.shippedAt) {
+          console.warn(`Order ${order.id} is SHIPPED but missing shippedAt timestamp.`);
+          return true; 
+        }
 
-        const shippedTime = new Date(order.shippedAt);
-        const diffMs = now - shippedTime;
+        
+        const shippedTime = new Date(order.shippedAt); 
+        const diffMs = now.getTime() - shippedTime.getTime(); 
 
-        return diffMs < 24 * 60 * 60 * 1000;
+        const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
+        return diffMs < twentyFourHoursInMs;
       });
     }
 
@@ -221,6 +241,12 @@ const KanbanBoard = () => {
                                       </span>
                                       <span>{order.unit}</span>
                                     </div>
+                                    {order.status === "SHIPPED" && order.shippedAt && (
+                                        <div>
+                                            <span className="card-label">Shipped At</span>
+                                            <span>{new Date(order.shippedAt).toLocaleString()}</span>
+                                        </div>
+                                    )}
                                     {order.transportNumber && (
                                       <div>
                                         <span className="card-label">

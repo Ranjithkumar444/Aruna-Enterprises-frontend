@@ -162,6 +162,7 @@ const ReelsInStock = () => {
               <th>Current Weight</th>
               <th>Unit</th>
               <th>Status</th>
+              <th>ReelUsedFor</th>
               <th>Paper Type</th>
               <th>Supplier Name</th>
             </tr>
@@ -186,6 +187,7 @@ const ReelsInStock = () => {
                     {reel.status}
                   </span>
                 </td>
+                <td>{reel.reelSet}</td>
                 <td>{reel.paperType}</td>
                 <td>{reel.supplierName}</td>
               </tr>

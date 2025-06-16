@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Table, Button, Input, Space, message } from 'antd';
 import { PrinterOutlined, SearchOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useParams } from 'react-router-dom';
 
 const ReelHistoryComponent = () => {
   const { barcodeId: urlBarcode } = useParams();

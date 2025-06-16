@@ -28,7 +28,7 @@ const ContactDetails = () => {
     try {
       const newStatus = !currentStatus;
       await axios.put(
-        `${process.env.REACT_APP_API_URL}/admin/contact/updateReplyStatus/${id}`,
+        `https://arunaenterprises.azurewebsites.net/admin/contact/updateReplyStatus/${id}`,
         { replyStatus: newStatus },
         {
           headers: {

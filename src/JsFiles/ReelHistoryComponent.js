@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Table, Button, Input, Space, message } from 'antd';
-import { PrinterOutlined, SearchOutlined } from '@ant-design/icons';
-import { useNavigate,useParams } from 'react-router-dom';
+import "../CssFiles/ReelHistoryComponent.css"
 
 const ReelHistoryComponent = () => {
   const { barcodeId: urlBarcode } = useParams();
   const navigate = useNavigate();
+
   const [barcodeId, setBarcodeId] = useState(urlBarcode || '');
   const [loading, setLoading] = useState(false);
   const [historyData, setHistoryData] = useState(null);
@@ -20,7 +20,7 @@ const ReelHistoryComponent = () => {
 
   const fetchHistory = async (barcode) => {
     if (!barcode.trim()) {
-      message.warning('Please enter a barcode ID');
+      alert('Please enter a barcode ID');
       return;
     }
 
@@ -35,22 +35,23 @@ const ReelHistoryComponent = () => {
           },
         }
       );
-      
       setHistoryData(response.data);
-      setPrintData(response.data.usages.map(usage => ({
-        client: usage.client,
-        productType: usage.productType,
-        quantity: usage.quantity,
-        size: usage.size,
-        unit: usage.unit,
-        howManyBox: usage.howManyBox,
-        weightConsumed: usage.weightConsumed,
-        usageType: usage.usageType,
-        courgationIn: usage.courgationIn,
-        courgationOut: usage.courgationOut
-      })));
+      setPrintData(
+        response.data.usages.map((usage) => ({
+          client: usage.client,
+          productType: usage.productType,
+          quantity: usage.quantity,
+          size: usage.size,
+          unit: usage.unit,
+          howManyBox: usage.howManyBox,
+          weightConsumed: usage.weightConsumed,
+          usageType: usage.usageType,
+          courgationIn: usage.courgationIn,
+          courgationOut: usage.courgationOut,
+        }))
+      );
     } catch (error) {
-      message.error('Error fetching history: ' + error.message);
+      alert('Error fetching history: ' + error.message);
       setHistoryData(null);
     } finally {
       setLoading(false);
@@ -65,18 +66,9 @@ const ReelHistoryComponent = () => {
 
   const printStickers = () => {
     const printWindow = window.open('', '_blank');
-    
+
     const printContent = printData.map((item, index) => `
-      <div style="
-        width: 2.8in; 
-        height: 4.8in; 
-        border: 1px solid #000; 
-        padding: 5px; 
-        margin: 5px; 
-        font-family: Arial; 
-        font-size: 8px;
-        page-break-after: always;
-      ">
+      <div style="width: 2.8in; height: 4.8in; border: 1px solid #000; padding: 5px; margin: 5px; font-family: Arial; font-size: 8px; page-break-after: always;">
         <h3 style="text-align: center; margin: 2px 0; font-size: 10px;">Reel Usage History</h3>
         <p><strong>Barcode:</strong> ${barcodeId}</p>
         <p><strong>Entry ${index + 1} of ${printData.length}</strong></p>
@@ -96,129 +88,97 @@ const ReelHistoryComponent = () => {
 
     printWindow.document.write(`
       <html>
-        <head>
-          <title>Reel Usage Stickers</title>
-          <style>
-            @media print {
-              body { margin: 0; padding: 0; }
-              @page { size: 2.8in 4.8in; margin: 0; }
-            }
-          </style>
-        </head>
-        <body>
-          ${printContent}
-          <script>
-            window.onload = function() {
-              setTimeout(function() {
-                window.print();
-                window.close();
-              }, 100);
-            };
-          </script>
-        </body>
+      <head>
+        <title>Reel Usage Stickers</title>
+        <style>
+          @media print {
+            body { margin: 0; padding: 0; }
+            @page { size: 2.8in 4.8in; margin: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        ${printContent}
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+              window.close();
+            }, 100);
+          };
+        </script>
+      </body>
       </html>
     `);
+
     printWindow.document.close();
   };
 
   const columns = [
-    {
-      title: 'Client',
-      dataIndex: 'client',
-      key: 'client',
-    },
-    {
-      title: 'Product Type',
-      dataIndex: 'productType',
-      key: 'productType',
-    },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      key: 'quantity',
-    },
-    {
-      title: 'Size',
-      dataIndex: 'size',
-      key: 'size',
-    },
-    {
-      title: 'Unit',
-      dataIndex: 'unit',
-      key: 'unit',
-    },
-    {
-      title: 'Boxes Made',
-      dataIndex: 'howManyBox',
-      key: 'howManyBox',
-    },
-    {
-      title: 'Weight Consumed',
-      dataIndex: 'weightConsumed',
-      key: 'weightConsumed',
-      render: (text) => text?.toFixed(2) || '0.00',
-    },
-    {
-      title: 'Usage Type',
-      dataIndex: 'usageType',
-      key: 'usageType',
-    },
-    {
-      title: 'Date In',
-      dataIndex: 'courgationIn',
-      key: 'courgationIn',
-      render: (text) => text ? new Date(text).toLocaleString() : '-',
-    },
-    {
-      title: 'Date Out',
-      dataIndex: 'courgationOut',
-      key: 'courgationOut',
-      render: (text) => text ? new Date(text).toLocaleString() : 'Active',
-    },
+    { title: 'Client', key: 'client' },
+    { title: 'Product Type', key: 'productType' },
+    { title: 'Quantity', key: 'quantity' },
+    { title: 'Size', key: 'size' },
+    { title: 'Unit', key: 'unit' },
+    { title: 'Boxes Made', key: 'howManyBox' },
+    { title: 'Weight Consumed', key: 'weightConsumed' },
+    { title: 'Usage Type', key: 'usageType' },
+    { title: 'Date In', key: 'courgationIn' },
+    { title: 'Date Out', key: 'courgationOut' },
   ];
 
   return (
-    <div style={{ padding: '20px' }}>
-      <Space size="middle" style={{ marginBottom: '20px' }}>
-        <Input
+    <div className="reel-history-container">
+      <div className="reel-history-controls">
+        <input
+          className="reel-history-input"
           placeholder="Enter Reel Barcode ID"
           value={barcodeId}
           onChange={(e) => setBarcodeId(e.target.value)}
-          style={{ width: '300px' }}
-          onPressEnter={handleSearch}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
         />
-        <Button 
-          type="primary" 
-          icon={<SearchOutlined />} 
-          onClick={handleSearch}
-          loading={loading}
-        >
-          Search
-        </Button>
+        <button className="reel-history-button" onClick={handleSearch} disabled={loading}>
+          {loading ? 'Loading...' : 'Search'}
+        </button>
         {historyData && (
-          <Button 
-            type="default" 
-            icon={<PrinterOutlined />} 
+          <button
+            className="reel-history-button print"
             onClick={printStickers}
             disabled={printData.length === 0}
           >
             Print Stickers
-          </Button>
+          </button>
         )}
-      </Space>
+      </div>
 
       {historyData && (
-        <div>
-          <h2>Reel Usage History: {historyData.barcodeId}</h2>
-          <Table 
-            columns={columns} 
-            dataSource={historyData.usages} 
-            rowKey={(record) => record.courgationIn} 
-            pagination={{ pageSize: 10 }}
-            bordered
-            size="small"
-            loading={loading}
-          />
+        <div className="reel-history-table-wrapper">
+          <h2 className="reel-history-heading">Reel Usage History: {historyData.barcodeId}</h2>
+          <table className="reel-history-table">
+            <thead>
+              <tr>
+                {columns.map((col) => (
+                  <th key={col.key}>{col.title}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {historyData.usages.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.client}</td>
+                  <td>{item.productType}</td>
+                  <td>{item.quantity}</td>
+                  <td>{item.size}</td>
+                  <td>{item.unit}</td>
+                  <td>{item.howManyBox}</td>
+                  <td>{item.weightConsumed?.toFixed(2) || '0.00'}</td>
+                  <td>{item.usageType}</td>
+                  <td>{item.courgationIn ? new Date(item.courgationIn).toLocaleString() : '-'}</td>
+                  <td>{item.courgationOut ? new Date(item.courgationOut).toLocaleString() : 'Active'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

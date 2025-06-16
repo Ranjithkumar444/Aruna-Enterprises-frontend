@@ -160,6 +160,7 @@ const ReelsInStock = () => {
               <th>Deckle</th>
               <th>Initial Weight</th>
               <th>Current Weight</th>
+              <th>Prev Weight</th>
               <th>Unit</th>
               <th>Status</th>
               <th>ReelUsedFor</th>
@@ -177,6 +178,7 @@ const ReelsInStock = () => {
                 <td>{reel.deckle}</td>
                 <td>{reel.initialWeight} Kg</td>
                 <td>{reel.currentWeight} Kg</td>
+                <td>{reel.previousWeight} Kg</td>
                 <td>{reel.unit}</td>
                 <td>
                   <span

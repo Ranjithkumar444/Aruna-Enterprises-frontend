@@ -81,21 +81,17 @@ const AttendanceList = () => {
     const formatTime = (time) => {
     if (!time) return '-';
     try {
-        // Parse as UTC and convert to IST
-        const utcDate = new Date(time);
-        const istDate = new Date(utcDate.getTime() + (5.5 * 60 * 60 * 1000));
-        
-        return istDate.toLocaleTimeString('en-IN', {
+        return new Intl.DateTimeFormat('en-IN', {
             hour: '2-digit',
             minute: '2-digit',
-            hour12: false,
+            hour12: true,
             timeZone: 'Asia/Kolkata'
-        });
+        }).format(new Date(time));
     } catch (e) {
-        console.error("Error formatting time:", time, e);
+        console.error("Invalid time format:", time, e);
         return 'Invalid Time';
     }
-    };
+};
 
     const handleRefresh = () => {
         fetchAttendanceData(date);

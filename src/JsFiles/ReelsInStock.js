@@ -14,6 +14,7 @@ const ReelsInStock = () => {
     deckle: "",
     unit: "",
     paperType: "",
+    createdDate: ""
   });
 
   useEffect(() => {
@@ -29,8 +30,6 @@ const ReelsInStock = () => {
             },
           }
         );
-
-        console.log(response);
 
         const sorted = response.data.sort((a, b) => {
           if (a.status === "IN_USE" && b.status !== "IN_USE") return -1;
@@ -74,11 +73,23 @@ const ReelsInStock = () => {
     }
 
     Object.entries(filters).forEach(([key, value]) => {
-      if (value) result = result.filter((r) => r[key]?.toString() === value);
+      if (value) {
+        if (key === "createdDate") {
+          result = result.filter((r) =>
+            r.createdAt?.startsWith(value)
+          );
+        } else {
+          result = result.filter((r) => r[key]?.toString() === value);
+        }
+      }
     });
 
     setFilteredReels(result);
   };
+
+  // Calculate total current weight and reel count
+  const totalCurrentWeight = filteredReels.reduce((sum, reel) => sum + reel.currentWeight, 0);
+  const reelCount = filteredReels.length;
 
   if (loading) return <p>Loading reels...</p>;
 
@@ -87,6 +98,18 @@ const ReelsInStock = () => {
   return (
     <div className="reel-container">
       <h2 className="reel-title">Reel Stock Information</h2>
+
+      {/* Summary Cards */}
+      <div className="summary-cards">
+        <div className="summary-card">
+          <h3>Total Reels</h3>
+          <p>{reelCount}</p>
+        </div>
+        <div className="summary-card">
+          <h3>Total Current Weight</h3>
+          <p>{totalCurrentWeight} Kg</p>
+        </div>
+      </div>
 
       <div className="search-filter-section">
         <input
@@ -102,6 +125,14 @@ const ReelsInStock = () => {
           value={search.supplierName}
           onChange={handleSearchChange}
           placeholder="Search by Supplier Name"
+        />
+
+        <input
+          type="date"
+          name="createdDate"
+          value={filters.createdDate}
+          onChange={handleFilterChange}
+          placeholder="Filter by Created Date"
         />
 
         <select name="status" onChange={handleFilterChange} value={filters.status}>
@@ -155,6 +186,7 @@ const ReelsInStock = () => {
             <tr>
               <th>Barcode ID</th>
               <th>Reel No</th>
+              <th>Created At</th>
               <th>GSM</th>
               <th>BF</th>
               <th>Deckle</th>
@@ -173,6 +205,7 @@ const ReelsInStock = () => {
               <tr key={reel.id}>
                 <td>{reel.barcodeId}</td>
                 <td>{reel.reelNo}</td>
+                <td>{reel.createdAt}</td>
                 <td>{reel.gsm}</td>
                 <td>{reel.burstFactor}</td>
                 <td>{reel.deckle}</td>

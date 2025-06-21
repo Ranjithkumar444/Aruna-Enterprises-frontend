@@ -35,6 +35,7 @@ const ReelHistoryComponent = () => {
           },
         }
       );
+      
       setHistoryData(response.data);
       setPrintData(
         response.data.usages.map((usage) => ({
@@ -80,6 +81,7 @@ const ReelHistoryComponent = () => {
         <p><strong>Unit:</strong> ${item.unit}</p>
         <p><strong>Boxes Made:</strong> ${item.howManyBox}</p>
         <p><strong>Weight Consumed:</strong> ${item.weightConsumed?.toFixed(2) || '0.00'}</p>
+        <p><strong>PreviousWeight:</strong> ${item.previousWeight?.toFixed(2)} || '0.00'</p>
         <p><strong>Usage Type:</strong> ${item.usageType}</p>
         <hr style="margin: 3px 0;"/>
         <p style="text-align: center; font-size: 7px;">Printed on: ${new Date().toLocaleString()}</p>
@@ -122,6 +124,7 @@ const ReelHistoryComponent = () => {
     { title: 'Unit', key: 'unit' },
     { title: 'Boxes Made', key: 'howManyBox' },
     { title: 'Weight Consumed', key: 'weightConsumed' },
+    { title: 'Previous Weight', key: 'previousWeight' },
     { title: 'Usage Type', key: 'usageType' },
     { title: 'Date In', key: 'courgationIn' },
     { title: 'Date Out', key: 'courgationOut' },
@@ -172,6 +175,7 @@ const ReelHistoryComponent = () => {
                   <td>{item.unit}</td>
                   <td>{item.howManyBox}</td>
                   <td>{item.weightConsumed?.toFixed(2) || '0.00'}</td>
+                  <td>{item.previousWeight?.toFixed(2) || '0.00'}</td>
                   <td>{item.usageType}</td>
                   <td>{item.courgationIn ? new Date(item.courgationIn).toLocaleString() : '-'}</td>
                   <td>{item.courgationOut ? new Date(item.courgationOut).toLocaleString() : 'Active'}</td>

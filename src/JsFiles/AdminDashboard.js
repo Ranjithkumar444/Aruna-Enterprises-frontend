@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import KanbanBoard from './KanbanBoard';
+import InUseReelsWithDetails from './InUseReelsTable';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -113,6 +114,10 @@ const AdminDashboard = () => {
 
                 <div>
                     <KanbanBoard/>
+                </div>
+
+                <div>
+                    <InUseReelsWithDetails/>
                 </div>
 
                 <div className="buttons-container">

@@ -94,6 +94,10 @@ const router = createBrowserRouter([
                         element: <ReelsInStock/>
                     },
                     {
+                        path: "admin/inventory/manipulateReel",
+                        element: <ReelManipulationForm/>
+                    },
+                    {
                         path: "admin/inventory",
                         element: <InventoryHome/>,
                     },

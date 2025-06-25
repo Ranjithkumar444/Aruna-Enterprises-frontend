@@ -29,6 +29,7 @@ import BoxSectors from "./BoxSectors.js";
 import SectorDetails from "./SectorDetails.js";
 import ReelsInStock from "./ReelsInStock.js";
 import ReelHistoryComponent from "./ReelHistoryComponent.js";
+import ReelManipulationForm from "./ReelManipulationForm.js";
 
 
 const router = createBrowserRouter([
@@ -95,7 +96,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "admin/inventory/manipulateReel",
-                        element: <ReelManipulationForm/>
+                        element: <ReelManipulationForm></ReelManipulationForm>
                     },
                     {
                         path: "admin/inventory",

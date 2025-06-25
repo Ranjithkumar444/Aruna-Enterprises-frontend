@@ -92,7 +92,7 @@ const InventoryHome = () => {
                         }
                         .company-name {
                             font-weight: bold;
-                            font-size: 11px; /* Slightly increased */
+                            font-size: 12px; /* Slightly increased */
                             margin-bottom: 3px; /* Adjusted margin */
                             margin-top: 3px; /* Adjusted top margin */
                         }
@@ -104,13 +104,13 @@ const InventoryHome = () => {
                             margin-bottom: 3px; /* Adjusted margin */
                         }
                         .details {
-                            font-size: 9px; /* Slightly increased */
+                            font-size: 12px; /* Slightly increased */
                             line-height: 1.2; /* Slightly increased for readability */
                             white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;
                             width: 100%;
-                            text-align: left; /* Align details text to left */
+                            text-align: center; /* Align details text to left */
                             padding: 0 5px; /* Small padding inside details for readability */
                             box-sizing: border-box;
                         }

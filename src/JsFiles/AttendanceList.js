@@ -194,7 +194,7 @@ const AttendanceList = () => {
                                         {record.status}
                                     </td>
                                     <td>₹ {record.daySalary.toFixed(2)}</td>
-                                    <td>{record.overtimeHours.toFixed(2)} hrs</td>
+                                    <td>{((record.overtimeHours || 0) + (record.regularHours || 0)).toFixed(2)} hrs</td>                               
                                 </tr>
                             ))
                         ) : (

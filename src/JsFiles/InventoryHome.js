@@ -265,6 +265,15 @@ const InventoryHome = () => {
                         Search History
                     </button>
                 </div>
+
+                <div>
+                    <button 
+                        className="action-button" 
+                        onClick={() => navigate("/admin/dashboard/admin/inventory/manipulateReel")}
+                    >
+                        Manipulate Reel
+                    </button>
+                </div>
             </div>
         </div>
     );

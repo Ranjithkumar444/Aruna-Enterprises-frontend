@@ -168,45 +168,45 @@ const AttendanceList = () => {
             </div>
 
             <div className="table-responsive">
-                <table className="attendance-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Barcode ID</th>
-                            <th>Date</th>
-                            <th>Check-In Time</th>
-                            <th>Check-Out Time</th>
-                            <th>Status</th>
-                            <th>Day Salary</th>
-                            <th>Worked Hours</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredData.length > 0 ? (
-                            filteredData.map((record, index) => (
-                                <tr key={index} className={record.status.toLowerCase()}>
-                                    <td>{record.name}</td>
-                                    <td>{record.barcodeId}</td>
-                                    <td>{record.date}</td>
-                                    <td>{formatTime(record.checkInTime)}</td>
-                                    <td>{formatTime(record.checkOutTime)}</td>
-                                    <td className={`status ${record.status.toLowerCase()}`}>
-                                        {record.status}
-                                    </td>
-                                    <td>₹ {record.daySalary.toFixed(2)}</td>
-                                    <td>{((record.overtimeHours || 0) + (record.regularHours || 0)).toFixed(2)} hrs</td>                               
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="8" className="no-data">
-                                    {loading ? 'Loading...' : 'No matching records found'}
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+    <table className="attendance-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Barcode ID</th>
+                <th>Date</th>
+                <th>Check-In Time</th>
+                <th>Check-Out Time</th>
+                <th>Status</th>
+                <th>Day Salary</th>
+                <th>Worked Hours</th>
+            </tr>
+        </thead>
+        <tbody>
+            {filteredData.length > 0 ? (
+                filteredData.map((record) => (
+                    <tr key={record.id || record.barcodeId} className={record.status.toLowerCase()}>
+                        <td>{record.name}</td>
+                        <td>{record.barcodeId}</td>
+                        <td>{record.date}</td>
+                        <td>{formatTime(record.checkInTime)}</td>
+                        <td>{formatTime(record.checkOutTime)}</td>
+                        <td className={`status ${record.status.toLowerCase()}`}>
+                            {record.status}
+                        </td>
+                        <td>₹ {(record.daySalary || 0).toFixed(2)}</td>
+                        <td>{((record.overtimeHours || 0) + (record.regularHours || 0)).toFixed(2)} hrs</td>
+                    </tr>
+                ))
+            ) : (
+                <tr>
+                    <td colSpan="8" className="no-data">
+                        {loading ? 'Loading...' : 'No matching records found'}
+                    </td>
+                </tr>
+            )}
+        </tbody>
+    </table>
+</div>
         </div>
     );
 };

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom"; 
 import KanbanBoard from './KanbanBoard';
+import React from "react";
 import InUseReelsTable from './InUseReelsTable';
 
 const AdminDashboard = () => {
@@ -18,8 +19,6 @@ const AdminDashboard = () => {
             setAdminName(`${adminDetails.firstName} ${adminDetails.lastName}`);
         }
     }, [token, adminDetails, navigate]);
-
-    console.log(token); 
 
     const handleLogout = () => {
         localStorage.removeItem("adminToken");

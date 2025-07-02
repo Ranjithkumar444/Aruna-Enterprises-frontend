@@ -78,7 +78,6 @@ const KanbanBoard = () => {
           },
         }
       );
-      console.log("Fetched orders:", res.data);
       setOrders(res.data);
     } catch (err) {
       console.error("Error fetching orders:", err);

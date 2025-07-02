@@ -32,6 +32,7 @@ import SectorDetails from "./SectorDetails";
 import ReelsInStock from "./ReelsInStock";
 import ReelHistoryComponent from "./ReelHistoryComponent";
 import ReelManipulationForm from "./ReelManipulationForm";
+import OrderReelSuggestions from "./OrderReelSuggestions";
 
 
 const router = createBrowserRouter([
@@ -83,6 +84,12 @@ const router = createBrowserRouter([
                     {
                         path: "salary/register/:employeeId",
                         element: <SalaryRegister/>
+                    },
+                    {
+                        
+                        path: "orders/:orderId/suggested-reels",
+                        element: <OrderReelSuggestions />
+                    
                     },
                     {
                         path: "admin/admins",

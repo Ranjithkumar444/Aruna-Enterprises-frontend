@@ -55,6 +55,7 @@ const InventoryHome = () => {
         }
     };
 
+
     const handlePrint = () => {
         if (!barcodeImage || !reelDetails) {
             setError("Nothing to print");

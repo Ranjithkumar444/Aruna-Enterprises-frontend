@@ -1,29 +1,34 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+// Removed: import "../CssFiles/KanbanBoard.css"; // No longer needed
 
+// Configuration for statuses and their Tailwind classes
 const statuses = ["TODO", "IN_PROGRESS", "COMPLETED", "SHIPPED"];
 
 const statusConfig = {
   TODO: {
     title: "To Do",
-    dotClass: "bg-status-blue",      
-    cardClass: "border-status-blue",  
+    dotClass: "bg-status-blue",      // Maps to custom blue in tailwind.config.js
+    cardClass: "border-status-blue",  // Maps to custom blue in tailwind.config.js
   },
   IN_PROGRESS: {
     title: "In Progress",
-    dotClass: "bg-status-yellow",     
-    cardClass: "border-status-yellow", 
+    dotClass: "bg-status-yellow",     // Maps to custom yellow
+    cardClass: "border-status-yellow", // Maps to custom yellow
   },
   COMPLETED: {
     title: "Done",
-    dotClass: "bg-status-green",      
-    cardClass: "border-status-green",  
+    dotClass: "bg-status-green",      // Maps to custom green
+    cardClass: "border-status-green",  // Maps to custom green
   },
   SHIPPED: {
     title: "Shipped",
-    dotClass: "bg-status-purple",     
-    cardClass: "border-status-purple", 
+    // Note: The original CSS used 'dot-purple' and 'border-purple' for SHIPPED.
+    // To preserve the color palette, I'm mapping 'darkgreen' from statusConfig
+    // to the purple color defined in your original CSS (#9b59b6).
+    dotClass: "bg-status-purple",     // Maps to custom purple
+    cardClass: "border-status-purple", // Maps to custom purple
   },
 };
 
@@ -43,16 +48,30 @@ const KanbanBoard = () => {
 
     const intervalId = setInterval(() => {
       fetchOrders();
-    }, 5 * 60 * 1000); 
+    }, 5 * 60 * 1000); // Refresh every 5 minutes
 
-    return () => clearInterval(intervalId); 
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
+
+  function convertToIST(utcDateString) {
+  const utcDate = new Date(utcDateString);
+  const istDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+  return istDate.toLocaleString('en-IN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
+}
 
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
       const res = await axios.get(
-        "https://arunaenterprises.azurewebsites.net/admin/order/getAllOrders",
+        "https://arunaenterprises.azurewebsites.net/admin/order/getOrdersByActiveStatus",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -72,16 +91,16 @@ const KanbanBoard = () => {
     const { destination, source, draggableId } = result;
     if (!destination || destination.droppableId === source.droppableId) return;
 
-    
+    // Prevent dragging out of Shipped column
     if (source.droppableId === "SHIPPED") {
       console.warn("Cannot drag orders out of the Shipped column.");
-      fetchOrders(); 
+      fetchOrders(); // Revert any visual changes
       return;
     }
-    
+    // Only allow drag to 'Shipped' from 'Completed'
     if (destination.droppableId === "SHIPPED" && source.droppableId !== "COMPLETED") {
         console.warn("Orders can only be dragged to 'Shipped' from 'Completed'.");
-        fetchOrders(); 
+        fetchOrders(); // Revert any visual changes
         return;
     }
     
@@ -123,7 +142,7 @@ const KanbanBoard = () => {
         }
       );
   
-      fetchOrders(); 
+      fetchOrders(); // Re-fetch orders to update the board
     } catch (err) {
       console.error("Error updating status:", err);
       alert(`Failed to update status: ${err.response?.data?.message || err.message}`);
@@ -157,20 +176,20 @@ const KanbanBoard = () => {
     setSelectedOrderId(null);
     setDestinationStatus(null);
     setTransportNumber("");
-    fetchOrders(); 
+    fetchOrders(); // Revert changes if drag was canceled by modal close
   };
 
   const getOrdersByStatus = (status) => {
     const now = new Date();
 
     if (status === "SHIPPED") {
-      
+      // Show only orders shipped within the last 24 hours
       return orders.filter((order) => {
         if (order.status !== "SHIPPED") return false;
         
         if (!order.shippedAt) {
           console.warn(`Order ${order.id} is SHIPPED but missing shippedAt timestamp.`);
-          return true; 
+          return true; // Include if timestamp is missing, but warn
         }
 
         const shippedTime = new Date(order.shippedAt);
@@ -198,12 +217,12 @@ const KanbanBoard = () => {
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="flex-1 bg-white rounded-lg p-4 shadow-md flex flex-col min-h-[300px]" 
+                    className="flex-1 bg-white rounded-lg p-4 shadow-md flex flex-col min-h-[300px]" // min-h added for better visual
                   >
                     <h2 className="text-xl font-bold text-center mb-4 text-purple-700">
                       {config.title}
                     </h2>
-                    <div className="flex flex-col gap-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2 custom-scrollbar"> 
+                    <div className="flex flex-col gap-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2 custom-scrollbar"> {/* Added custom scrollbar class */}
                       {getOrdersByStatus(status).map((order, index) => (
                         <Draggable
                           key={order.id.toString()}
@@ -215,7 +234,7 @@ const KanbanBoard = () => {
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className={`bg-white p-4 rounded-md shadow-sm border-l-4 ${config.cardClass} cursor-grab active:cursor-grabbing transform transition-all duration-150 ease-in-out hover:shadow-md`} 
+                              className={`bg-white p-4 rounded-md shadow-sm border-l-4 ${config.cardClass} cursor-grab active:cursor-grabbing transform transition-all duration-150 ease-in-out hover:shadow-md`} // Added border-l-4
                             >
                               <div className="flex gap-3 items-start">
                                 <div className={`w-3 h-3 rounded-full mt-1 flex-shrink-0 ${config.dotClass}`}></div>
@@ -227,10 +246,14 @@ const KanbanBoard = () => {
                                     <span className="text-xs bg-gray-100 px-2 py-1 rounded-full font-medium text-gray-700">
                                       {order.productType}
                                     </span>
+                                    
                                   </div>
                                   <p className="text-sm text-gray-600 font-medium leading-snug">
                                     Client: {order.client}
                                   </p>
+                                  <span className="text-xs bg-gray-100 px-2 py-1 rounded-full font-medium text-gray-700">
+                                      {order.typeOfProduct}
+                                    </span>
                                   <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-3 text-sm text-gray-800">
                                     <div>
                                       <span className="block text-gray-500 font-normal">Size</span>
@@ -244,6 +267,11 @@ const KanbanBoard = () => {
                                       <span className="block text-gray-500 font-normal">Unit</span>
                                       <span>{order.unit}</span>
                                     </div>
+                                    <div>
+                                      <span className="block text-gray-500 font-normal">CreatedAt</span>
+                                      <span>{convertToIST(order.createdAt)}</span>
+                                    </div>
+
                                     {order.status === "SHIPPED" && order.shippedAt && (
                                       <div>
                                           <span className="block text-gray-500 font-normal">Shipped At</span>
@@ -251,7 +279,7 @@ const KanbanBoard = () => {
                                       </div>
                                     )}
                                     {order.transportNumber && (
-                                      <div className="col-span-2"> 
+                                      <div className="col-span-2"> {/* Span across both columns */}
                                         <span className="block text-gray-500 font-normal">
                                           Transport #
                                         </span>
@@ -277,6 +305,7 @@ const KanbanBoard = () => {
         </DragDropContext>
       </div>
 
+      {/* Confirmation Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-modal-fade-in">
           <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md text-center">
@@ -305,6 +334,7 @@ const KanbanBoard = () => {
         </div>
       )}
 
+      {/* Shipping Modal */}
       {showShippingModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-modal-fade-in">
           <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md text-center">
@@ -313,7 +343,7 @@ const KanbanBoard = () => {
               Are you sure you want to mark Order <b className="font-semibold text-blue-700">#{selectedOrderId}</b> as{" "}
               <b className="font-semibold text-status-purple">Shipped</b>?
             </p>
-            <div className="mb-6 text-left">
+            <div className="mb-6 text-left"> {/* Aligned to left for input */}
               <label htmlFor="transportNumber" className="block text-sm font-medium text-gray-700 mb-1">Transport Number:</label>
               <input
                 type="text"

@@ -21,6 +21,8 @@ const AdminDashboard = () => {
         }
     }, [token, adminDetails, navigate]);
 
+    console.log(token);
+
     const handleLogout = () => {
         localStorage.removeItem("adminToken");
         localStorage.removeItem("adminDetails");

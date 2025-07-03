@@ -55,7 +55,6 @@ const InventoryHome = () => {
         }
     };
 
-    console.log(reelDetails);
 
     const handlePrint = () => {
         if (!barcodeImage || !reelDetails) {

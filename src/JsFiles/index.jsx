@@ -2,7 +2,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter,RouterProvider } from "react-router-dom";
-import '../index.css';
 
 import App from "./App";
 import NotFound from "./Error";
@@ -33,6 +32,7 @@ import ReelsInStock from "./ReelsInStock";
 import ReelHistoryComponent from "./ReelHistoryComponent";
 import ReelManipulationForm from "./ReelManipulationForm";
 import OrderReelSuggestions from "./OrderReelsSuggestions";
+
 
 
 const router = createBrowserRouter([
@@ -86,8 +86,11 @@ const router = createBrowserRouter([
                         element: <SalaryRegister/>
                     },
                     {
+
+                        
                         path: "orders/:orderId/suggested-reels",
                         element: <OrderReelSuggestions />
+                    
                     },
                     {
                         path: "admin/admins",

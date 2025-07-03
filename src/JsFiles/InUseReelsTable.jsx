@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+// Removed: import '../CssFiles/InUseReelsTable.css' // No longer needed
 
 const InUseReelsWithDetails = () => {
     const [reels, setReels] = useState([]);
@@ -23,7 +24,7 @@ const InUseReelsWithDetails = () => {
                     const errorData = await response.json();
                     throw new Error(errorData.message || 'Failed to fetch data');
                 }
-
+                
                 const data = await response.json();
                 setReels(data);
             } catch (error) {
@@ -43,6 +44,7 @@ const InUseReelsWithDetails = () => {
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);
+        // Using toLocaleString with options for more control and elegance
         return new Intl.DateTimeFormat('en-IN', {
             year: 'numeric',
             month: 'short',
@@ -50,7 +52,7 @@ const InUseReelsWithDetails = () => {
             hour: '2-digit',
             minute: '2-digit',
             hour12: true,
-
+            // timeZoneName: 'short', // Optional: if you want to display timezone
         }).format(date);
     };
 
@@ -83,6 +85,7 @@ const InUseReelsWithDetails = () => {
                                         <span className="bg-gray-200 px-3 py-1 rounded-full font-medium">Initial: <span className="font-bold">{reel.initialWeight}</span></span>
                                         <span className="bg-gray-200 px-3 py-1 rounded-full font-medium">Current: <span className="font-bold">{reel.currentWeight}</span></span>
                                         <span className="bg-gray-200 px-3 py-1 rounded-full font-medium">Previous: <span className="font-bold">{reel.previousWeight}</span></span>
+                                        <span className="bg-gray-200 px-3 py-1 rounded-full font-medium">UsageType: <span className="font-bold">{reel.usageType}</span></span>
                                     </div>
                                     <div className="flex flex-wrap gap-2 md:gap-4 text-sm text-gray-700 mt-2 md:mt-0">
                                         <span className="bg-gray-200 px-3 py-1 rounded-full font-medium">Paper: <span className="font-bold">{reel.paperType}</span></span>

@@ -172,7 +172,7 @@ const ContactForm = () => {
               </li>
               <li>
                 <strong className="text-gray-900">Email:</strong>{" "}
-                <a href="mailto:sales@arunaenterprises.com" className="text-blue-600 hover:text-blue-800 transition-colors">sales@arunaenterprises.com</a>
+                <a href="mailto:sales@arunaenterprises.com" className="text-blue-600 hover:text-blue-800 transition-colors">sales@arunaenterprisesblr.com</a>
               </li>
               <li className="flex flex-col items-center">
                 <strong className="text-gray-900">WhatsApp:</strong> +91 9538033119

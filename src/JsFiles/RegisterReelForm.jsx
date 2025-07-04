@@ -137,14 +137,14 @@ const ReelForm = () => {
             .barcode-image {
               max-width: 95%;
               height: auto;
-              max-height: 35%;
+              max-height: 50%;
               margin: 3px 0;
             }
             .details {
-              font-size: 9px;
+              font-size: 12px;
               line-height: 1.2;
               width: 100%;
-              text-align: left;
+              text-align: center;
               padding: 0 5px;
             }
             .details p {
@@ -161,6 +161,7 @@ const ReelForm = () => {
               <p><strong>Reel No:</strong> ${barcodeData.details.reelNo || 'N/A'}</p>
               <p><strong>GSM:</strong> ${barcodeData.details.gsm}</p>
               <p><strong>Deckle:</strong> ${barcodeData.details.deckle}</p>
+              <p><strong>BurstFactor:</strong> ${barcodeData.details.burstFactor}</P>
               <p><strong>Weight:</strong> ${barcodeData.details.currentWeight} kg</p>
               <p><strong>Supplier:</strong> ${barcodeData.details.supplierName}</p>
               <p><strong>Paper Type:</strong> ${barcodeData.details.paperType}</p>

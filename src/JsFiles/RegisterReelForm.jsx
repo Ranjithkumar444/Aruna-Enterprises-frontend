@@ -137,14 +137,14 @@ const ReelForm = () => {
             .barcode-image {
               max-width: 95%;
               height: auto;
-              max-height: 35%;
+              max-height: 45%;
               margin: 3px 0;
             }
             .details {
-              font-size: 9px;
+              font-size: 13px;
               line-height: 1.2;
               width: 100%;
-              text-align: left;
+              text-align: center;
               padding: 0 5px;
             }
             .details p {

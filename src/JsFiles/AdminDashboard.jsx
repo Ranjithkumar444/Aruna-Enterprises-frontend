@@ -4,8 +4,7 @@ import { Link } from "react-router-dom";
 import KanbanBoard from './KanbanBoard';
 import InUseReelsTable from './InUseReelsTable';
 import OrderList from './OrderList';
-import React from 'react';
-//added react
+
 const AdminDashboard = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("adminToken");
@@ -64,22 +63,24 @@ const AdminDashboard = () => {
 
                 {}
                 <ul className="list-none p-0 mt-4">
-                    {[
-                        { name: "Employee", path: "admin/employee" },
-                        { name: "Attendance", path: "admin/attendance" },
-                        { name: "Inventory", path: "admin/inventory" },
-                        { name: "Salary", path: "admin/salary" },
-                        { name: "Admins", path: "admin/admins" },
-                    ].map((item) => (
-                        <li
-                            key={item.name}
-                            onClick={() => handleMenuClick(item.path)}
-                            className="py-3 px-4 cursor-pointer hover:bg-gray-700 transition-colors duration-200 border-b border-gray-700 whitespace-nowrap overflow-hidden text-ellipsis"
-                        >
-                            <span className={`${isMenuOpen ? 'inline' : 'hidden'} lg:inline`}>{item.name}</span> {}
-                        </li>
-                    ))}
-                </ul>
+    {[
+        { name: "Employee", path: "admin/employee" },
+        { name: "Attendance", path: "admin/attendance" },
+        { name: "Inventory", path: "admin/inventory" },
+        { name: "Salary", path: "admin/salary" },
+        { name: "Admins", path: "admin/admins" },
+        { name: "Clients", path: "admin/clients" },  // ✅ New menu item here
+    ].map((item) => (
+        <li
+            key={item.name}
+            onClick={() => handleMenuClick(item.path)}
+            className="py-3 px-4 cursor-pointer hover:bg-gray-700 transition-colors duration-200 border-b border-gray-700 whitespace-nowrap overflow-hidden text-ellipsis"
+        >
+            <span className={`${isMenuOpen ? 'inline' : 'hidden'} lg:inline`}>{item.name}</span>
+        </li>
+    ))}
+</ul>
+
             </div>
 
             {}

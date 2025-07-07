@@ -55,6 +55,7 @@ const InventoryHome = () => {
         }
     };
 
+    console.log(reelDetails);
 
     const handlePrint = () => {
         if (!barcodeImage || !reelDetails) {
@@ -97,18 +98,18 @@ const InventoryHome = () => {
                         .barcode-image {
                             max-width: 95%;
                             height: auto;
-                            max-height: 35%;
+                            max-height: 45%;
                             object-fit: contain;
                             margin-bottom: 3px;
                         }
                         .details {
-                            font-size: 9px;
+                            font-size: 13px;
                             line-height: 1.2;
                             white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;
                             width: 100%;
-                            text-align: left;
+                            text-align: center;
                             padding: 0 5px;
                             box-sizing: border-box;
                         }
@@ -200,6 +201,13 @@ const InventoryHome = () => {
                     onClick={() => navigate("/admin/dashboard/admin/inventory/manipulateReel")}
                 >
                     Manipulate Reel
+                </button>
+
+                <button 
+                    className="px-8 py-4 bg-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300 min-w-[200px]"
+                    onClick={() => navigate("/admin/dashboard/admin/inventory/reel/usage")}
+                >
+                    Reel Usage Search
                 </button>
             </div>
             

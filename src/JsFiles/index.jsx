@@ -2,6 +2,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter,RouterProvider } from "react-router-dom";
+import '../CssFiles/index.css';
 
 import App from "./App";
 import NotFound from "./Error";
@@ -31,8 +32,10 @@ import SectorDetails from "./SectorDetails";
 import ReelsInStock from "./ReelsInStock";
 import ReelHistoryComponent from "./ReelHistoryComponent";
 import ReelManipulationForm from "./ReelManipulationForm";
-import OrderReelSuggestions from "./OrderReelsSuggestions";
-
+import OrderList from "./OrderList";
+import OrderReelSuggestions from "./OrderReelSuggestions";
+import ReelUsageSearch from "./ReelUsageSearch";
+import ClientList from "./ClientList";
 
 
 const router = createBrowserRouter([
@@ -78,6 +81,10 @@ const router = createBrowserRouter([
                         element: <AdminDashboard /> 
                     },
                     {
+                        path: "admin/clients",
+                        element: <ClientList/>
+                    },
+                    {
                         path: "admin/employee",
                         element: <RegisterEmployee />
                     },
@@ -86,11 +93,8 @@ const router = createBrowserRouter([
                         element: <SalaryRegister/>
                     },
                     {
-
-                        
                         path: "orders/:orderId/suggested-reels",
                         element: <OrderReelSuggestions />
-                    
                     },
                     {
                         path: "admin/admins",
@@ -103,6 +107,10 @@ const router = createBrowserRouter([
                     {
                         path: "admin/inventory/reel",
                         element: <ReelsInStock/>
+                    },
+                    {
+                        path: "admin/inventory/reel/usage",
+                        element: <ReelUsageSearch/>
                     },
                     {
                         path: "admin/inventory/manipulateReel",

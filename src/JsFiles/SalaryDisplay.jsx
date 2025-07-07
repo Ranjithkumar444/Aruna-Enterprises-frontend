@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import AccessDeniedMessage from './AccessDeneidMessage';
+import AccessDeniedMessage from './AccessDeneidMessage'; 
+import * as XLSX from "xlsx";
+
 
 const SalaryDisplay = () => {
   const [salaryData, setSalaryData] = useState([]);
@@ -68,27 +70,54 @@ const SalaryDisplay = () => {
   const currentMonth = salaryData.length > 0 ? monthNames[salaryData[0].month] : '';
   const currentYear = new Date().getFullYear(); 
 
+  const handleExportToExcel = () => {
+  const exportData = filteredData.map(({ name, barcodeId, totalSalaryThisMonth, totalOvertimeHours, unit, month, monthlyBaseSalary }) => ({
+    "Employee Name": name,
+    "Barcode ID": barcodeId,
+    "Total Salary (₹)": Number(totalSalaryThisMonth).toFixed(2),
+    "Overtime Hours": Number(totalOvertimeHours).toFixed(2),
+    "Unit": unit,
+    "Month": monthNames[month],
+    "Base Salary (₹)": Number(monthlyBaseSalary).toFixed(2),
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, `Salary_${currentMonth}_${currentYear}`);
+  XLSX.writeFile(workbook, `Salary_${currentMonth}_${currentYear}.xlsx`);
+};
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-6 sm:p-10 font-sans">
       <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-8 tracking-tight md:text-5xl">
         Salary Details - {currentMonth} {currentYear}
       </h1>
 
-      <div className="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-xl shadow-lg mb-8 gap-4">
-        <input
-          type="text"
-          placeholder="Filter by Unit"
-          value={filterUnit}
-          onChange={(e) => setFilterUnit(e.target.value)}
-          className="flex-grow px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg shadow-sm w-full md:w-auto"
-        />
-        <button
-          onClick={handlePrint}
-          className="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-auto"
-        >
-          Print
-        </button>
-      </div>
+      <div className="flex flex-wrap gap-4">
+  <input
+    type="text"
+    placeholder="Filter by Unit"
+    value={filterUnit}
+    onChange={(e) => setFilterUnit(e.target.value)}
+    className="flex-grow px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg shadow-sm w-full md:w-auto"
+  />
+
+  <button
+    onClick={handlePrint}
+    className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition"
+  >
+    🖨️ Print
+  </button>
+
+  <button
+    onClick={handleExportToExcel}
+    className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition"
+  >
+    ⬇ Export Excel
+  </button>
+</div>
+
 
       <div className="overflow-x-auto bg-white rounded-xl shadow-xl border border-gray-100">
         <table className="min-w-full divide-y divide-gray-200">

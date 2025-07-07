@@ -11,8 +11,7 @@ const OrderReelSuggestions = () => {
   const [error, setError] = useState(null);
   const [selectedUnit, setSelectedUnit] = useState('ALL');
   const [selectedReelType, setSelectedReelType] = useState('ALL');
-  
-  // Get order details from navigation state
+
   const orderDetails = state?.order;
 
   useEffect(() => {
@@ -25,17 +24,20 @@ const OrderReelSuggestions = () => {
           `https://arunaenterprises.azurewebsites.net/admin/order/${orderId}/suggested-reels`,
           {
             headers: {
-              "Authorization": `Bearer ${token}`
+              Authorization: `Bearer ${token}`,
             },
-            cancelToken: source.token
+            cancelToken: source.token,
           }
         );
-
         setSuggestions(response.data);
         setLoading(false);
       } catch (err) {
         if (!axios.isCancel(err)) {
-          setError(err.response?.data?.message || err.message || 'Failed to fetch suggested reels');
+          setError(
+            err.response?.data?.message ||
+              err.message ||
+              'Failed to fetch suggested reels'
+          );
           setLoading(false);
         }
       }
@@ -44,47 +46,49 @@ const OrderReelSuggestions = () => {
     fetchData();
 
     return () => {
-      source.cancel("Component unmounted, request canceled");
+      source.cancel('Component unmounted, request canceled');
     };
   }, [orderId]);
 
-  const handleUnitChange = (e) => {
-    setSelectedUnit(e.target.value);
-  };
-
-  const handleReelTypeChange = (e) => {
-    setSelectedReelType(e.target.value);
-  };
+  const handleUnitChange = (e) => setSelectedUnit(e.target.value);
+  const handleReelTypeChange = (e) => setSelectedReelType(e.target.value);
 
   const getFilteredReels = () => {
-  if (!suggestions) return [];
+    if (!suggestions) return [];
 
-  let reels = [];
-  if (selectedReelType === 'ALL' || selectedReelType === 'TOP') {
-    reels = [...reels, ...suggestions.topGsmReels.map(r => ({ ...r, type: 'Top' }))];
-  }
-  if (selectedReelType === 'ALL' || selectedReelType === 'BOTTOM') {
-    reels = [...reels, ...suggestions.bottomGsmReels.map(r => ({ ...r, type: 'Bottom' }))];
-  }
-  if (selectedReelType === 'ALL' || selectedReelType === 'FLUTE') {
-    reels = [...reels, ...suggestions.fluteGsmReels.map(r => ({ ...r, type: 'Flute' }))];
-  }
+    let reels = [];
+    if (selectedReelType === 'ALL' || selectedReelType === 'TOP') {
+      reels = [...reels, ...suggestions.topGsmReels.map(r => ({ ...r, type: 'Top' }))];
+    }
+    if (selectedReelType === 'ALL' || selectedReelType === 'BOTTOM') {
+      reels = [...reels, ...suggestions.bottomGsmReels.map(r => ({ ...r, type: 'Bottom' }))];
+    }
+    if (selectedReelType === 'ALL' || selectedReelType === 'FLUTE') {
+      reels = [...reels, ...suggestions.fluteGsmReels.map(r => ({ ...r, type: 'Flute' }))];
+    }
 
-  if (selectedUnit !== 'ALL') {
-    reels = reels.filter(reel => reel.unit === selectedUnit);
-  }
+    if (selectedUnit !== 'ALL') {
+      reels = reels.filter(reel => reel.unit === selectedUnit);
+    }
 
-  // Sort by currentWeight (ascending)
-  reels.sort((a, b) => (a.currentWeight ?? 0) - (b.currentWeight ?? 0));
+    // ✅ Sort by deckle, then currentWeight
+    reels.sort((a, b) => {
+      const deckleA = a.deckle ?? 0;
+      const deckleB = b.deckle ?? 0;
+      const weightA = a.currentWeight ?? 0;
+      const weightB = b.currentWeight ?? 0;
 
-  return reels;
-};
+      if (deckleA === deckleB) return weightA - weightB;
+      return deckleA - deckleB;
+    });
 
+    return reels;
+  };
 
   const getStatusBadge = (status) => {
     switch (status) {
       case 'NOT_IN_USE':
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Available</span>;
+        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Not In Use</span>;
       case 'IN_USE':
         return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">In Use</span>;
       default:
@@ -142,39 +146,19 @@ const OrderReelSuggestions = () => {
           <div className="mb-6 p-4 bg-blue-50 rounded-lg">
             <h3 className="text-lg font-semibold text-blue-800 mb-2">Order Details</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <p className="text-sm text-gray-600">Client</p>
-                <p className="font-medium">{orderDetails.client}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Size</p>
-                <p className="font-medium">{orderDetails.size}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Product Type</p>
-                <p className="font-medium">{orderDetails.productType || 'N/A'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Quantity</p>
-                <p className="font-medium">{orderDetails.quantity}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Unit</p>
-                <p className="font-medium">{orderDetails.unit || 'N/A'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Status</p>
-                <p className="font-medium">{orderDetails.status}</p>
-              </div>
+              <div><p className="text-sm text-gray-600">Client</p><p className="font-medium">{orderDetails.client}</p></div>
+              <div><p className="text-sm text-gray-600">Size</p><p className="font-medium">{orderDetails.size}</p></div>
+              <div><p className="text-sm text-gray-600">Product Type</p><p className="font-medium">{orderDetails.productType || 'N/A'}</p></div>
+              <div><p className="text-sm text-gray-600">Quantity</p><p className="font-medium">{orderDetails.quantity}</p></div>
+              <div><p className="text-sm text-gray-600">Unit</p><p className="font-medium">{orderDetails.unit || 'N/A'}</p></div>
+              <div><p className="text-sm text-gray-600">Status</p><p className="font-medium">{orderDetails.status}</p></div>
             </div>
           </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
-            <label htmlFor="reel-type" className="block text-sm font-medium text-gray-700 mb-1">
-              Filter by Reel Type
-            </label>
+            <label htmlFor="reel-type" className="block text-sm font-medium text-gray-700 mb-1">Filter by Reel Type</label>
             <select
               id="reel-type"
               className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm border"
@@ -188,9 +172,7 @@ const OrderReelSuggestions = () => {
             </select>
           </div>
           <div>
-            <label htmlFor="unit-filter" className="block text-sm font-medium text-gray-700 mb-1">
-              Filter by Unit
-            </label>
+            <label htmlFor="unit-filter" className="block text-sm font-medium text-gray-700 mb-1">Filter by Unit</label>
             <select
               id="unit-filter"
               className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm border"
@@ -216,14 +198,14 @@ const OrderReelSuggestions = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg">Type</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Barcode ID</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Reel No</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">GSM</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Deckle</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Unit</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Current Weight</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tr-lg">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg">Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Barcode ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Reel No</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">GSM</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Deckle</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Unit</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Current Weight</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tr-lg">Status</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">

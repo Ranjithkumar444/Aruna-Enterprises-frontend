@@ -1,34 +1,29 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-// Removed: import "../CssFiles/KanbanBoard.css"; // No longer needed
 
-// Configuration for statuses and their Tailwind classes
 const statuses = ["TODO", "IN_PROGRESS", "COMPLETED", "SHIPPED"];
 
 const statusConfig = {
   TODO: {
     title: "To Do",
-    dotClass: "bg-status-blue",      // Maps to custom blue in tailwind.config.js
-    cardClass: "border-status-blue",  // Maps to custom blue in tailwind.config.js
+    dotClass: "bg-status-blue",      
+    cardClass: "border-status-blue",  
   },
   IN_PROGRESS: {
     title: "In Progress",
-    dotClass: "bg-status-yellow",     // Maps to custom yellow
-    cardClass: "border-status-yellow", // Maps to custom yellow
+    dotClass: "bg-status-yellow",     
+    cardClass: "border-status-yellow", 
   },
   COMPLETED: {
     title: "Done",
-    dotClass: "bg-status-green",      // Maps to custom green
-    cardClass: "border-status-green",  // Maps to custom green
+    dotClass: "bg-status-green",     
+    cardClass: "border-status-green",  
   },
   SHIPPED: {
     title: "Shipped",
-    // Note: The original CSS used 'dot-purple' and 'border-purple' for SHIPPED.
-    // To preserve the color palette, I'm mapping 'darkgreen' from statusConfig
-    // to the purple color defined in your original CSS (#9b59b6).
-    dotClass: "bg-status-purple",     // Maps to custom purple
-    cardClass: "border-status-purple", // Maps to custom purple
+    dotClass: "bg-status-purple",     
+    cardClass: "border-status-purple", 
   },
 };
 
@@ -48,9 +43,9 @@ const KanbanBoard = () => {
 
     const intervalId = setInterval(() => {
       fetchOrders();
-    }, 5 * 60 * 1000); // Refresh every 5 minutes
+    }, 5 * 60 * 1000); 
 
-    return () => clearInterval(intervalId); // Cleanup on unmount
+    return () => clearInterval(intervalId); 
   }, []);
 
   function convertToIST(utcDateString) {
@@ -91,16 +86,14 @@ const KanbanBoard = () => {
     const { destination, source, draggableId } = result;
     if (!destination || destination.droppableId === source.droppableId) return;
 
-    // Prevent dragging out of Shipped column
     if (source.droppableId === "SHIPPED") {
       console.warn("Cannot drag orders out of the Shipped column.");
-      fetchOrders(); // Revert any visual changes
+      fetchOrders();
       return;
     }
-    // Only allow drag to 'Shipped' from 'Completed'
     if (destination.droppableId === "SHIPPED" && source.droppableId !== "COMPLETED") {
         console.warn("Orders can only be dragged to 'Shipped' from 'Completed'.");
-        fetchOrders(); // Revert any visual changes
+        fetchOrders(); 
         return;
     }
     
@@ -142,7 +135,7 @@ const KanbanBoard = () => {
         }
       );
   
-      fetchOrders(); // Re-fetch orders to update the board
+      fetchOrders();
     } catch (err) {
       console.error("Error updating status:", err);
       alert(`Failed to update status: ${err.response?.data?.message || err.message}`);
@@ -176,20 +169,19 @@ const KanbanBoard = () => {
     setSelectedOrderId(null);
     setDestinationStatus(null);
     setTransportNumber("");
-    fetchOrders(); // Revert changes if drag was canceled by modal close
+    fetchOrders(); 
   };
 
   const getOrdersByStatus = (status) => {
     const now = new Date();
 
     if (status === "SHIPPED") {
-      // Show only orders shipped within the last 24 hours
       return orders.filter((order) => {
         if (order.status !== "SHIPPED") return false;
         
         if (!order.shippedAt) {
           console.warn(`Order ${order.id} is SHIPPED but missing shippedAt timestamp.`);
-          return true; // Include if timestamp is missing, but warn
+          return true; 
         }
 
         const shippedTime = new Date(order.shippedAt);

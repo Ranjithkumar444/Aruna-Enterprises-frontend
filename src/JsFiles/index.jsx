@@ -36,6 +36,7 @@ import OrderList from "./OrderList";
 import OrderReelSuggestions from "./OrderReelSuggestions";
 import ReelUsageSearch from "./ReelUsageSearch";
 import ClientList from "./ClientList";
+import ThresholdForm from "./ThresholdForm";
 
 
 const router = createBrowserRouter([

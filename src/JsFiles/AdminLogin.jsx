@@ -20,6 +20,7 @@ const AdminLogin = () => {
 
       localStorage.setItem('adminToken', token);
       localStorage.setItem('adminDetails', JSON.stringify(admin));
+      localStorage.setItem("adminLoginTime", new Date().toISOString());
 
       navigate('/admin/dashboard');
     } catch (err) {

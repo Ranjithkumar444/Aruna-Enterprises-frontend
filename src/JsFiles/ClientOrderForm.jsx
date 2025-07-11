@@ -56,6 +56,7 @@ const ClientOrderForm = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      
       alert("Client order created successfully!");
       navigate("/admin/dashboard");
     } catch (error) {
@@ -82,7 +83,7 @@ const ClientOrderForm = () => {
           ["madeUpOf", "Made Up Of (Ups/Piece)"],
           ["paperTypeTop", "Paper Type Top"],
           ["paperTypeBottom", "Paper Type Bottom"],
-          ["paperTypeFlute", "Paper Type Flute"],
+          ["paperTypeFlute" , "Paper Type Flute"],
           ["oneUps", "1 Ups"],
           ["twoUps", "2 Ups"],
           ["threeUps", "3 Ups"],

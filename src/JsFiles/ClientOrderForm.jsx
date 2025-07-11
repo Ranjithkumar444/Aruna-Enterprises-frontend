@@ -30,33 +30,46 @@ const ClientOrderForm = () => {
   });
 
   const handleChange = (e) => {
-  const { name, value } = e.target;
+    const { name, value } = e.target;
 
-  if (
-    name === "size" &&
-    value &&
-    !/^\d{1,4}(X\d{1,4}){0,2}$/.test(value.toUpperCase())
-  ) {
-    return;
-  }
+    if (name === "size") {
+      const upperValue = value.toUpperCase();
+      const validWhileTyping = /^(\d{0,4})(X\d{0,4}){0,2}$/.test(upperValue);
+      if (!validWhileTyping) return;
 
-  setFormData({
-    ...formData,
-    [name]: name === "size" ? value.toUpperCase() : value,
-  });
-};
-
+      setFormData({
+        ...formData,
+        [name]: upperValue,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const sizePattern = /^\d{1,4}X\d{1,4}(X\d{1,4})?$/;
+    if (!sizePattern.test(formData.size)) {
+      alert("Size must be in format like 420X520 or 420X520X620");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.post("https://arunaenterprises.azurewebsites.net/admin/client/order/create", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
+      await axios.post(
+        "https://arunaenterprises.azurewebsites.net/admin/client/order/create",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       alert("Client order created successfully!");
       navigate("/admin/dashboard");
     } catch (error) {
@@ -70,38 +83,38 @@ const ClientOrderForm = () => {
       <h1 className="text-2xl font-bold mb-6 text-indigo-600">Create Client Order</h1>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {[
-          ["client", "Client Name"],
-          ["product", "Product Name"],
-          ["productType", "Product Type (Corrugated / Punching)"],
-          ["size", "Size (e.g., 321X373X193)"],
-          ["ply", "Ply"],
-          ["deckle", "Deckle"],
-          ["cuttingLength", "Cutting Length"],
-          ["topGsm", "Top GSM"],
-          ["linerGsm", "Liner GSM"],
-          ["fluteGsm", "Flute GSM"],
-          ["madeUpOf", "Made Up Of (Ups/Piece)"],
-          ["paperTypeTop", "Paper Type Top"],
-          ["paperTypeBottom", "Paper Type Bottom"],
-          ["paperTypeFlute" , "Paper Type Flute"],
-          ["oneUps", "1 Ups"],
-          ["twoUps", "2 Ups"],
-          ["threeUps", "3 Ups"],
-          ["fourUps", "4 Ups"],
-          ["description", "Description"],
-          ["sellingPricePerBox", "Selling Price per Box"],
-          ["productionCostPerBox", "Production Cost per Box"],
-        ].map(([name, label]) => (
+          ["client", "Client Name", true],
+          ["product", "Product Name", true],
+          ["productType", "Product Type (Corrugated / Punching)", true],
+          ["size", "Size (e.g., 420X520 or 420X520X620)", true],
+          ["ply", "Ply", true],
+          ["deckle", "Deckle", true],
+          ["cuttingLength", "Cutting Length", true],
+          ["topGsm", "Top GSM", true],
+          ["linerGsm", "Liner GSM", true],
+          ["fluteGsm", "Flute GSM", true],
+          ["madeUpOf", "Made Up Of (Ups/Piece)", true],
+          ["paperTypeTop", "Paper Type Top", true],
+          ["paperTypeBottom", "Paper Type Bottom", true],
+          ["paperTypeFlute", "Paper Type Flute", true],
+          ["oneUps", "1 Ups", false],
+          ["twoUps", "2 Ups", false],
+          ["threeUps", "3 Ups", false],
+          ["fourUps", "4 Ups", false],
+          ["description", "Description", true],
+          ["sellingPricePerBox", "Selling Price per Box", true],
+          ["productionCostPerBox", "Production Cost per Box", true],
+        ].map(([name, label, required]) => (
           <div key={name}>
             <label htmlFor={name} className="block text-sm font-medium text-gray-700">
               {label}
             </label>
             <input
-              required
               type="text"
               name={name}
               value={formData[name]}
               onChange={handleChange}
+              required={required}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>

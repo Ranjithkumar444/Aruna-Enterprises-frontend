@@ -27,7 +27,7 @@ const ClientList = () => {
   };
 
   const handleExport = () => {
-  const exportData = clients.map(({ id, clientNormalizer, ...rest }) => rest); // Remove unwanted fields
+  const exportData = clients.map(({ id, clientNormalizer, ...rest }) => rest);
 
   const worksheet = XLSX.utils.json_to_sheet(exportData);
   const workbook = XLSX.utils.book_new();
@@ -39,7 +39,7 @@ const ClientList = () => {
 
   const handleFormSuccess = () => {
     setShowForm(false);
-    fetchClients(); // Refresh client list after creation
+    fetchClients(); 
   };
 
   return (
@@ -87,12 +87,12 @@ const ClientList = () => {
                   <th className="px-4 py-2 border">Deckle</th>
                   <th className="px-4 py-2 border">Cutting Length</th>
                   <th className="px-4 py-2 border">Top GSM</th>
-                  <th className="px-4 py-2 border">Bottom GSM</th>
                   <th className="px-4 py-2 border">Liner GSM</th>
                   <th className="px-4 py-2 border">Flute GSM</th>
                   <th className="px-4 py-2 border">Made Up Of</th>
                   <th className="px-4 py-2 border">Paper Top</th>
                   <th className="px-4 py-2 border">Paper Bottom</th>
+                  <th className="px-4 py-2 border">Paper Flute</th>
                   <th className="px-4 py-2 border">1 Ups</th>
                   <th className="px-4 py-2 border">2 Ups</th>
                   <th className="px-4 py-2 border">3 Ups</th>
@@ -113,12 +113,12 @@ const ClientList = () => {
                     <td className="px-4 py-2 border">{client.deckle}</td>
                     <td className="px-4 py-2 border">{client.cuttingLength}</td>
                     <td className="px-4 py-2 border">{client.topGsm}</td>
-                    <td className="px-4 py-2 border">{client.bottomGsm}</td>
                     <td className="px-4 py-2 border">{client.linerGsm}</td>
                     <td className="px-4 py-2 border">{client.fluteGsm}</td>
                     <td className="px-4 py-2 border">{client.madeUpOf}</td>
                     <td className="px-4 py-2 border">{client.paperTypeTop}</td>
                     <td className="px-4 py-2 border">{client.paperTypeBottom}</td>
+                    <td className="px-4 py-2 border">{client.paperTypeFlute}</td>
                     <td className="px-4 py-2 border">{client.oneUps}</td>
                     <td className="px-4 py-2 border">{client.twoUps}</td>
                     <td className="px-4 py-2 border">{client.threeUps}</td>

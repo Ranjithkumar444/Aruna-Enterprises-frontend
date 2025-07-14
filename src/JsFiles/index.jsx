@@ -37,6 +37,8 @@ import OrderReelSuggestions from "./OrderReelSuggestions";
 import ReelUsageSearch from "./ReelUsageSearch";
 import ClientList from "./ClientList";
 import ThresholdForm from "./ThresholdForm";
+import OrderSummaryPage from "./OrderSummaryPage";
+import OrderSummaryDashboard from "./OrderSummaryDashboard";
 
 
 const router = createBrowserRouter([
@@ -149,6 +151,12 @@ const router = createBrowserRouter([
                     },{
                         path: "admin/box/boxCreate",
                         element: <BoxForm/>
+                    },{
+                        path: "admin/ordersummary",
+                        element: <OrderSummaryPage/>
+                    },{
+                        path: "admin/analytics",
+                        element: <OrderSummaryDashboard/>
                     }
                     
                 ]

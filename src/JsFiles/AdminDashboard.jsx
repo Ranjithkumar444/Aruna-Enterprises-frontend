@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import KanbanBoard from './KanbanBoard';
 import InUseReelsTable from './InUseReelsTable';
 import OrderList from './OrderList';
+import OrderSummaryDashboard from './OrderSummaryDashboard';
 import React from 'react';
 
 const AdminDashboard = () => {
@@ -20,6 +21,8 @@ const AdminDashboard = () => {
             setAdminName(`${adminDetails.firstName} ${adminDetails.lastName}`);
         }
     }, [token, adminDetails, navigate]);
+
+    console.log(token);
 
     const handleLogout = () => {
         localStorage.removeItem("adminToken");
@@ -132,6 +135,8 @@ const AdminDashboard = () => {
                         { name: "Salary", path: "admin/salary" },
                         { name: "Admins", path: "admin/admins" },
                         { name: "Clients", path: "admin/clients" },
+                        {name: "OrderSummary", path: "admin/ordersummary"},
+                        {name: "Dashboard/Analytics", path: "admin/analytics"}
                     ].map((item) => (
                         <li
                             key={item.name}
@@ -199,7 +204,7 @@ const AdminDashboard = () => {
     <button
         onClick={async () => {
             try {
-                const response = await fetch("https://arunaenterprises.azurewebsites.net/admin/reel/stock/alert/trigger", {
+                const response = await fetch("http://localhost:8080/admin/reel/stock/alert/trigger", {
                     method: "POST",
                     headers: {
                         Authorization: `Bearer ${token}`,

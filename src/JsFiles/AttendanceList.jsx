@@ -38,7 +38,7 @@ const AttendanceList = () => {
                     }
                 }
             );
-            console.log(response);
+            console.log(response.data);
             setAttendanceData(response.data);
             setFilteredData(response.data);
             setLastUpdated(new Date());

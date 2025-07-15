@@ -78,7 +78,9 @@ const OrderSummaryDashboard = () => {
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch data');
       setSummaryData(null);
-      setHasAccessError(true);
+      if (err.response?.status === 401) {
+        setHasAccessError(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -97,22 +99,23 @@ const OrderSummaryDashboard = () => {
           }
         }
       );
-      setRangeData(response.data);
+      setRangeData(response.data || []);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch data');
       setRangeData([]);
-      setHasAccessError(true);
+      if (err.response?.status === 401) {
+        setHasAccessError(true);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-
     if (!adminToken) {
-        setHasAccessError(true);
-        return; 
+      setHasAccessError(true);
+      return; 
     }
 
     if (timeRange === 'daily') {
@@ -150,25 +153,19 @@ const OrderSummaryDashboard = () => {
     dark: '#212121'
   };
 
-  // Prepare data for charts
+  // Prepare data for charts with null checks
   const prepareClientDistributionData = () => {
-    if (!summaryData) return { labels: [], datasets: [] };
+    if (!summaryData?.orderDetails?.length) return { labels: [], datasets: [] };
 
     const clientMap = {};
     summaryData.orderDetails.forEach(order => {
-      if (clientMap[order.client]) {
-        clientMap[order.client] += order.quantity;
-      } else {
-        clientMap[order.client] = order.quantity;
+      if (order.client) {
+        clientMap[order.client] = (clientMap[order.client] || 0) + (order.quantity || 0);
       }
     });
 
     const labels = Object.keys(clientMap);
     const data = Object.values(clientMap);
-
-    if (hasAccessError) {
-      return <AccessDeniedMessage />;
-    }
 
     return {
       labels,
@@ -191,14 +188,12 @@ const OrderSummaryDashboard = () => {
   };
 
   const prepareProductTypeData = () => {
-    if (!summaryData) return { labels: [], datasets: [] };
+    if (!summaryData?.orderDetails?.length) return { labels: [], datasets: [] };
 
     const productMap = {};
     summaryData.orderDetails.forEach(order => {
-      if (productMap[order.productType]) {
-        productMap[order.productType] += order.quantity;
-      } else {
-        productMap[order.productType] = order.quantity;
+      if (order.productType) {
+        productMap[order.productType] = (productMap[order.productType] || 0) + (order.quantity || 0);
       }
     });
 
@@ -232,9 +227,9 @@ const OrderSummaryDashboard = () => {
         {
           label: 'Amount (₹)',
           data: [
-            summaryData.totalRevenueOfDay,
-            summaryData.totalProfitOfDay,
-            summaryData.totalReelWastageOfDay * 50 // Assuming ₹50/kg wastage cost
+            summaryData.totalRevenueOfDay || 0,
+            summaryData.totalProfitOfDay || 0,
+            (summaryData.totalReelWastageOfDay || 0) * 50 // Assuming ₹50/kg wastage cost
           ],
           backgroundColor: [
             colors.success,
@@ -249,16 +244,18 @@ const OrderSummaryDashboard = () => {
   };
 
   const prepareWastageData = () => {
-    if (!summaryData) return { labels: [], datasets: [] };
+    if (!summaryData?.orderDetails?.length) return { labels: [], datasets: [] };
 
     const wastageData = summaryData.orderDetails
-      .filter(order => order.totalReelWastage > 0)
+      .filter(order => (order.totalReelWastage || 0) > 0)
       .map(order => ({
-        orderId: order.orderId,
-        wastage: order.totalReelWastage,
+        orderId: order.orderId || '',
+        wastage: order.totalReelWastage || 0,
         percentage: parseFloat(order.totalReelWastagePercentage) || 0,
-        client: order.client
+        client: order.client || ''
       }));
+
+    if (wastageData.length === 0) return { labels: [], datasets: [] };
 
     return {
       labels: wastageData.map(item => `${item.client} (Order ${item.orderId})`),
@@ -284,14 +281,14 @@ const OrderSummaryDashboard = () => {
   };
 
   const prepareTimeSeriesData = () => {
-    if (rangeData.length === 0) return { labels: [], datasets: [] };
+    if (!rangeData?.length) return { labels: [], datasets: [] };
 
     return {
       labels: rangeData.map(item => format(new Date(item.summaryDate), 'MMM dd')),
       datasets: [
         {
           label: 'Revenue (₹)',
-          data: rangeData.map(item => item.totalRevenueOfDay),
+          data: rangeData.map(item => item.totalRevenueOfDay || 0),
           borderColor: colors.success,
           backgroundColor: `${colors.success}20`,
           tension: 0.3,
@@ -299,7 +296,7 @@ const OrderSummaryDashboard = () => {
         },
         {
           label: 'Profit (₹)',
-          data: rangeData.map(item => item.totalProfitOfDay),
+          data: rangeData.map(item => item.totalProfitOfDay || 0),
           borderColor: colors.primary,
           backgroundColor: `${colors.primary}20`,
           tension: 0.3,
@@ -307,7 +304,7 @@ const OrderSummaryDashboard = () => {
         },
         {
           label: 'Wastage (kg)',
-          data: rangeData.map(item => item.totalReelWastageOfDay),
+          data: rangeData.map(item => item.totalReelWastageOfDay || 0),
           borderColor: colors.error,
           backgroundColor: `${colors.error}20`,
           tension: 0.3,
@@ -318,13 +315,15 @@ const OrderSummaryDashboard = () => {
   };
 
   const prepareProductivityData = () => {
-    if (!summaryData) return { labels: [], datasets: [] };
+    if (!summaryData?.orderDetails?.length) return { labels: [], datasets: [] };
 
-    const productivity = summaryData.orderDetails.map(order => ({
-      orderId: order.orderId,
-      client: order.client,
-      efficiency: 100 - (parseFloat(order.totalReelWastagePercentage) || 0)
-    }));
+    const productivity = summaryData.orderDetails
+      .filter(order => order.orderId) // Only orders with ID
+      .map(order => ({
+        orderId: order.orderId,
+        client: order.client || 'Unknown',
+        efficiency: 100 - (parseFloat(order.totalReelWastagePercentage) || 0)
+      }));
 
     return {
       labels: productivity.map(item => `${item.client} (Order ${item.orderId})`),
@@ -508,6 +507,10 @@ const OrderSummaryDashboard = () => {
     );
   };
 
+  if (hasAccessError) {
+    return <AccessDeniedMessage />;
+  }
+
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
@@ -619,7 +622,7 @@ const OrderSummaryDashboard = () => {
               <StatCard 
                 icon={<LocalShipping />}
                 title="Orders Shipped" 
-                value={summaryData.totalOrdersShipped}
+                value={summaryData.totalOrdersShipped || 0}
                 trend="up"
               />
             </Grid>
@@ -627,8 +630,8 @@ const OrderSummaryDashboard = () => {
               <StatCard 
                 icon={<MonetizationOn />}
                 title="Total Revenue" 
-                value={summaryData.totalRevenueOfDay}
-                percentage={summaryData.totalRevenueOfDayPercentage}
+                value={summaryData.totalRevenueOfDay || 0}
+                percentage={summaryData.totalRevenueOfDayPercentage || '0%'}
                 trend="up"
               />
             </Grid>
@@ -636,8 +639,8 @@ const OrderSummaryDashboard = () => {
               <StatCard 
                 icon={<AttachMoney />}
                 title="Total Profit" 
-                value={summaryData.totalProfitOfDay}
-                percentage={summaryData.totalProfitOfDayPercentage}
+                value={summaryData.totalProfitOfDay || 0}
+                percentage={summaryData.totalProfitOfDayPercentage || '0%'}
                 trend="up"
               />
             </Grid>
@@ -645,8 +648,8 @@ const OrderSummaryDashboard = () => {
               <StatCard 
                 icon={<TrendingDown />}
                 title="Total Wastage" 
-                value={summaryData.totalReelWastageOfDay.toFixed(2.0) + ' kg'}
-                percentage={summaryData.totalReelWastageOfDayPercentage}
+                value={(summaryData.totalReelWastageOfDay || 0).toFixed(2) + ' kg'}
+                percentage={summaryData.totalReelWastageOfDayPercentage || '0%'}
                 trend="down"
               />
             </Grid>
@@ -660,7 +663,13 @@ const OrderSummaryDashboard = () => {
                   Client Distribution (Quantity)
                 </Typography>
                 <Box sx={{ height: 400 }}>
-                  <Doughnut data={prepareClientDistributionData()} options={chartOptions} />
+                  {summaryData?.orderDetails?.length ? (
+                    <Doughnut data={prepareClientDistributionData()} options={chartOptions} />
+                  ) : (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                      <Typography>No client data available</Typography>
+                    </Box>
+                  )}
                 </Box>
               </Paper>
             </Grid>
@@ -670,7 +679,13 @@ const OrderSummaryDashboard = () => {
                   Product Type Distribution
                 </Typography>
                 <Box sx={{ height: 400 }}>
-                  <Pie data={prepareProductTypeData()} options={chartOptions} />
+                  {summaryData?.orderDetails?.length ? (
+                    <Pie data={prepareProductTypeData()} options={chartOptions} />
+                  ) : (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                      <Typography>No product data available</Typography>
+                    </Box>
+                  )}
                 </Box>
               </Paper>
             </Grid>
@@ -694,7 +709,13 @@ const OrderSummaryDashboard = () => {
                   Production Efficiency
                 </Typography>
                 <Box sx={{ height: 400 }}>
-                  <Bar data={prepareProductivityData()} options={chartOptions} />
+                  {summaryData?.orderDetails?.length ? (
+                    <Bar data={prepareProductivityData()} options={chartOptions} />
+                  ) : (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                      <Typography>No efficiency data available</Typography>
+                    </Box>
+                  )}
                 </Box>
               </Paper>
             </Grid>
@@ -706,7 +727,13 @@ const OrderSummaryDashboard = () => {
               Wastage Analysis
             </Typography>
             <Box sx={{ height: 400 }}>
-              <Bar data={prepareWastageData()} options={wastageOptions} />
+              {summaryData?.orderDetails?.filter(order => (order.totalReelWastage || 0) > 0).length ? (
+                <Bar data={prepareWastageData()} options={wastageOptions} />
+              ) : (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                  <Typography>No wastage data available</Typography>
+                </Box>
+              )}
             </Box>
           </Paper>
 
@@ -731,7 +758,7 @@ const OrderSummaryDashboard = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {summaryData.orderDetails.map((order) => (
+                  {summaryData.orderDetails?.map((order) => (
                     <TableRow 
                       key={order.orderId}
                       hover
@@ -740,7 +767,7 @@ const OrderSummaryDashboard = () => {
                       <TableCell>{order.orderId}</TableCell>
                       <TableCell>
                         <Chip 
-                          label={order.client} 
+                          label={order.client || 'Unknown'} 
                           size="small" 
                           sx={{ 
                             bgcolor: order.client === 'Kamtech' ? colors.primary + '20' : 
@@ -752,22 +779,26 @@ const OrderSummaryDashboard = () => {
                           }} 
                         />
                       </TableCell>
-                      <TableCell>{order.productType}</TableCell>
-                      <TableCell>{order.quantity}</TableCell>
+                      <TableCell>{order.productType || '-'}</TableCell>
+                      <TableCell>{order.quantity || 0}</TableCell>
                       <TableCell>
-                        <Chip label={order.size} size="small" variant="outlined" />
+                        <Chip label={order.size || '-'} size="small" variant="outlined" />
                       </TableCell>
-                      <TableCell align="right">{order.totalWeightConsumed.toFixed(2)}</TableCell>
-                      <TableCell align="right">₹{order.revenue.toLocaleString()}</TableCell>
+                      <TableCell align="right">{(order.totalWeightConsumed || 0).toFixed(2)}</TableCell>
+                      <TableCell align="right">
+                        {order.revenue ? `₹${order.revenue.toLocaleString()}` : '-'}
+                      </TableCell>
                       <TableCell align="right">
                         <Box sx={{ 
-                          color: order.profitPercentage > 15 ? colors.success : 
-                                order.profitPercentage > 10 ? colors.warning : colors.error
+                          color: parseFloat(order.profitPercentage) > 15 ? colors.success : 
+                                parseFloat(order.profitPercentage) > 10 ? colors.warning : colors.error
                         }}>
-                          ₹{order.profit.toLocaleString()} 
-                          <Typography variant="caption" display="block">
-                            ({order.profitPercentage})
-                          </Typography>
+                          {order.profit ? `₹${order.profit.toLocaleString()}` : '-'}
+                          {order.profitPercentage && (
+                            <Typography variant="caption" display="block">
+                              ({order.profitPercentage})
+                            </Typography>
+                          )}
                         </Box>
                       </TableCell>
                       <TableCell align="right">
@@ -775,10 +806,12 @@ const OrderSummaryDashboard = () => {
                           color: parseFloat(order.totalReelWastagePercentage) > 5 ? colors.error : 
                                 parseFloat(order.totalReelWastagePercentage) > 3 ? colors.warning : colors.success
                         }}>
-                          {order.totalReelWastage.toFixed(2)} kg
-                          <Typography variant="caption" display="block">
-                            ({order.totalReelWastagePercentage})
-                          </Typography>
+                          {(order.totalReelWastage || 0).toFixed(2)} kg
+                          {order.totalReelWastagePercentage && (
+                            <Typography variant="caption" display="block">
+                              ({order.totalReelWastagePercentage})
+                            </Typography>
+                          )}
                         </Box>
                       </TableCell>
                     </TableRow>
@@ -829,15 +862,17 @@ const OrderSummaryDashboard = () => {
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                       <TableCell>{summary.summaryDate}</TableCell>
-                      <TableCell align="right">{summary.totalOrdersShipped}</TableCell>
-                      <TableCell align="right">{summary.totalWeightConsumed.toFixed(2)}</TableCell>
-                      <TableCell align="right">₹{summary.totalRevenueOfDay.toLocaleString()}</TableCell>
+                      <TableCell align="right">{summary.totalOrdersShipped || 0}</TableCell>
+                      <TableCell align="right">{(summary.totalWeightConsumed || 0).toFixed(2)}</TableCell>
+                      <TableCell align="right">
+                        {summary.totalRevenueOfDay ? `₹${summary.totalRevenueOfDay.toLocaleString()}` : '-'}
+                      </TableCell>
                       <TableCell align="right">
                         <Box sx={{ 
                           color: parseFloat(summary.totalProfitOfDayPercentage) > 15 ? colors.success : 
                                 parseFloat(summary.totalProfitOfDayPercentage) > 10 ? colors.warning : colors.error
                         }}>
-                          ₹{summary.totalProfitOfDay.toLocaleString()}
+                          {summary.totalProfitOfDay ? `₹${summary.totalProfitOfDay.toLocaleString()}` : '-'}
                         </Box>
                       </TableCell>
                       <TableCell align="right">
@@ -845,7 +880,7 @@ const OrderSummaryDashboard = () => {
                           color: parseFloat(summary.totalProfitOfDayPercentage) > 15 ? colors.success : 
                                 parseFloat(summary.totalProfitOfDayPercentage) > 10 ? colors.warning : colors.error
                         }}>
-                          {summary.totalProfitOfDayPercentage}
+                          {summary.totalProfitOfDayPercentage || '-'}
                         </Box>
                       </TableCell>
                       <TableCell align="right">
@@ -853,7 +888,7 @@ const OrderSummaryDashboard = () => {
                           color: parseFloat(summary.totalReelWastageOfDayPercentage) > 5 ? colors.error : 
                                 parseFloat(summary.totalReelWastageOfDayPercentage) > 3 ? colors.warning : colors.success
                         }}>
-                          {summary.totalReelWastageOfDay.toFixed(2)}
+                          {(summary.totalReelWastageOfDay || 0).toFixed(2)}
                         </Box>
                       </TableCell>
                       <TableCell align="right">
@@ -861,7 +896,7 @@ const OrderSummaryDashboard = () => {
                           color: parseFloat(summary.totalReelWastageOfDayPercentage) > 5 ? colors.error : 
                                 parseFloat(summary.totalReelWastageOfDayPercentage) > 3 ? colors.warning : colors.success
                         }}>
-                          {summary.totalReelWastageOfDayPercentage}
+                          {summary.totalReelWastageOfDayPercentage || '-'}
                         </Box>
                       </TableCell>
                     </TableRow>

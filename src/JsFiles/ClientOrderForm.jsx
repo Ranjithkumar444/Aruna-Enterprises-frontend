@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const ClientOrderForm = () => {
+const ClientOrderForm = ({ onSuccess, clientData, isEditMode }) => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -29,35 +29,89 @@ const ClientOrderForm = () => {
     productionCostPerBox: "",
   });
 
+  useEffect(() => {
+    if (isEditMode && clientData) {
+      setFormData({
+        ...clientData,
+        // Convert numbers to strings for the form
+        deckle: clientData.deckle.toString(),
+        cuttingLength: clientData.cuttingLength.toString(),
+        topGsm: clientData.topGsm.toString(),
+        linerGsm: clientData.linerGsm.toString(),
+        fluteGsm: clientData.fluteGsm.toString(),
+        oneUps: clientData.oneUps.toString(),
+        twoUps: clientData.twoUps.toString(),
+        threeUps: clientData.threeUps.toString(),
+        fourUps: clientData.fourUps.toString(),
+        sellingPricePerBox: clientData.sellingPricePerBox.toString(),
+        productionCostPerBox: clientData.productionCostPerBox.toString(),
+      });
+    }
+  }, [isEditMode, clientData]);
+
   const handleChange = (e) => {
-  const { name, value } = e.target;
+    const { name, value } = e.target;
 
-  if (
-    name === "size" &&
-    value &&
-    !/^\d{1,4}(X\d{1,4}){0,2}$/.test(value.toUpperCase())
-  ) {
-    return;
-  }
+    if (
+      name === "size" &&
+      value &&
+      !/^\d{1,4}(X\d{1,4}){0,2}$/.test(value.toUpperCase())
+    ) {
+      return;
+    }
 
-  setFormData({
-    ...formData,
-    [name]: name === "size" ? value.toUpperCase() : value,
-  });
-};
-
+    setFormData({
+      ...formData,
+      [name]: name === "size" ? value.toUpperCase() : value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.post("https://arunaenterprises.azurewebsites.net/admin/client/order/create", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
       
-      alert("Client order created successfully!");
+      // Convert string values back to numbers where needed
+      const payload = {
+        ...formData,
+        deckle: parseFloat(formData.deckle),
+        cuttingLength: parseFloat(formData.cuttingLength),
+        topGsm: parseInt(formData.topGsm),
+        linerGsm: parseInt(formData.linerGsm),
+        fluteGsm: parseInt(formData.fluteGsm),
+        oneUps: parseFloat(formData.oneUps),
+        twoUps: parseFloat(formData.twoUps),
+        threeUps: parseFloat(formData.threeUps),
+        fourUps: parseFloat(formData.fourUps),
+        sellingPricePerBox: parseFloat(formData.sellingPricePerBox),
+        productionCostPerBox: parseFloat(formData.productionCostPerBox),
+      };
+
+      if (isEditMode) {
+        payload.id = clientData.id;
+        await axios.put(
+          `https://arunaenterprises.azurewebsites.net/admin/updateClientAndReel/${clientData.id}`,
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else {
+        await axios.post(
+          "https://arunaenterprises.azurewebsites.net/admin/client/order/create",
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
+      alert(`Client ${isEditMode ? 'updated' : 'created'} successfully!`);
+      onSuccess();
       navigate("/admin/dashboard");
     } catch (error) {
       console.error("Submission error:", error);
@@ -67,7 +121,9 @@ const ClientOrderForm = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-8 shadow-xl rounded-xl mt-10 bg-white">
-      <h1 className="text-2xl font-bold mb-6 text-indigo-600">Create Client Order</h1>
+      <h1 className="text-2xl font-bold mb-6 text-indigo-600">
+        {isEditMode ? "Edit Client" : "Create Client Order"}
+      </h1>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {[
           ["client", "Client Name"],
@@ -83,7 +139,7 @@ const ClientOrderForm = () => {
           ["madeUpOf", "Made Up Of (Ups/Piece)"],
           ["paperTypeTop", "Paper Type Top"],
           ["paperTypeBottom", "Paper Type Bottom"],
-          ["paperTypeFlute" , "Paper Type Flute"],
+          ["paperTypeFlute", "Paper Type Flute"],
           ["oneUps", "1 Ups"],
           ["twoUps", "2 Ups"],
           ["threeUps", "3 Ups"],
@@ -98,11 +154,12 @@ const ClientOrderForm = () => {
             </label>
             <input
               required
-              type="text"
+              type={["deckle", "cuttingLength", "oneUps", "twoUps", "threeUps", "fourUps", "sellingPricePerBox", "productionCostPerBox"].includes(name) ? "number" : "text"}
               name={name}
               value={formData[name]}
               onChange={handleChange}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              step={["deckle", "cuttingLength", "oneUps", "twoUps", "threeUps", "fourUps", "sellingPricePerBox", "productionCostPerBox"].includes(name) ? "0.01" : undefined}
             />
           </div>
         ))}
@@ -112,7 +169,7 @@ const ClientOrderForm = () => {
             type="submit"
             className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 shadow-md transition-all"
           >
-            Submit Order
+            {isEditMode ? "Update Client" : "Submit Order"}
           </button>
         </div>
       </form>

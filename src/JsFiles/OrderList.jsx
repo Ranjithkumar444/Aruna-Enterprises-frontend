@@ -16,7 +16,7 @@ const OrderList = () => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/admin/order/getOrdersToDoAndInProgress",
+          "https://arunaenterprises.azurewebsites.net/admin/order/getOrdersToDoAndInProgress",
           {
             headers: {
               "Authorization": `Bearer ${token}`

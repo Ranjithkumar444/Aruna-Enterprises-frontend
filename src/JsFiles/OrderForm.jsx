@@ -1,168 +1,254 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const OrderList = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedUnit, setSelectedUnit] = useState('ALL');
+const OrderForm = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    client: '',
+    typeOfProduct: '',
+    productType: '',
+    quantity: '',
+    size: '',
+    materialGrade: '',
+    deliveryAddress: '',
+    expectedCompletionDate: '',
+    unit: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'size') {
+      // Convert lowercase x to uppercase X
+      const formatted = value.toUpperCase();
+
+      // Only allow digits and uppercase X
+      const allowed = /^[0-9X]*$/;
+      if (!allowed.test(formatted)) return;
+
+      setFormData(prev => ({
+        ...prev,
+        [name]: formatted
+      }));
+      return;
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
     const token = localStorage.getItem('adminToken');
-    const source = axios.CancelToken.source();
+    const adminDetails = JSON.parse(localStorage.getItem('adminDetails'));
+    const createdBy = adminDetails?.email || 'Unknown';
 
-    const fetchOrders = async () => {
-      try {
-        const response = await axios.get(
-          "https://arunaenterprises.azurewebsites.net/admin/order/getOrdersToDoAndInProgress",
-          {
-            headers: {
-              "Authorization": `Bearer ${token}`
-            },
-            cancelToken: source.token
+    const payload = {
+      ...formData,
+      quantity: parseInt(formData.quantity, 10),
+      status: 'TODO',
+      createdBy,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      expectedCompletionDate: formData.expectedCompletionDate
+        ? new Date(formData.expectedCompletionDate).toISOString()
+        : null
+    };
+
+    try {
+      const res = await axios.post(
+        "https://arunaenterprises.azurewebsites.net/admin/order/create-order", 
+        payload, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
-        );
-        setOrders(response.data);
-        setLoading(false);
-      } catch (err) {
-        if (!axios.isCancel(err)) {
-          setError(err.response?.data?.message || err.message || 'Failed to fetch orders');
-          setLoading(false);
         }
+      );
+
+      const existingOrders = JSON.parse(localStorage.getItem("suggestedReelsOrders")) || [];
+      const newOrder = {
+        response: res.data,
+        orderDetails: { 
+          ...formData,
+          orderId: res.data.orderId
+        },
+        timestamp: new Date().toISOString()
+      };
+
+      localStorage.setItem(
+        "suggestedReelsOrders",
+        JSON.stringify([...existingOrders, newOrder])
+      );
+
+      alert("Order created successfully!");
+      navigate('/admin/dashboard');
+      
+    } catch (error) {
+      console.error("Error creating order:", error);
+      let errorMsg = "An unexpected error occurred. Please try again.";
+
+      if (error.response) {
+        const data = error.response.data;
+        if (typeof data === 'string') {
+          errorMsg = data;
+        } else if (typeof data === 'object') {
+          errorMsg = data.error || JSON.stringify(data);
+        }
+      } else if (error.request) {
+        errorMsg = "No response from server. Please check your network connection.";
       }
-    };
 
-    fetchOrders();
-
-    return () => {
-      source.cancel("Component unmounted, request canceled");
-    };
-  }, []);
-
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'TODO':
-        return <span className="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 animate-pulse">To Do</span>;
-      case 'IN_PROGRESS':
-        return <span className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">In Progress</span>;
-      case 'COMPLETED':
-        return <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Completed</span>;
-      default:
-        return <span className="px-3 py-1 text-xs font-semibold rounded-full bg-gray-200 text-gray-800">{status}</span>;
+      alert("Failed to create order: " + errorMsg);
+    } finally {
+      setIsSubmitting(false);
     }
-  };
-
-  const uniqueUnits = useMemo(() => {
-    const units = new Set(orders.map(order => order.unit).filter(Boolean));
-    return ['ALL', ...Array.from(units).sort()];
-  }, [orders]);
-
-  const filteredOrders = useMemo(() => {
-    if (selectedUnit === 'ALL') {
-      return orders;
-    }
-    return orders.filter(order => order.unit === selectedUnit);
-  }, [orders, selectedUnit]);
-
-  const handleUnitChange = (event) => {
-    setSelectedUnit(event.target.value);
-  };
-
-  const handleRowClick = (order) => {
-    navigate(`/admin/dashboard/orders/${order.id}/suggested-reels`, { 
-      state: { order } 
-    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-xl">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6 flex items-center">
-          <span role="img" aria-label="package" className="mr-3 text-4xl">📦</span>
-          Orders To Do & In Progress
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="w-full max-w-xl bg-white rounded-xl shadow-2xl p-8 space-y-6">
+        <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-6">
+          Create New Order
         </h2>
-
-        {loading && (
-          <div className="flex items-center justify-center py-10">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
-            <p className="ml-4 text-lg text-blue-600">Loading orders, please wait...</p>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-semibold">Client Name</label>
+            <input
+              type="text"
+              name="client"
+              value={formData.client}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded"
+            />
           </div>
-        )}
 
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong className="font-bold">Error!</strong>
-            <span className="block sm:inline ml-2">{error}</span>
+          <div>
+            <label className="block text-sm font-semibold">Product Type</label>
+            <input
+              type="text"
+              name="typeOfProduct"
+              value={formData.typeOfProduct}
+              onChange={handleChange}
+              placeholder="e.g. Corrugated, Punching"
+              required
+              className="w-full px-4 py-2 border rounded"
+            />
           </div>
-        )}
 
-        {!loading && !error && (
-          <>
-            <div className="flex justify-end mb-4">
-              <label htmlFor="unit-filter" className="sr-only">Filter by Unit</label>
-              <div className="relative">
-                <select
-                  id="unit-filter"
-                  className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm appearance-none bg-white border"
-                  value={selectedUnit}
-                  onChange={handleUnitChange}
-                >
-                  {uniqueUnits.map(unit => (
-                    <option key={unit} value={unit}>
-                      {unit === 'ALL' ? 'All Units' : `Unit ${unit}`}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+          <div>
+            <label className="block text-sm font-semibold">Ply</label>
+            <input
+              type="text"
+              name="productType"
+              value={formData.productType}
+              onChange={handleChange}
+              placeholder="e.g. 3-ply, 5-ply"
+              required
+              className="w-full px-4 py-2 border rounded"
+            />
+          </div>
 
-            {filteredOrders.length === 0 ? (
-              <div className="text-center py-10 text-gray-500 text-lg">
-                <p>No orders to display for the selected unit.</p>
-                <p className="text-sm mt-2">Try selecting a different unit or add new orders.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto shadow-lg rounded-lg border border-gray-200">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-                    <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-lg">Client</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Size</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Product Type</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Unit</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tr-lg">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredOrders.map((order) => (
-                      <tr 
-                        key={order.id} 
-                        className="hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer"
-                        onClick={() => handleRowClick(order)}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order.client}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.size}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.productType || <span className="text-gray-400 italic">N/A</span>}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.unit || <span className="text-gray-400 italic">N/A</span>}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">{getStatusBadge(order.status)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </>
-        )}
+          <div>
+            <label className="block text-sm font-semibold">Quantity</label>
+            <input
+              type="number"
+              name="quantity"
+              value={formData.quantity}
+              onChange={handleChange}
+              placeholder="e.g. 1000"
+              required
+              min="1"
+              className="w-full px-4 py-2 border rounded"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold">Size</label>
+            <input
+              type="text"
+              name="size"
+              value={formData.size}
+              onChange={handleChange}
+              placeholder="e.g. 625X430X520 (Use capital X)"
+              required
+              pattern="^(\d+X){1,2}\d+$"
+              title="Enter in format like 625X430X520 with capital X only"
+              className="w-full px-4 py-2 border rounded"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold">Material Grade</label>
+            <input
+              type="text"
+              name="materialGrade"
+              value={formData.materialGrade}
+              onChange={handleChange}
+              placeholder="e.g. Natural, Kraft"
+              className="w-full px-4 py-2 border rounded"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold">Delivery Address</label>
+            <input
+              type="text"
+              name="deliveryAddress"
+              value={formData.deliveryAddress}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold">Expected Completion Date</label>
+            <input
+              type="date"
+              name="expectedCompletionDate"
+              value={formData.expectedCompletionDate}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold">Unit</label>
+            <input
+              type="text"
+              name="unit"
+              value={formData.unit}
+              onChange={handleChange}
+              placeholder="e.g. A or B"
+              required
+              className="w-full px-4 py-2 border rounded"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full py-3 text-white rounded-lg font-bold transition ${
+              isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            {isSubmitting ? 'Creating Order...' : 'Create Order'}
+          </button>
+        </form>
       </div>
     </div>
   );
 };
 
-export default OrderList;
+export default OrderForm;

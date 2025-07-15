@@ -20,8 +20,7 @@ const OrderForm = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [productionDetail, setProductionDetail] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
- 
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

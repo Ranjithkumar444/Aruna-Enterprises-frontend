@@ -68,35 +68,27 @@ const OrderForm = () => {
       );
 
       const orderId = res.data.orderid;
-
       const existingOrders = JSON.parse(localStorage.getItem("suggestedReelsOrders")) || [];
       const newOrder = {
         response: res.data,
-        orderDetails: { ...formData, orderId },
+        orderDetails: {
+          ...formData,
+          orderId
+        },
         timestamp: new Date().toISOString()
       };
-
-      localStorage.setItem(
-        "suggestedReelsOrders",
-        JSON.stringify([...existingOrders, newOrder])
-      );
+      localStorage.setItem("suggestedReelsOrders", JSON.stringify([...existingOrders, newOrder]));
 
       const prodRes = await axios.get(
         `https://arunaenterprises.azurewebsites.net/admin/${orderId}/production-detail`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setProductionDetail(prodRes.data);
       alert("Order created successfully!");
-      navigate('/admin/dashboard');
     } catch (error) {
       console.error("Error creating order:", error);
       let errorMsg = "An unexpected error occurred. Please try again.";
-
       if (error.response) {
         const data = error.response.data;
         if (typeof data === 'string') errorMsg = data;
@@ -104,7 +96,6 @@ const OrderForm = () => {
       } else if (error.request) {
         errorMsg = "No response from server. Please check your network connection.";
       }
-
       alert("Failed to create order: " + errorMsg);
     } finally {
       setIsSubmitting(false);
@@ -112,12 +103,44 @@ const OrderForm = () => {
   };
 
   const handlePrint = () => {
-    const content = printRef.current;
+    const printContent = printRef.current;
     const printWindow = window.open('', '', 'width=290,height=490');
-    printWindow.document.write('<html><head><title>Print</title></head><body>');
-    printWindow.document.write('<style>body{font-family:Arial;font-size:11px;padding:5px}.row{display:flex;justify-content:space-between}.section-title{text-align:center;font-weight:bold;margin-top:5px;margin-bottom:2px}</style>');
-    printWindow.document.write(content.innerHTML);
-    printWindow.document.write('</body></html>');
+    printWindow.document.write('<html><head><title>Print Sticker</title>');
+    printWindow.document.write(`
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          font-size: 11px;
+          padding: 5px;
+        }
+        .label {
+          width: 2.90in;
+          height: 4.90in;
+        }
+        .label h3 {
+          text-align: center;
+          font-size: 12px;
+          font-weight: bold;
+          margin-bottom: 4px;
+        }
+        .row {
+          display: flex;
+          justify-content: space-between;
+          margin: 2px 0;
+        }
+        .section {
+          text-align: center;
+          font-weight: bold;
+          margin-top: 4px;
+          border-top: 1px solid #000;
+          padding-top: 2px;
+        }
+      </style>
+    `);
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<div class="label">');
+    printWindow.document.write(printContent.innerHTML);
+    printWindow.document.write('</div></body></html>');
     printWindow.document.close();
     printWindow.focus();
     printWindow.print();
@@ -125,29 +148,32 @@ const OrderForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="w-full max-w-xl bg-white rounded-xl shadow-2xl p-8 space-y-6">
-        <h2 className="text-3xl font-extrabold text-center">Create New Order</h2>
+        <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-6">
+          Create New Order
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* FORM FIELDS */}
           {[
-            { label: "Client Name", name: "client", type: "text", required: true },
-            { label: "Product Type", name: "typeOfProduct", type: "text", placeholder: "e.g. Corrugated", required: true },
-            { label: "Ply", name: "productType", type: "text", placeholder: "e.g. 3-ply", required: true },
-            { label: "Quantity", name: "quantity", type: "number", required: true, min: 1 },
-            { label: "Size", name: "size", type: "text", placeholder: "e.g. 625X430X520", required: true },
-            { label: "Material Grade", name: "materialGrade", type: "text", placeholder: "e.g. Kraft" },
-            { label: "Delivery Address", name: "deliveryAddress", type: "text", required: true },
-            { label: "Expected Completion Date", name: "expectedCompletionDate", type: "date", required: true },
-            { label: "Unit", name: "unit", type: "text", placeholder: "e.g. A", required: true }
-          ].map(({ label, name, ...rest }) => (
-            <div key={name}>
-              <label className="block text-sm font-semibold">{label}</label>
+            { label: "Client Name", name: "client", type: "text" },
+            { label: "Product Type", name: "typeOfProduct", type: "text", placeholder: "e.g. Corrugated, Punching" },
+            { label: "Ply", name: "productType", type: "text", placeholder: "e.g. 3-ply, 5-ply" },
+            { label: "Quantity", name: "quantity", type: "number", placeholder: "e.g. 1000", min: 1 },
+            { label: "Size", name: "size", type: "text", placeholder: "e.g. 625X430X520 (Use capital X)", pattern: "^(\d+X){1,2}\d+$" },
+            { label: "Material Grade", name: "materialGrade", type: "text", placeholder: "e.g. Natural, Kraft" },
+            { label: "Delivery Address", name: "deliveryAddress", type: "text" },
+            { label: "Expected Completion Date", name: "expectedCompletionDate", type: "date" },
+            { label: "Unit", name: "unit", type: "text", placeholder: "e.g. A or B" },
+          ].map(field => (
+            <div key={field.name}>
+              <label className="block text-sm font-semibold">{field.label}</label>
               <input
-                {...rest}
-                name={name}
-                value={formData[name]}
+                {...field}
+                value={formData[field.name]}
                 onChange={handleChange}
+                required
                 className="w-full px-4 py-2 border rounded"
               />
             </div>
@@ -156,9 +182,7 @@ const OrderForm = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full py-3 text-white rounded-lg font-bold transition ${
-              isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-            }`}
+            className={`w-full py-3 text-white rounded-lg font-bold transition ${isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
           >
             {isSubmitting ? 'Creating Order...' : 'Create Order'}
           </button>
@@ -167,32 +191,48 @@ const OrderForm = () => {
 
       {productionDetail && (
         <div className="mt-8 bg-white p-2 rounded shadow w-[2.90in] h-[4.90in] text-[11px] leading-snug">
-          <div ref={printRef}>
-            <div className="text-center font-bold mb-1 text-[12px]">Production Sticker</div>
+          <h3 className="text-center font-bold mb-2 text-[12px]">Production Sticker</h3>
+          <div ref={printRef} className="space-y-[2px]">
+            {/* Compact layout */}
+            {[
+              ['Client', productionDetail.client, 'Size', productionDetail.size],
+              ['Ply', productionDetail.ply, 'Type', productionDetail.typeOfProduct],
+              ['Product', productionDetail.productType, 'Boxes', productionDetail.quantity],
+              ['Top GSM', productionDetail.topGsm, 'Liner GSM', productionDetail.linerGsm],
+              ['Flute GSM', productionDetail.fluteGsm, 'Cut Len', productionDetail.cuttingLength],
+              ['Top Mat', productionDetail.topMaterial, 'Liner Mat', productionDetail.linerMaterial],
+              ['Flute Mat', productionDetail.fluteMaterial, '', ''],
+            ].map(([label1, value1, label2, value2], idx) => (
+              <div className="flex justify-between" key={idx}>
+                <span><strong>{label1}:</strong> {value1}</span>
+                <span><strong>{label2}:</strong> {value2}</span>
+              </div>
+            ))}
 
-            <div className="flex justify-between"><span><strong>Client:</strong> {productionDetail.client}</span><span><strong>Size:</strong> {productionDetail.size}</span></div>
-            <div className="flex justify-between"><span><strong>Ply:</strong> {productionDetail.ply}</span><span><strong>Type:</strong> {productionDetail.typeOfProduct}</span></div>
-            <div className="flex justify-between"><span><strong>Product:</strong> {productionDetail.productType}</span><span><strong>Boxes:</strong> {productionDetail.quantity}</span></div>
-            <div className="flex justify-between"><span><strong>Top GSM:</strong> {productionDetail.topGsm}</span><span><strong>Liner GSM:</strong> {productionDetail.linerGsm}</span></div>
-            <div className="flex justify-between"><span><strong>Flute GSM:</strong> {productionDetail.fluteGsm}</span><span><strong>Cut Len:</strong> {productionDetail.cuttingLength}</span></div>
-            <div className="flex justify-between"><span><strong>Top Mat:</strong> {productionDetail.topMaterial}</span><span><strong>Liner Mat:</strong> {productionDetail.linerMaterial}</span></div>
-            <div className="flex justify-between"><span><strong>Flute Mat:</strong> {productionDetail.fluteMaterial}</span><span></span></div>
+            {[
+              ['ONE UPS', productionDetail.deckle, productionDetail.plain, productionDetail.sheets],
+              ['TWO UPS', productionDetail.twoUpsDeckle, productionDetail.twoUpsPlain, productionDetail.twoUpsSheets],
+              ['THREE UPS', productionDetail.threeUpsDeckle, productionDetail.threeUpsPlain, productionDetail.threeUpsSheets],
+              ['FOUR UPS', productionDetail.fourUpsDeckle, productionDetail.fourUpsPlain, productionDetail.fourUpsSheets],
+            ].map(([label, deckle, plain, sheets]) => (
+              <div key={label}>
+                <div className="text-center font-semibold mt-1 border-t pt-1">{label}</div>
+                <div className="flex justify-between">
+                  <span>Deckle: {deckle}</span>
+                  <span>P: {plain} | S: {sheets}</span>
+                </div>
+              </div>
+            ))}
 
-            <div className="section-title">ONE UPS</div>
-            <div className="flex justify-between"><span>Deckle: {productionDetail.deckle}</span><span>P: {productionDetail.plain} | S: {productionDetail.sheets}</span></div>
-
-            <div className="section-title">TWO UPS</div>
-            <div className="flex justify-between"><span>Deckle: {productionDetail.twoUpsDeckle}</span><span>P: {productionDetail.twoUpsPlain} | S: {productionDetail.twoUpsSheets}</span></div>
-
-            <div className="section-title">THREE UPS</div>
-            <div className="flex justify-between"><span>Deckle: {productionDetail.threeUpsDeckle}</span><span>P: {productionDetail.threeUpsPlain} | S: {productionDetail.threeUpsSheets}</span></div>
-
-            <div className="section-title">FOUR UPS</div>
-            <div className="flex justify-between"><span>Deckle: {productionDetail.fourUpsDeckle}</span><span>P: {productionDetail.fourUpsPlain} | S: {productionDetail.fourUpsSheets}</span></div>
-
-            <div className="section-title">Material Required</div>
-            <div className="flex justify-between"><span>Top: {productionDetail.totalTopWeightReq.toFixed(2)} kg</span><span>Flute: {productionDetail.totalFluteWeightReq.toFixed(2)} kg</span></div>
-            <div className="flex justify-between"><span>Liner: {productionDetail.totalLinerWeightReq.toFixed(2)} kg</span><span></span></div>
+            <div className="text-center font-semibold mt-1 border-t pt-1">Material Required</div>
+            <div className="flex justify-between">
+              <span>Top: {productionDetail.totalTopWeightReq} kg</span>
+              <span>Flute: {productionDetail.totalFluteWeightReq} kg</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Liner: {productionDetail.totalLinerWeightReq} kg</span>
+              <span></span>
+            </div>
           </div>
 
           <button

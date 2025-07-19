@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react';
 import KanbanBoard from './KanbanBoard';
 import InUseReelsTable from './InUseReelsTable';
 import OrderList from './OrderList';
-import OrderSummaryDashboard from './OrderSummaryDashboard';
-import React from 'react';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -136,7 +134,8 @@ const AdminDashboard = () => {
                         { name: "Admins", path: "admin/admins" },
                         { name: "Clients", path: "admin/clients" },
                         {name: "OrderSummary", path: "admin/ordersummary"},
-                        {name: "Dashboard/Analytics", path: "admin/analytics"}
+                        {name: "Dashboard/Analytics", path: "admin/analytics"},
+                        {name: "Completed Orders" , path: "admin/completedOrders"}
                     ].map((item) => (
                         <li
                             key={item.name}
@@ -151,6 +150,14 @@ const AdminDashboard = () => {
 
             {/* Main Dashboard */}
             <div className="flex-1 p-8 relative overflow-y-auto bg-gray-100">
+
+                <button
+                        onClick={() => navigate("admin/order-create")}
+                        className="w-full md:w-auto px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700"
+                    >
+                        Create Order
+                </button>
+
                 <button
                     onClick={handleLogout}
                     className="absolute top-4 right-6 px-4 py-2 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 transition-colors duration-200"
@@ -181,12 +188,7 @@ const AdminDashboard = () => {
                     >
                         Add Industry
                     </button>
-                    <button
-                        onClick={() => navigate("admin/order-create")}
-                        className="w-full md:w-auto px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700"
-                    >
-                        Create Order
-                    </button>
+                    
                     <button
                         onClick={() => navigate("admin/contact/contactDetails")}
                         className="w-full md:w-auto px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700"

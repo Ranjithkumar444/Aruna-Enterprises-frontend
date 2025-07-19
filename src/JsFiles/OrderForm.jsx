@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,11 +8,11 @@ const OrderForm = () => {
 
   const [formData, setFormData] = useState({
     client: '',
-    productName: '',
     typeOfProduct: '',
     productType: '',
     quantity: '',
     size: '',
+    materialGrade: '',
     deliveryAddress: '',
     expectedCompletionDate: '',
     unit: ''
@@ -20,33 +20,6 @@ const OrderForm = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [productionDetail, setProductionDetail] = useState(null);
-  const [clients, setClients] = useState([]);
-  const [filteredClients, setFilteredClients] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [showClientDropdown, setShowClientDropdown] = useState(false);
-  const [showProductDropdown, setShowProductDropdown] = useState(false);
-
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const token = localStorage.getItem('adminToken');
-        const response = await axios.get(
-          "https://arunaenterprises.azurewebsites.net/admin/getAllClients",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-        setClients(response.data);
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-      }
-    };
-
-    fetchClients();
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,85 +36,10 @@ const OrderForm = () => {
       return;
     }
 
-    if (name === 'client') {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value,
-        productName: '', // Reset product name when client changes
-        size: '', // Reset size when client changes
-        productType: '', // Reset ply when client changes
-        typeOfProduct: '' // Reset product type when client changes
-      }));
-
-      // Filter clients based on input
-      const filtered = clients.filter(client =>
-        client.client.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredClients(filtered);
-      setShowClientDropdown(true);
-      return;
-    }
-
-    if (name === 'productName') {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-
-      // Filter products based on input and selected client
-      if (formData.client) {
-        const clientProducts = clients.filter(
-          client => client.client === formData.client
-        );
-        const filtered = clientProducts.filter(product =>
-          product.product.toLowerCase().includes(value.toLowerCase())
-        );
-        setFilteredProducts(filtered.map(p => p.product));
-        setShowProductDropdown(true);
-      }
-      return;
-    }
-
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-  };
-
-  const selectClient = (client) => {
-    setFormData(prev => ({
-      ...prev,
-      client,
-      productName: '', // Reset product when client changes
-      size: '', // Reset size when client changes
-      productType: '', // Reset ply when client changes
-      typeOfProduct: '' // Reset product type when client changes
-    }));
-    setShowClientDropdown(false);
-  };
-
-  const selectProduct = (productName) => {
-    // Find the first matching client product to auto-fill other fields
-    const clientProduct = clients.find(
-      client => client.client === formData.client && client.product === productName
-    );
-
-    if (clientProduct) {
-      setFormData(prev => ({
-        ...prev,
-        productName,
-        size: clientProduct.size || '',
-        productType: clientProduct.ply || '',
-        typeOfProduct: clientProduct.productType || '',
-        materialGrade: clientProduct.madeUpOf || ''
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        productName
-      }));
-    }
-    setShowProductDropdown(false);
   };
 
   const handleSubmit = async (e) => {
@@ -227,19 +125,19 @@ const OrderForm = () => {
 
   const handlePrint = () => {
     const printContent = printRef.current;
-    const printWindow = window.open('', '', 'width=390,height=490');
+    const printWindow = window.open('', '', 'width=290,height=490');
     printWindow.document.write('<html><head><title>Print Sticker</title>');
     printWindow.document.write(`
       <style>
         body {
           font-family: Arial, sans-serif;
-          font-size: 15px;
+          font-size: 11px;
           padding: 5px;
           margin: 0;
         }
         .sticker-container {
-          width: 3.90in;
-          height: 5.90in;
+          width: 2.90in;
+          height: 4.90in;
           padding: 5px;
           box-sizing: border-box;
         }
@@ -268,67 +166,80 @@ const OrderForm = () => {
     printWindow.document.write('<div class="sticker-container">');
     printWindow.document.write('<div class="sticker-content">');
     
+    // Add the production details in the same format as the UI
     printWindow.document.write('<h3 class="section-title">Production Sticker</h3>');
     
+    // Client and Size row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Client:</strong> ${productionDetail.client}</span>`);
     printWindow.document.write(`<span><strong>Size:</strong> ${productionDetail.size}</span>`);
     printWindow.document.write('</div>');
     
+    // Ply and Type row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Ply:</strong> ${productionDetail.ply}</span>`);
     printWindow.document.write(`<span><strong>Type:</strong> ${productionDetail.typeOfProduct}</span>`);
     printWindow.document.write('</div>');
     
+    // Product and Boxes row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Product:</strong> ${productionDetail.productType}</span>`);
     printWindow.document.write(`<span><strong>Boxes:</strong> ${productionDetail.quantity}</span>`);
     printWindow.document.write('</div>');
     
+    // Top GSM and Liner GSM row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Top GSM:</strong> ${productionDetail.topGsm}</span>`);
     printWindow.document.write(`<span><strong>Liner GSM:</strong> ${productionDetail.linerGsm}</span>`);
     printWindow.document.write('</div>');
     
+    // Flute GSM and Cut Len row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Flute GSM:</strong> ${productionDetail.fluteGsm}</span>`);
     printWindow.document.write(`<span><strong>Cut Len:</strong> ${productionDetail.cuttingLength}</span>`);
     printWindow.document.write('</div>');
     
+    // Top Mat and Liner Mat row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Top Mat:</strong> ${productionDetail.topMaterial}</span>`);
     printWindow.document.write(`<span><strong>Liner Mat:</strong> ${productionDetail.linerMaterial}</span>`);
     printWindow.document.write('</div>');
     
+    // Flute Mat row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Flute Mat:</strong> ${productionDetail.fluteMaterial}</span>`);
     printWindow.document.write('<span></span>');
     printWindow.document.write('</div>');
     
+    // ONE UPS section
     printWindow.document.write('<div class="section-title">ONE UPS</div>');
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span>Deckle: ${productionDetail.deckle}</span>`);
     printWindow.document.write(`<span>P: ${productionDetail.plain} | S: ${productionDetail.sheets}</span>`);
     printWindow.document.write('</div>');
     
+    // TWO UPS section
     printWindow.document.write('<div class="section-title">TWO UPS</div>');
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span>Deckle: ${productionDetail.twoUpsDeckle}</span>`);
     printWindow.document.write(`<span>P: ${productionDetail.twoUpsPlain} | S: ${productionDetail.twoUpsSheets}</span>`);
     printWindow.document.write('</div>');
     
+    // THREE UPS section
     printWindow.document.write('<div class="section-title">THREE UPS</div>');
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span>Deckle: ${productionDetail.threeUpsDeckle}</span>`);
     printWindow.document.write(`<span>P: ${productionDetail.threeUpsPlain} | S: ${productionDetail.threeUpsSheets}</span>`);
     printWindow.document.write('</div>');
     
+    // FOUR UPS section
     printWindow.document.write('<div class="section-title">FOUR UPS</div>');
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span>Deckle: ${productionDetail.fourUpsDeckle}</span>`);
     printWindow.document.write(`<span>P: ${productionDetail.fourUpsPlain} | S: ${productionDetail.fourUpsSheets}</span>`);
     printWindow.document.write('</div>');
     
+    // Material Required section
     printWindow.document.write('<div class="section-title">Material Required</div>');
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span>Top: ${productionDetail.totalTopWeightReq.toFixed(2)} kg</span>`);
@@ -354,7 +265,7 @@ const OrderForm = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="relative">
+          <div>
             <label className="block text-sm font-semibold">Client Name</label>
             <input
               type="text"
@@ -363,49 +274,7 @@ const OrderForm = () => {
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border rounded"
-              autoComplete="off"
             />
-            {showClientDropdown && filteredClients.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                {filteredClients.map((client, index) => (
-                  <div
-                    key={index}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => selectClient(client.client)}
-                  >
-                    {client.client}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="relative">
-            <label className="block text-sm font-semibold">Product Name</label>
-            <input
-              type="text"
-              name="productName"
-              value={formData.productName}
-              onChange={handleChange}
-              placeholder="e.g. It,Tile 400 X 400"
-              required
-              className="w-full px-4 py-2 border rounded"
-              autoComplete="off"
-              disabled={!formData.client}
-            />
-            {showProductDropdown && filteredProducts.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                {filteredProducts.map((product, index) => (
-                  <div
-                    key={index}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => selectProduct(product)}
-                  >
-                    {product}
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
 
           <div>
@@ -464,6 +333,18 @@ const OrderForm = () => {
           </div>
 
           <div>
+            <label className="block text-sm font-semibold">Material Grade</label>
+            <input
+              type="text"
+              name="materialGrade"
+              value={formData.materialGrade}
+              onChange={handleChange}
+              placeholder="e.g. Natural, Kraft"
+              className="w-full px-4 py-2 border rounded"
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-semibold">Delivery Address</label>
             <input
               type="text"
@@ -517,6 +398,7 @@ const OrderForm = () => {
           <h3 className="text-center font-bold mb-2 text-[12px]">Production Sticker</h3>
 
           <div ref={printRef} className="space-y-[2px]">
+            {/* Row-wise left-right format */}
             <div className="flex justify-between">
               <span><strong>Client:</strong> {productionDetail.client}</span>
               <span><strong>Size:</strong> {productionDetail.size}</span>

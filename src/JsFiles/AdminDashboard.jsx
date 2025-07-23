@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react';
 import KanbanBoard from './KanbanBoard';
 import InUseReelsTable from './InUseReelsTable';
 import OrderList from './OrderList';
-import React from 'react';
+import OrderSummaryDashboard from './OrderSummaryDashboard';
+import react from 'react';
+
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -149,6 +151,7 @@ const AdminDashboard = () => {
                 </ul>
             </div>
 
+
             {/* Main Dashboard */}
             <div className="flex-1 p-8 relative overflow-y-auto bg-gray-100">
 
@@ -189,7 +192,7 @@ const AdminDashboard = () => {
                     >
                         Add Industry
                     </button>
-                    
+                
                     <button
                         onClick={() => navigate("admin/contact/contactDetails")}
                         className="w-full md:w-auto px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700"
@@ -203,11 +206,19 @@ const AdminDashboard = () => {
                         Create Box
                     </button>
 
+
+                    <button
+                        onClick={() => navigate("admin/machine/config")}
+                        className="w-full md:w-auto px-6 py-3 bg-orange-600 text-white font-semibold rounded-lg shadow-md hover:bg-orange-700"
+                    >
+                        Machine Config
+                    </button>
+
                     <div className="w-full md:w-auto">
     <button
         onClick={async () => {
             try {
-                const response = await fetch("http://localhost:8080/admin/reel/stock/alert/trigger", {
+                const response = await fetch("https://arunaenterprises.azurewebsites.net/admin/reel/stock/alert/trigger", {
                     method: "POST",
                     headers: {
                         Authorization: `Bearer ${token}`,

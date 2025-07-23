@@ -157,6 +157,12 @@ const router = createBrowserRouter([
                     },{
                         path: "admin/analytics",
                         element: <OrderSummaryDashboard/>
+                    },{
+                        path: "admin/completedOrders",
+                        element: <CompletedOrders/>
+                    },{
+                        path: "admin/machine/config",
+                        element: <MachineConfigForm/>
                     }
                     
                 ]

@@ -40,6 +40,7 @@ import ThresholdForm from "./ThresholdForm";
 import OrderSummaryPage from "./OrderSummaryPage";
 import OrderSummaryDashboard from "./OrderSummaryDashboard";
 import CompletedOrders from "./CompletedOrder";
+import MachineConfigForm from "./MachineConfigForm";
 
 
 

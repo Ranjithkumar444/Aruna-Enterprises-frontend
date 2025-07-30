@@ -43,6 +43,7 @@ import CompletedOrders from "./CompletedOrder";
 import MachineConfigForm from "./MachineConfigForm";
 
 
+
 const router = createBrowserRouter([
     {
         path: "/",

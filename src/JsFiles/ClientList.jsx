@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import CorrugatedClientOrderForm from "./CorrugatedClientOrderForm";
 import PunchingClientOrderForm from "./PunchingClientOrderForm";
-
+import CorrugatedClientOrderForm from "./CorrugatedClientOrderForm";
 
 const ClientList = () => {
   const [clients, setClients] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
   const [formType, setFormType] = useState(""); // "corrugated" or "punching"
+  const [selectedFilter, setSelectedFilter] = useState("all"); // "all", "corrugated", "punching"
   const token = localStorage.getItem("adminToken");
 
   const fetchClients = async () => {
@@ -23,6 +23,7 @@ const ClientList = () => {
           },
         }
       );
+      console.log(response);
       setClients(response.data);
     } catch (error) {
       console.error("Error fetching clients:", error);
@@ -50,11 +51,43 @@ const ClientList = () => {
     setShowForm(true);
   };
 
+  // Filter clients based on selected filter
+  const filteredClients = clients.filter(client => {
+    if (selectedFilter === "all") return true;
+    return client.productType === selectedFilter;
+  });
+
+  // Separate clients by type
+  const corrugatedClients = clients.filter(client => client.productType === "corrugated");
+  const punchingClients = clients.filter(client => client.productType === "punching");
+
   const exportToExcel = () => {
-    const filteredClients = clients.map(({ productionCostPerBox, sellingPricePerBox, ...rest }) => rest);
-    const worksheet = XLSX.utils.json_to_sheet(filteredClients);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Clients");
+
+    // Prepare data for export (remove sensitive fields)
+    const prepareDataForExport = (clientList) => {
+      return clientList.map(({ productionCostPerBox, sellingPricePerBox, ...rest }) => rest);
+    };
+
+    // Add All Clients sheet
+    const allClientsData = prepareDataForExport(clients);
+    const allClientsSheet = XLSX.utils.json_to_sheet(allClientsData);
+    XLSX.utils.book_append_sheet(workbook, allClientsSheet, "All Clients");
+
+    // Add Corrugated Clients sheet
+    if (corrugatedClients.length > 0) {
+      const corrugatedData = prepareDataForExport(corrugatedClients);
+      const corrugatedSheet = XLSX.utils.json_to_sheet(corrugatedData);
+      XLSX.utils.book_append_sheet(workbook, corrugatedSheet, "Corrugated Clients");
+    }
+
+    // Add Punching Clients sheet
+    if (punchingClients.length > 0) {
+      const punchingData = prepareDataForExport(punchingClients);
+      const punchingSheet = XLSX.utils.json_to_sheet(punchingData);
+      XLSX.utils.book_append_sheet(workbook, punchingSheet, "Punching Clients");
+    }
+
     const excelBuffer = XLSX.write(workbook, {
       bookType: "xlsx",
       type: "array",
@@ -68,31 +101,67 @@ const ClientList = () => {
       <h1 className="text-3xl font-bold mb-6">Client Management</h1>
 
       {!showForm && (
-        <div className="mb-6 flex gap-4">
-          <button
-            onClick={() => {
-              setShowForm(true);
-              setFormType("corrugated");
-            }}
-            className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700"
-          >
-            + Corrugated Client
-          </button>
-          <button
-            onClick={() => {
-              setShowForm(true);
-              setFormType("punching");
-            }}
-            className="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg shadow hover:bg-purple-700"
-          >
-            + Punching Client
-          </button>
-          <button
-            onClick={exportToExcel}
-            className="ml-auto px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700"
-          >
-            Export to Excel
-          </button>
+        <div className="mb-6">
+          <div className="flex gap-4 mb-4">
+            <button
+              onClick={() => {
+                setShowForm(true);
+                setFormType("corrugated");
+              }}
+              className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700"
+            >
+              + Corrugated Client
+            </button>
+            <button
+              onClick={() => {
+                setShowForm(true);
+                setFormType("punching");
+              }}
+              className="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg shadow hover:bg-purple-700"
+            >
+              + Punching Client
+            </button>
+            <button
+              onClick={exportToExcel}
+              className="ml-auto px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700"
+            >
+              Export to Excel
+            </button>
+          </div>
+
+          {/* Filter Buttons */}
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => setSelectedFilter("all")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition duration-200 ${
+                selectedFilter === "all"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              All Clients ({clients.length})
+            </button>
+            <button
+              onClick={() => setSelectedFilter("corrugated")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition duration-200 ${
+                selectedFilter === "corrugated"
+                  ? "bg-indigo-600 text-white shadow-sm"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Corrugated ({corrugatedClients.length})
+            </button>
+            <button
+              onClick={() => setSelectedFilter("punching")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition duration-200 ${
+                selectedFilter === "punching"
+                  ? "bg-purple-600 text-white shadow-sm"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Punching ({punchingClients.length})
+            </button>
+          </div>
         </div>
       )}
 
@@ -110,7 +179,6 @@ const ClientList = () => {
           </button>
 
           {formType === "corrugated" && (
-            
             <CorrugatedClientOrderForm
               onSuccess={handleFormSuccess}
               clientData={editingClient}
@@ -133,6 +201,7 @@ const ClientList = () => {
                 {[
                   "Client",
                   "Product",
+                  "Product Type",
                   "Size",
                   "Ply",
                   "Cutting Length",
@@ -150,6 +219,7 @@ const ClientList = () => {
                   "Four Ups",
                   "Five Ups",
                   "Six Ups",
+                  "Description",
                   "Actions",
                 ].map((header) => (
                   <th
@@ -162,10 +232,19 @@ const ClientList = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {clients.map((client, index) => (
+              {filteredClients.map((client, index) => (
                 <tr key={index} className="hover:bg-gray-50">
                   <td className="px-4 py-2">{client.client}</td>
                   <td className="px-4 py-2">{client.product}</td>
+                  <td className="px-4 py-2">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      client.productType === "corrugated" 
+                        ? "bg-indigo-100 text-indigo-800" 
+                        : "bg-purple-100 text-purple-800"
+                    }`}>
+                      {client.productType}
+                    </span>
+                  </td>
                   <td className="px-4 py-2">{client.size}</td>
                   <td className="px-4 py-2">{client.ply}</td>
                   <td className="px-4 py-2">{client.cuttingLength}</td>
@@ -183,6 +262,7 @@ const ClientList = () => {
                   <td className="px-4 py-2">{client.fourUps}</td>
                   <td className="px-4 py-2">{client.fiveUps}</td>
                   <td className="px-4 py-2">{client.sixUps}</td>
+                  <td className="px-4 py-2">{client.description}</td>
                   <td className="px-4 py-2 text-right">
                     <button
                       onClick={() => handleEdit(client)}
@@ -193,13 +273,13 @@ const ClientList = () => {
                   </td>
                 </tr>
               ))}
-              {clients.length === 0 && (
+              {filteredClients.length === 0 && (
                 <tr>
                   <td
-                    colSpan="20"
+                    colSpan="21"
                     className="text-center text-gray-500 py-6 font-medium"
                   >
-                    No clients found.
+                    No clients found for the selected filter.
                   </td>
                 </tr>
               )}

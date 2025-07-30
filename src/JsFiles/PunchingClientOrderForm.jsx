@@ -19,6 +19,7 @@ const PunchingClientOrderForm = ({ onSuccess, clientData = null, isEditMode = fa
     paperTypeTop: "",
     paperTypeBottom: "",
     paperTypeFlute: "",
+    fluteType: "",  // added fluteType
     description: "",
     sellingPricePerBox: "",
     productionCostPerBox: ""
@@ -42,8 +43,16 @@ const PunchingClientOrderForm = ({ onSuccess, clientData = null, isEditMode = fa
     e.preventDefault();
     const token = localStorage.getItem("adminToken");
 
+    const mappedFluteType =
+      formData.fluteType === "NF"
+        ? "nfcorrugation"
+        : formData.fluteType === "E"
+        ? "ecorrugation"
+        : "";
+
     const payload = {
       ...formData,
+      fluteType: mappedFluteType,
       cuttingLength: parseFloat(formData.cuttingLength),
       deckle: parseFloat(formData.deckle),
       topGsm: parseInt(formData.topGsm),
@@ -122,8 +131,27 @@ const PunchingClientOrderForm = ({ onSuccess, clientData = null, isEditMode = fa
           </div>
         ))}
 
+        {/* Flute Type Dropdown */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Flute Type</label>
+          <select
+            name="fluteType"
+            value={formData.fluteType}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="">Select Flute Type</option>
+            <option value="NF">NF</option>
+            <option value="E">E</option>
+          </select>
+        </div>
+
         <div className="md:col-span-2">
-          <button type="submit" className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 shadow-md transition-all">
+          <button
+            type="submit"
+            className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 shadow-md transition-all"
+          >
             {isEditMode ? "Update Punching Order" : "Submit Punching Order"}
           </button>
         </div>

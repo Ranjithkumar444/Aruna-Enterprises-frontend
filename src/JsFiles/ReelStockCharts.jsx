@@ -41,7 +41,7 @@ const ReelStockChart = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:8080/admin/inventory/getReelStocks', {
+        const response = await axios.get('https://arunaenterprises.azurewebsites.net/admin/inventory/getReelStocks', {
           headers: {
             'Authorization': `Bearer ${adminToken}`
           }

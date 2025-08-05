@@ -112,80 +112,101 @@ const OrderReelSuggestions = () => {
     printWindow.document.write('<div class="sticker-container">');
     printWindow.document.write('<div class="sticker-content">');
     
-    // Add the production details in the same format as the UI
     printWindow.document.write('<h3 class="section-title">Production Sticker</h3>');
     
-    // Client and Size row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Client:</strong> ${productionDetail.client}</span>`);
     printWindow.document.write(`<span><strong>Size:</strong> ${productionDetail.size}</span>`);
     printWindow.document.write('</div>');
     
-    // Ply and Type row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Ply:</strong> ${productionDetail.ply}</span>`);
     printWindow.document.write(`<span><strong>Type:</strong> ${productionDetail.typeOfProduct}</span>`);
     printWindow.document.write('</div>');
     
-    // Product and Boxes row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Product:</strong> ${productionDetail.productType}</span>`);
     printWindow.document.write(`<span><strong>Boxes:</strong> ${productionDetail.quantity}</span>`);
     printWindow.document.write('</div>');
     
-    // Top GSM and Liner GSM row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Top GSM:</strong> ${productionDetail.topGsm}</span>`);
     printWindow.document.write(`<span><strong>Liner GSM:</strong> ${productionDetail.linerGsm}</span>`);
     printWindow.document.write('</div>');
     
-    // Flute GSM and Cut Len row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Flute GSM:</strong> ${productionDetail.fluteGsm}</span>`);
     printWindow.document.write(`<span><strong>Cut Len:</strong> ${productionDetail.cuttingLength}</span>`);
     printWindow.document.write('</div>');
     
-    // Top Mat and Liner Mat row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Top Mat:</strong> ${productionDetail.topMaterial}</span>`);
     printWindow.document.write(`<span><strong>Liner Mat:</strong> ${productionDetail.linerMaterial}</span>`);
     printWindow.document.write('</div>');
     
-    // Flute Mat row
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span><strong>Flute Mat:</strong> ${productionDetail.fluteMaterial}</span>`);
     printWindow.document.write('<span></span>');
     printWindow.document.write('</div>');
     
-    // ONE UPS section
-    printWindow.document.write('<div class="section-title">ONE UPS</div>');
-    printWindow.document.write('<div class="row">');
-    printWindow.document.write(`<span>Deckle: ${productionDetail.deckle}</span>`);
-    printWindow.document.write(`<span>P: ${productionDetail.plain} | S: ${productionDetail.sheets}</span>`);
-    printWindow.document.write('</div>');
+    // Dynamic UPS sections
+    const minDeckle = parseFloat(productionDetail.minDeckle);
+    const maxDeckle = parseFloat(productionDetail.maxDeckle);
     
-    // TWO UPS section
-    printWindow.document.write('<div class="section-title">TWO UPS</div>');
-    printWindow.document.write('<div class="row">');
-    printWindow.document.write(`<span>Deckle: ${productionDetail.twoUpsDeckle}</span>`);
-    printWindow.document.write(`<span>P: ${productionDetail.twoUpsPlain} | S: ${productionDetail.twoUpsSheets}</span>`);
-    printWindow.document.write('</div>');
+    if (productionDetail.deckle >= minDeckle && productionDetail.deckle <= maxDeckle) {
+      printWindow.document.write('<div class="section-title">ONE UPS</div>');
+      printWindow.document.write('<div class="row">');
+      printWindow.document.write(`<span>Deckle: ${productionDetail.deckle}</span>`);
+      printWindow.document.write(`<span>P: ${productionDetail.plain} | S: ${productionDetail.sheets}</span>`);
+      printWindow.document.write('</div>');
+    }
     
-    // THREE UPS section
-    printWindow.document.write('<div class="section-title">THREE UPS</div>');
-    printWindow.document.write('<div class="row">');
-    printWindow.document.write(`<span>Deckle: ${productionDetail.threeUpsDeckle}</span>`);
-    printWindow.document.write(`<span>P: ${productionDetail.threeUpsPlain} | S: ${productionDetail.threeUpsSheets}</span>`);
-    printWindow.document.write('</div>');
+    if (productionDetail.twoUpsDeckle >= minDeckle && productionDetail.twoUpsDeckle <= maxDeckle) {
+      printWindow.document.write('<div class="section-title">TWO UPS</div>');
+      printWindow.document.write('<div class="row">');
+      printWindow.document.write(`<span>Deckle: ${productionDetail.twoUpsDeckle}</span>`);
+      printWindow.document.write(`<span>P: ${productionDetail.twoUpsPlain} | S: ${productionDetail.twoUpsSheets}</span>`);
+      printWindow.document.write('</div>');
+    }
     
-    // FOUR UPS section
-    printWindow.document.write('<div class="section-title">FOUR UPS</div>');
-    printWindow.document.write('<div class="row">');
-    printWindow.document.write(`<span>Deckle: ${productionDetail.fourUpsDeckle}</span>`);
-    printWindow.document.write(`<span>P: ${productionDetail.fourUpsPlain} | S: ${productionDetail.fourUpsSheets}</span>`);
-    printWindow.document.write('</div>');
+    if (productionDetail.threeUpsDeckle >= minDeckle && productionDetail.threeUpsDeckle <= maxDeckle) {
+      printWindow.document.write('<div class="section-title">THREE UPS</div>');
+      printWindow.document.write('<div class="row">');
+      printWindow.document.write(`<span>Deckle: ${productionDetail.threeUpsDeckle}</span>`);
+      printWindow.document.write(`<span>P: ${productionDetail.threeUpsPlain} | S: ${productionDetail.threeUpsSheets}</span>`);
+      printWindow.document.write('</div>');
+    }
     
-    // Material Required section
+    if (productionDetail.fourUpsDeckle >= minDeckle && productionDetail.fourUpsDeckle <= maxDeckle) {
+      printWindow.document.write('<div class="section-title">FOUR UPS</div>');
+      printWindow.document.write('<div class="row">');
+      printWindow.document.write(`<span>Deckle: ${productionDetail.fourUpsDeckle}</span>`);
+      printWindow.document.write(`<span>P: ${productionDetail.fourUpsPlain} | S: ${productionDetail.fourUpsSheets}</span>`);
+      printWindow.document.write('</div>');
+    }
+
+    // Dynamic Piece sections
+    const minCuttingLength = parseFloat(productionDetail.minCuttingLength);
+    const maxCuttingLength = parseFloat(productionDetail.maxCuttingLength);
+    
+    if (productionDetail.onePieceCuttingLength >= minCuttingLength && 
+        productionDetail.onePieceCuttingLength <= maxCuttingLength) {
+      printWindow.document.write('<div class="section-title">ONE PIECE</div>');
+      printWindow.document.write('<div class="row">');
+      printWindow.document.write(`<span>Cut Len: ${productionDetail.onePieceCuttingLength}</span>`);
+      printWindow.document.write(`<span>P: ${productionDetail.onePiecePlain} | S: ${productionDetail.onePieceSheet}</span>`);
+      printWindow.document.write('</div>');
+    }
+    
+    if (productionDetail.twoPieceCuttingLength >= minCuttingLength && 
+        productionDetail.twoPieceCuttingLength <= maxCuttingLength) {
+      printWindow.document.write('<div class="section-title">TWO PIECE</div>');
+      printWindow.document.write('<div class="row">');
+      printWindow.document.write(`<span>Cut Len: ${productionDetail.twoPieceCuttingLength}</span>`);
+      printWindow.document.write(`<span>P: ${productionDetail.twoPiecePlain} | S: ${productionDetail.twoPieceSheet}</span>`);
+      printWindow.document.write('</div>');
+    }
+    
     printWindow.document.write('<div class="section-title">Material Required</div>');
     printWindow.document.write('<div class="row">');
     printWindow.document.write(`<span>Top: ${productionDetail.totalTopWeightReq.toFixed(2)} kg</span>`);
@@ -417,29 +438,73 @@ const OrderReelSuggestions = () => {
                 <span></span>
               </div>
 
-              <div className="mt-1 border-t pt-1 text-center font-semibold">ONE UPS</div>
-              <div className="flex justify-between">
-                <span>Deckle: {productionDetail.deckle}</span>
-                <span>P: {productionDetail.plain} | S: {productionDetail.sheets}</span>
-              </div>
+              {/* Dynamic UPS sections */}
+              {productionDetail.deckle >= productionDetail.minDeckle && 
+               productionDetail.deckle <= productionDetail.maxDeckle && (
+                <>
+                  <div className="mt-1 border-t pt-1 text-center font-semibold">ONE UPS</div>
+                  <div className="flex justify-between">
+                    <span>Deckle: {productionDetail.deckle}</span>
+                    <span>P: {productionDetail.plain} | S: {productionDetail.sheets}</span>
+                  </div>
+                </>
+              )}
 
-              <div className="mt-1 text-center font-semibold">TWO UPS</div>
-              <div className="flex justify-between">
-                <span>Deckle: {productionDetail.twoUpsDeckle}</span>
-                <span>P: {productionDetail.twoUpsPlain} | S: {productionDetail.twoUpsSheets}</span>
-              </div>
+              {productionDetail.twoUpsDeckle >= productionDetail.minDeckle && 
+               productionDetail.twoUpsDeckle <= productionDetail.maxDeckle && (
+                <>
+                  <div className="mt-1 text-center font-semibold">TWO UPS</div>
+                  <div className="flex justify-between">
+                    <span>Deckle: {productionDetail.twoUpsDeckle}</span>
+                    <span>P: {productionDetail.twoUpsPlain} | S: {productionDetail.twoUpsSheets}</span>
+                  </div>
+                </>
+              )}
 
-              <div className="mt-1 text-center font-semibold">THREE UPS</div>
-              <div className="flex justify-between">
-                <span>Deckle: {productionDetail.threeUpsDeckle}</span>
-                <span>P: {productionDetail.threeUpsPlain} | S: {productionDetail.threeUpsSheets}</span>
-              </div>
+              {productionDetail.threeUpsDeckle >= productionDetail.minDeckle && 
+               productionDetail.threeUpsDeckle <= productionDetail.maxDeckle && (
+                <>
+                  <div className="mt-1 text-center font-semibold">THREE UPS</div>
+                  <div className="flex justify-between">
+                    <span>Deckle: {productionDetail.threeUpsDeckle}</span>
+                    <span>P: {productionDetail.threeUpsPlain} | S: {productionDetail.threeUpsSheets}</span>
+                  </div>
+                </>
+              )}
 
-              <div className="mt-1 text-center font-semibold">FOUR UPS</div>
-              <div className="flex justify-between">
-                <span>Deckle: {productionDetail.fourUpsDeckle}</span>
-                <span>P: {productionDetail.fourUpsPlain} | S: {productionDetail.fourUpsSheets}</span>
-              </div>
+              {productionDetail.fourUpsDeckle >= productionDetail.minDeckle && 
+               productionDetail.fourUpsDeckle <= productionDetail.maxDeckle && (
+                <>
+                  <div className="mt-1 text-center font-semibold">FOUR UPS</div>
+                  <div className="flex justify-between">
+                    <span>Deckle: {productionDetail.fourUpsDeckle}</span>
+                    <span>P: {productionDetail.fourUpsPlain} | S: {productionDetail.fourUpsSheets}</span>
+                  </div>
+                </>
+              )}
+
+              {/* Dynamic Piece sections */}
+              {productionDetail.onePieceCuttingLength >= productionDetail.minCuttingLength && 
+               productionDetail.onePieceCuttingLength <= productionDetail.maxCuttingLength && (
+                <>
+                  <div className="mt-1 text-center font-semibold">ONE PIECE</div>
+                  <div className="flex justify-between">
+                    <span>Cut Len: {productionDetail.onePieceCuttingLength}</span>
+                    <span>P: {productionDetail.onePiecePlain} | S: {productionDetail.onePieceSheet}</span>
+                  </div>
+                </>
+              )}
+
+              {productionDetail.twoPieceCuttingLength >= productionDetail.minCuttingLength && 
+               productionDetail.twoPieceCuttingLength <= productionDetail.maxCuttingLength && (
+                <>
+                  <div className="mt-1 text-center font-semibold">TWO PIECE</div>
+                  <div className="flex justify-between">
+                    <span>Cut Len: {productionDetail.twoPieceCuttingLength}</span>
+                    <span>P: {productionDetail.twoPiecePlain} | S: {productionDetail.twoPieceSheet}</span>
+                  </div>
+                </>
+              )}
 
               <div className="mt-1 text-center font-semibold">Material Required</div>
               <div className="flex justify-between">

@@ -41,6 +41,7 @@ import OrderSummaryPage from "./OrderSummaryPage";
 import OrderSummaryDashboard from "./OrderSummaryDashboard";
 import CompletedOrders from "./CompletedOrder";
 import MachineConfigForm from "./MachineConfigForm";
+import QuotationForm from "./QuotationGeneration";
 
 
 const router = createBrowserRouter([
@@ -165,6 +166,10 @@ const router = createBrowserRouter([
                     },{
                         path: "admin/machine/config",
                         element: <MachineConfigForm/>
+                    },
+                    {
+                        path: "admin/quote",
+                        element: <QuotationForm/>
                     }
                     
                 ]

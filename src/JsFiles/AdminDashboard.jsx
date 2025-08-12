@@ -163,7 +163,8 @@ const AdminDashboard = () => {
                             { name: "Clients", path: "admin/clients", icon: "👥" },
                             { name: "OrderSummary", path: "admin/ordersummary", icon: "📊" },
                             { name: "Analytics", path: "admin/analytics", icon: "📈" },
-                            { name: "Completed Orders", path: "admin/completedOrders", icon: "✅" }
+                            { name: "Completed Orders", path: "admin/completedOrders", icon: "✅" },
+                            { name: "Quotation Generation", path: "admin/quote", icon: "🧾" }
                         ].map((item) => (
                             <button
                                 key={item.name}

@@ -42,7 +42,7 @@ import OrderSummaryDashboard from "./OrderSummaryDashboard";
 import CompletedOrders from "./CompletedOrder";
 import MachineConfigForm from "./MachineConfigForm";
 import QuotationForm from "./QuotationGeneration";
-
+import DailyReelUsageReport from "./DailyReelUsageReport";
 
 
 const router = createBrowserRouter([

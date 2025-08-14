@@ -146,6 +146,10 @@ const router = createBrowserRouter([
                         element: <ReelHistoryComponent/>
                     },
                     {
+                        path: "admin/inventory/dailyreelusage",
+                        element: <DailyReelUsageReport/>
+                    },
+                    {
                         path: "admin/contact/contactDetails",
                         element: <ContactDetails/>
                     },{

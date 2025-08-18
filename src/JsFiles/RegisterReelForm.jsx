@@ -109,14 +109,14 @@ const ReelForm = () => {
           <title>Print Barcode</title>
           <style>
             @page {
-              size: 3.9in 3.9in;
+              size: 2.9in 3.9in;
               margin: 0;
             }
             body {
               margin: 0;
               padding: 0;
               font-family: Arial, sans-serif;
-              width: 3.9in;
+              width: 2.9in;
               height: 3.9in;
             }
             .sticker {
@@ -135,20 +135,13 @@ const ReelForm = () => {
               margin: 3px 0;
             }
             .barcode-image {
-              max-width: 100%;
+              max-width: 95%;
               height: auto;
-
-              max-height: 50%;
+              max-height: 45%;
               margin: 3px 0;
             }
             .details {
               font-size: 13px;
-
-              max-height: 50%;
-              margin: 3px 0;
-            }
-            .details {
-              font-size: 12px;
               line-height: 1.2;
               width: 100%;
               text-align: center;
@@ -168,7 +161,7 @@ const ReelForm = () => {
               <p><strong>Reel No:</strong> ${barcodeData.details.reelNo || 'N/A'}</p>
               <p><strong>GSM:</strong> ${barcodeData.details.gsm}</p>
               <p><strong>Deckle:</strong> ${barcodeData.details.deckle}</p>
-              <p><strong>BurstFactor:</strong> ${barcodeData.details.burstFactor}</P>
+              <p><strong>BurstFactor:</strong> ${barcodeData.details.burstFactor}</p>
               <p><strong>Weight:</strong> ${barcodeData.details.currentWeight} kg</p>
               <p><strong>Supplier:</strong> ${barcodeData.details.supplierName}</p>
               <p><strong>Paper Type:</strong> ${barcodeData.details.paperType}</p>

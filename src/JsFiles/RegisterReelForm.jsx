@@ -109,14 +109,14 @@ const ReelForm = () => {
           <title>Print Barcode</title>
           <style>
             @page {
-              size: 2.9in 3.9in;
+              size: 3.9in 3.9in;
               margin: 0;
             }
             body {
               margin: 0;
               padding: 0;
               font-family: Arial, sans-serif;
-              width: 2.9in;
+              width: 3.9in;
               height: 3.9in;
             }
             .sticker {
@@ -135,10 +135,10 @@ const ReelForm = () => {
               margin: 3px 0;
             }
             .barcode-image {
-              max-width: 95%;
+              max-width: 100%;
               height: auto;
 
-              max-height: 45%;
+              max-height: 50%;
               margin: 3px 0;
             }
             .details {

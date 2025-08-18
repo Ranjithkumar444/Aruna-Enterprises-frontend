@@ -165,7 +165,7 @@ const QuotationForm = () => {
       };
 
       const response = await axios.post(
-        'http://localhost:8080/admin/quotation/calculate',
+        'https://arunaenterprises.azurewebsites.net/admin/quotation/calculate',
         requestData,
         { headers }
       );

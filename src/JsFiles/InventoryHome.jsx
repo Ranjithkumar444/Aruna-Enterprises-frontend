@@ -42,7 +42,7 @@ const InventoryHome = () => {
                     { headers: { Authorization: `Bearer ${token}` } }
                 )
             ]);
-
+            console.log(detailsResponse);
             const blob = new Blob([barcodeResponse.data], { type: 'image/png' });
             setBarcodeImage(URL.createObjectURL(blob));
             setReelDetails(detailsResponse.data);
@@ -56,16 +56,16 @@ const InventoryHome = () => {
         }
     };
 
+    console.log(reelDetails);
+
     const handlePrint = () => {
         if (!barcodeImage || !reelDetails) {
             setError("Nothing to print");
             return;
         }
 
-        // 203 DPI calculations: 3 inches = 3 * 203 = 609px, 5 inches = 5 * 203 = 1015px
-        const stickerWidthPx = 3 * 203; // 3 inches in pixels at 203 DPI
-        const stickerHeightPx = 5 * 203; // 5 inches in pixels at 203 DPI
-        const barcodeHeightPx = 1.5 * 203; // 1.5 inches height for barcode
+        const stickerWidthPx = 2.9 * 96; 
+        const stickerHeightPx = 3.9 * 96; 
 
         const printWindow = window.open('', '_blank');
         printWindow.document.write(`
@@ -76,69 +76,58 @@ const InventoryHome = () => {
                         body {
                             margin: 0;
                             padding: 0;
-                            font-family: Arial, sans-serif;
+                            font-family: sans-serif;
                         }
                         .sticker {
                             width: ${stickerWidthPx}px;
                             height: ${stickerHeightPx}px;
-                            padding: 10px;
+                            padding: 4px; 
                             box-sizing: border-box;
                             display: flex;
                             flex-direction: column;
-                            justify-content: space-between;
+                            justify-content: flex-start;
                             align-items: center;
                             text-align: center;
                             overflow: hidden;
-                            page-break-after: always;
                         }
                         .company-name {
                             font-weight: bold;
-                            font-size: 28px;
-                            margin-bottom: 10px;
-                            text-align: center;
-                            width: 100%;
-                        }
-                        .barcode-container {
-                            width: 100%;
-                            height: ${barcodeHeightPx}px;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            margin-bottom: 10px;
+                            font-size: 11px;
+                            margin-bottom: 3px;
+                            margin-top: 3px;
                         }
                         .barcode-image {
-                            max-width: 100%;
-                            max-height: 100%;
+                            max-width: 95%;
+                            height: auto;
+                            max-height: 35%;
                             object-fit: contain;
+                            margin-bottom: 3px;
                         }
                         .details {
-                            font-size: 18px;
-                            line-height: 1.3;
+                            font-size: 9px;
+                            line-height: 1.2;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
                             width: 100%;
                             text-align: left;
-                            padding: 0 10px;
+                            padding: 0 5px;
                             box-sizing: border-box;
                         }
                         .details p {
-                            margin: 8px 0;
-                        }
-                        .barcode-id {
-                            font-size: 24px;
-                            font-weight: bold;
-                            text-align: center;
-                            margin-top: 10px;
-                            width: 100%;
+                            margin: 1.5px 0;
                         }
                         @page {
-                            size: ${3}in ${5}in;
+                            size: ${2.9}in ${3.9}in;
                             margin: 0;
                         }
                         @media print {
                             body {
-                                width: ${3}in;
-                                height: ${5}in;
+                                width: ${2.9}in;
+                                height: ${3.9}in;
                                 margin: 0;
                                 padding: 0;
+                                display: block;
                             }
                             .sticker {
                                 border: none;
@@ -148,30 +137,24 @@ const InventoryHome = () => {
                 </head>
                 <body>
                     <div class="sticker">
-                        <div class="company-name">ARUNA ENTERPRISES</div>
-                        <div class="barcode-container">
-                            <img src="${barcodeImage}" alt="Barcode" class="barcode-image" />
-                        </div>
-                        <div class="barcode-id">${reelDetails.barcodeId}</div>
+                        <div class="company-name">Aruna Enterprises</div>
+                        <img src="${barcodeImage}" alt="Barcode" class="barcode-image" />
                         <div class="details">
-                            <p><strong>REEL NO:</strong> ${reelDetails.reelNo || 'N/A'}</p>
+                            <p><strong>Barcode ID:</strong> ${reelDetails.barcodeId}</p>
+                            <p><strong>ReelNo:</strong> ${reelDetails.reelNo || 'N/A'}</p>
                             <p><strong>GSM:</strong> ${reelDetails.gsm}</p>
-                            <p><strong>DECKLE:</strong> ${reelDetails.deckle}</p>
-                            <p><strong>INIT WT:</strong> ${reelDetails.initialWeight} kg</p>
-                            <p><strong>CUR WT:</strong> ${reelDetails.currentWeight} kg</p>
-                            <p><strong>BURST:</strong> ${reelDetails.burstFactor}</p>
-                            <p><strong>SUPPLIER:</strong> ${reelDetails.supplierName}</p>
-                            <p><strong>TYPE:</strong> ${reelDetails.paperType}</p>
+                            <p><strong>Deckle:</strong> ${reelDetails.deckle}</p>
+                            <p><strong>Initial Wt:</strong> ${reelDetails.initialWeight} kg</p>
+                            <p><strong>Current Wt:</strong> ${reelDetails.currentWeight} kg</p>
+                            <p><strong>Burst Factor:</strong> ${reelDetails.burstFactor}</p>
+                            <p><strong>Supplier:</strong> ${reelDetails.supplierName}</p>
+                            <p><strong>Paper Type:</strong> ${reelDetails.paperType}</p>
                         </div>
                     </div>
                     <script>
                         window.onload = function() {
-                            setTimeout(function() {
-                                window.print();
-                                window.onafterprint = function() { 
-                                    setTimeout(function() { window.close(); }, 100);
-                                };
-                            }, 200);
+                            window.print();
+                            window.onafterprint = function() { window.close(); };
                         };
                     </script>
                 </body>
@@ -262,22 +245,13 @@ const InventoryHome = () => {
                         </svg>
                         Reel Stocks Alert
                     </button>
-                    <button 
-                        className="flex items-center justify-center px-6 py-4 bg-gray-800 text-white font-medium rounded-lg shadow-sm hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                        onClick={() => navigate("/admin/dashboard/admin/inventory/dailyreelusage")}
-                    >
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        Reel Usage Search
-                    </button>
                 </div>
             </div>
 
             {/* Stock Chart */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Stock Overview</h2>
-                <ReelStockChart />
+                <ReelStockChart/>
             </div>
 
             {/* Utility Functions */}
@@ -309,35 +283,29 @@ const InventoryHome = () => {
 
                         {barcodeImage && (
                             <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                <div className="flex flex-col items-center gap-4">
-                                    <div className="w-full max-w-xs">
-                                        <div className="border border-gray-300 p-2 bg-white">
-                                            <img 
-                                                src={barcodeImage} 
-                                                alt="Barcode" 
-                                                className="w-full h-auto object-contain"
-                                                style={{ maxHeight: '150px' }}
-                                            />
-                                        </div>
+                                <div className="flex flex-col md:flex-row items-start gap-4">
+                                    <div className="flex-shrink-0">
+                                        <img src={barcodeImage} alt="Barcode" className="w-32 h-auto object-contain rounded border border-gray-300" />
                                     </div>
                                     {reelDetails && (
-                                        <div className="w-full text-gray-700 text-sm">
-                                            <h4 className="font-semibold text-gray-900 mb-2 text-center">Reel Details Preview</h4>
-                                            <div className="grid grid-cols-2 gap-2">
+                                        <div className="flex-1 text-gray-700 text-sm">
+                                            <h4 className="font-semibold text-gray-900 mb-2">Reel Details</h4>
+                                            <div className="grid grid-cols-1 gap-1">
                                                 <p><span className="font-medium">REEL NO:</span> {reelDetails.reelNo || 'N/A'}</p>
                                                 <p><span className="font-medium">GSM:</span> {reelDetails.gsm}</p>
-                                                <p><span className="font-medium">DECKLE:</span> {reelDetails.deckle}</p>
-                                                <p><span className="font-medium">INIT WT:</span> {reelDetails.initialWeight} kg</p>
-                                                <p><span className="font-medium">CUR WT:</span> {reelDetails.currentWeight} kg</p>
-                                                <p><span className="font-medium">BURST:</span> {reelDetails.burstFactor}</p>
-                                                <p className="col-span-2"><span className="font-medium">SUPPLIER:</span> {reelDetails.supplierName}</p>
-                                                <p className="col-span-2"><span className="font-medium">TYPE:</span> {reelDetails.paperType}</p>
+                                                <p><span className="font-medium">Deckle:</span> {reelDetails.deckle}</p>
+                                                <p><span className="font-medium">Initial Weight:</span> {reelDetails.initialWeight} kg</p>
+                                                <p><span className="font-medium">Current Weight:</span> {reelDetails.currentWeight} kg</p>
+                                                <p><span className="font-medium">Burst Factor:</span> {reelDetails.burstFactor}</p>
+                                                <p><span className="font-medium">Supplier:</span> {reelDetails.supplierName}</p>
+                                                <p><span className="font-medium">Paper Type:</span> {reelDetails.paperType}</p>
                                             </div>
                                             <button 
-                                                className="mt-4 w-full px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" 
+                                                className="mt-4 px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" 
                                                 onClick={handlePrint}
+                                                disabled={!barcodeImage || !reelDetails}
                                             >
-                                                Print Barcode
+                                                Print Barcode Sticker
                                             </button>
                                         </div>
                                     )}

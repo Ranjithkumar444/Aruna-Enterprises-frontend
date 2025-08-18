@@ -23,7 +23,7 @@ const DailyReelUsageReport = () => {
   const [deckleData, setDeckleData] = useState([]);
   const [bfData, setBfData] = useState([]); // Burst Factor data
 
-  const API_BASE_URL = 'http://localhost:8080/admin/daily-reel-usage';
+  const API_BASE_URL = 'https://arunaenterprises.azurewebsites.net/admin/daily-reel-usage';
 
   const fetchReport = async () => {
     setLoading(true);

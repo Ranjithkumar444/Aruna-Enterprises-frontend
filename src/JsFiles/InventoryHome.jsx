@@ -42,7 +42,7 @@ const InventoryHome = () => {
                     { headers: { Authorization: `Bearer ${token}` } }
                 )
             ]);
-            console.log(detailsResponse);
+            
             const blob = new Blob([barcodeResponse.data], { type: 'image/png' });
             setBarcodeImage(URL.createObjectURL(blob));
             setReelDetails(detailsResponse.data);
@@ -55,8 +55,6 @@ const InventoryHome = () => {
             setLoading(false);
         }
     };
-
-    console.log(reelDetails);
 
     const handlePrint = () => {
         if (!barcodeImage || !reelDetails) {

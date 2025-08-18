@@ -161,6 +161,7 @@ const ReelForm = () => {
               <p><strong>Reel No:</strong> ${barcodeData.details.reelNo || 'N/A'}</p>
               <p><strong>GSM:</strong> ${barcodeData.details.gsm}</p>
               <p><strong>Deckle:</strong> ${barcodeData.details.deckle}</p>
+              <p><strong>BurstFactor:</strong> ${barcodeData.details.burstFactor}</p>
               <p><strong>Weight:</strong> ${barcodeData.details.currentWeight} kg</p>
               <p><strong>Supplier:</strong> ${barcodeData.details.supplierName}</p>
               <p><strong>Paper Type:</strong> ${barcodeData.details.paperType}</p>

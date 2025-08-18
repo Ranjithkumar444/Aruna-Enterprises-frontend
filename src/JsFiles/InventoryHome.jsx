@@ -222,7 +222,7 @@ const InventoryHome = () => {
                         onClick={() => navigate("/admin/dashboard/admin/inventory/manipulateReel")}
                     >
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37-2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         Manipulate Reel
@@ -291,34 +291,33 @@ const InventoryHome = () => {
                         </div>
 
                         {barcodeImage && (
-                            <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                <div className="flex flex-col md:flex-row items-start gap-4">
-                                    <div className="flex-shrink-0">
-                                        <img src={barcodeImage} alt="Barcode" className="w-32 h-auto object-contain rounded border border-gray-300" />
-                                    </div>
-                                    {reelDetails && (
-                                        <div className="flex-1 text-gray-700 text-sm">
-                                            <h4 className="font-semibold text-gray-900 mb-2">Reel Details</h4>
-                                            <div className="grid grid-cols-1 gap-1">
-                                                <p><span className="font-medium">REEL NO:</span> {reelDetails.reelNo || 'N/A'}</p>
-                                                <p><span className="font-medium">GSM:</span> {reelDetails.gsm}</p>
-                                                <p><span className="font-medium">Deckle:</span> {reelDetails.deckle}</p>
-                                                <p><span className="font-medium">Initial Weight:</span> {reelDetails.initialWeight} kg</p>
-                                                <p><span className="font-medium">Current Weight:</span> {reelDetails.currentWeight} kg</p>
-                                                <p><span className="font-medium">Burst Factor:</span> {reelDetails.burstFactor}</p>
-                                                <p><span className="font-medium">Supplier:</span> {reelDetails.supplierName}</p>
-                                                <p><span className="font-medium">Paper Type:</span> {reelDetails.paperType}</p>
-                                            </div>
-                                            <button 
-                                                className="mt-4 px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" 
-                                                onClick={handlePrint}
-                                                disabled={!barcodeImage || !reelDetails}
-                                            >
-                                                Print Barcode Sticker
-                                            </button>
-                                        </div>
-                                    )}
+                            <div className="mt-8 p-6 bg-blue-50 rounded-xl shadow-lg border border-blue-200 flex flex-col md:flex-row items-center justify-center gap-8">
+                                <div className="flex-shrink-0">
+                                    <img src={barcodeImage} alt="Barcode" className="w-48 h-auto object-contain rounded-lg shadow-md border border-gray-200" />
                                 </div>
+                                {reelDetails && (
+                                    <div className="flex-1 text-gray-800 text-lg">
+                                        <h3 className="text-xl font-bold mb-3 border-b pb-2 border-blue-300 text-blue-800">Reel Details</h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+                                            <p><strong className="font-semibold text-gray-700">Barcode ID:</strong> {reelDetails.barcodeId}</p>
+                                            <p><strong className="font-semibold text-gray-700">ReelNo:</strong> {reelDetails.reelNo || 'N/A'}</p>
+                                            <p><strong className="font-semibold text-gray-700">GSM:</strong> {reelDetails.gsm}</p>
+                                            <p><strong className="font-semibold text-gray-700">Deckle:</strong> {reelDetails.deckle}</p>
+                                            <p><strong className="font-semibold text-gray-700">Initial Wt:</strong> {reelDetails.initialWeight} kg</p>
+                                            <p><strong className="font-semibold text-gray-700">Current Wt:</strong> {reelDetails.currentWeight} kg</p>
+                                            <p><strong className="font-semibold text-gray-700">Burst Factor:</strong> {reelDetails.burstFactor}</p>
+                                            <p><strong className="font-semibold text-gray-700">Supplier:</strong> {reelDetails.supplierName}</p>
+                                            <p><strong className="font-semibold text-gray-700">Paper Type:</strong> {reelDetails.paperType}</p>
+                                        </div>
+                                        <button 
+                                            className="mt-6 px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-300 ease-in-out transform hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                            onClick={handlePrint}
+                                            disabled={!barcodeImage || !reelDetails}
+                                        >
+                                            Print Barcode Sticker
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

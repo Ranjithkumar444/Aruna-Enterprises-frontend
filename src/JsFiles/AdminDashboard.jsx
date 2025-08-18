@@ -4,7 +4,7 @@ import KanbanBoard from './KanbanBoard';
 import InUseReelsTable from './InUseReelsTable';
 import OrderList from './OrderList';
 import OrderSummaryDashboard from './OrderSummaryDashboard';
-import react from 'react';
+import React from 'react';
 
 
 const AdminDashboard = () => {

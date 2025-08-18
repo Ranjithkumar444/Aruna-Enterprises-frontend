@@ -35,6 +35,7 @@ const ReelForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError(null);
 
@@ -109,20 +110,20 @@ const ReelForm = () => {
           <title>Print Barcode</title>
           <style>
             @page {
-              size: 2.9in 3.9in;
+              size: 2.90in 3.90in;
               margin: 0;
             }
             body {
               margin: 0;
               padding: 0;
               font-family: Arial, sans-serif;
-              width: 2.9in;
-              height: 3.9in;
+              width: 2.90in;
+              height: 3.90in;
             }
             .sticker {
               width: 100%;
               height: 100%;
-              padding: 4px;
+              padding: 8px; /* Increased padding */
               box-sizing: border-box;
               display: flex;
               flex-direction: column;
@@ -131,24 +132,24 @@ const ReelForm = () => {
             }
             .company-name {
               font-weight: bold;
-              font-size: 11px;
-              margin: 3px 0;
+              font-size: 13px; /* Slightly larger font */
+              margin: 5px 0;
             }
             .barcode-image {
-              max-width: 95%;
+              width: 100%; /* Stretched to full width */
               height: auto;
-              max-height: 45%;
-              margin: 3px 0;
+              max-height: 60%; /* Increased max height */
+              margin: 5px 0;
             }
             .details {
-              font-size: 13px;
-              line-height: 1.2;
+              font-size: 14px; /* Larger font for readability */
+              line-height: 1.3; /* Adjusted line height */
               width: 100%;
               text-align: center;
               padding: 0 5px;
             }
             .details p {
-              margin: 1.5px 0;
+              margin: 2px 0; /* Adjusted margin */
             }
           </style>
         </head>
@@ -199,7 +200,7 @@ const ReelForm = () => {
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
       <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Register New Reel</h1>
-        
+
         {error && (
           <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
             <p>{error}</p>
@@ -231,23 +232,24 @@ const ReelForm = () => {
               />
             </div>
           ))}
-        </form>
 
-        <div className="flex justify-center gap-4 mt-6">
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
-          >
-            {loading ? 'Submitting...' : 'Register Reel'}
-          </button>
-          <button
-            onClick={resetForm}
-            className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded"
-          >
-            Reset
-          </button>
-        </div>
+          <div className="md:col-span-2 flex justify-center gap-4 mt-6">
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
+            >
+              {loading ? 'Submitting...' : 'Register Reel'}
+            </button>
+            <button
+              type="button"
+              onClick={resetForm}
+              className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded"
+            >
+              Reset
+            </button>
+          </div>
+        </form>
 
         {barcodeData && (
           <div className="mt-10 bg-green-50 p-6 rounded-lg border border-green-200">

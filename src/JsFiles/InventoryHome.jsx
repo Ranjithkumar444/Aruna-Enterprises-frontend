@@ -64,8 +64,8 @@ const InventoryHome = () => {
             return;
         }
 
-        const stickerWidthPx = 2.9 * 96; 
-        const stickerHeightPx = 3.9 * 96; 
+        const stickerWidthPx = 2.9 * 203; 
+        const stickerHeightPx = 3.9 * 203; 
 
         const printWindow = window.open('', '_blank');
         printWindow.document.write(`
@@ -97,9 +97,9 @@ const InventoryHome = () => {
                             margin-top: 3px;
                         }
                         .barcode-image {
-                            max-width: 95%;
+                            max-width: 100%;
                             height: auto;
-                            max-height: 35%;
+                            max-height: 55%;
                             object-fit: contain;
                             margin-bottom: 3px;
                         }

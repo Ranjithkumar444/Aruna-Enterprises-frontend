@@ -42,7 +42,7 @@ const InventoryHome = () => {
                     { headers: { Authorization: `Bearer ${token}` } }
                 )
             ]);
-            console.log(detailsResponse);
+
             const blob = new Blob([barcodeResponse.data], { type: 'image/png' });
             setBarcodeImage(URL.createObjectURL(blob));
             setReelDetails(detailsResponse.data);
@@ -56,16 +56,16 @@ const InventoryHome = () => {
         }
     };
 
-    console.log(reelDetails);
-
     const handlePrint = () => {
         if (!barcodeImage || !reelDetails) {
             setError("Nothing to print");
             return;
         }
 
-        const stickerWidthPx = 2.9 * 96; 
-        const stickerHeightPx = 3.9 * 96; 
+        // 203 DPI calculations: 3 inches = 3 * 203 = 609px, 5 inches = 5 * 203 = 1015px
+        const stickerWidthPx = 3 * 203; // 3 inches in pixels at 203 DPI
+        const stickerHeightPx = 5 * 203; // 5 inches in pixels at 203 DPI
+        const barcodeHeightPx = 1.5 * 203; // 1.5 inches height for barcode
 
         const printWindow = window.open('', '_blank');
         printWindow.document.write(`
@@ -76,58 +76,69 @@ const InventoryHome = () => {
                         body {
                             margin: 0;
                             padding: 0;
-                            font-family: sans-serif;
+                            font-family: Arial, sans-serif;
                         }
                         .sticker {
                             width: ${stickerWidthPx}px;
                             height: ${stickerHeightPx}px;
-                            padding: 4px; 
+                            padding: 10px;
                             box-sizing: border-box;
                             display: flex;
                             flex-direction: column;
-                            justify-content: flex-start;
+                            justify-content: space-between;
                             align-items: center;
                             text-align: center;
                             overflow: hidden;
+                            page-break-after: always;
                         }
                         .company-name {
                             font-weight: bold;
-                            font-size: 11px;
-                            margin-bottom: 3px;
-                            margin-top: 3px;
+                            font-size: 28px;
+                            margin-bottom: 10px;
+                            text-align: center;
+                            width: 100%;
+                        }
+                        .barcode-container {
+                            width: 100%;
+                            height: ${barcodeHeightPx}px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            margin-bottom: 10px;
                         }
                         .barcode-image {
-                            max-width: 95%;
-                            height: auto;
-                            max-height: 35%;
+                            max-width: 100%;
+                            max-height: 100%;
                             object-fit: contain;
-                            margin-bottom: 3px;
                         }
                         .details {
-                            font-size: 9px;
-                            line-height: 1.2;
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
+                            font-size: 18px;
+                            line-height: 1.3;
                             width: 100%;
                             text-align: left;
-                            padding: 0 5px;
+                            padding: 0 10px;
                             box-sizing: border-box;
                         }
                         .details p {
-                            margin: 1.5px 0;
+                            margin: 8px 0;
+                        }
+                        .barcode-id {
+                            font-size: 24px;
+                            font-weight: bold;
+                            text-align: center;
+                            margin-top: 10px;
+                            width: 100%;
                         }
                         @page {
-                            size: ${2.9}in ${3.9}in;
+                            size: ${3}in ${5}in;
                             margin: 0;
                         }
                         @media print {
                             body {
-                                width: ${2.9}in;
-                                height: ${3.9}in;
+                                width: ${3}in;
+                                height: ${5}in;
                                 margin: 0;
                                 padding: 0;
-                                display: block;
                             }
                             .sticker {
                                 border: none;
@@ -137,24 +148,30 @@ const InventoryHome = () => {
                 </head>
                 <body>
                     <div class="sticker">
-                        <div class="company-name">Aruna Enterprises</div>
-                        <img src="${barcodeImage}" alt="Barcode" class="barcode-image" />
+                        <div class="company-name">ARUNA ENTERPRISES</div>
+                        <div class="barcode-container">
+                            <img src="${barcodeImage}" alt="Barcode" class="barcode-image" />
+                        </div>
+                        <div class="barcode-id">${reelDetails.barcodeId}</div>
                         <div class="details">
-                            <p><strong>Barcode ID:</strong> ${reelDetails.barcodeId}</p>
-                            <p><strong>ReelNo:</strong> ${reelDetails.reelNo || 'N/A'}</p>
+                            <p><strong>REEL NO:</strong> ${reelDetails.reelNo || 'N/A'}</p>
                             <p><strong>GSM:</strong> ${reelDetails.gsm}</p>
-                            <p><strong>Deckle:</strong> ${reelDetails.deckle}</p>
-                            <p><strong>Initial Wt:</strong> ${reelDetails.initialWeight} kg</p>
-                            <p><strong>Current Wt:</strong> ${reelDetails.currentWeight} kg</p>
-                            <p><strong>Burst Factor:</strong> ${reelDetails.burstFactor}</p>
-                            <p><strong>Supplier:</strong> ${reelDetails.supplierName}</p>
-                            <p><strong>Paper Type:</strong> ${reelDetails.paperType}</p>
+                            <p><strong>DECKLE:</strong> ${reelDetails.deckle}</p>
+                            <p><strong>INIT WT:</strong> ${reelDetails.initialWeight} kg</p>
+                            <p><strong>CUR WT:</strong> ${reelDetails.currentWeight} kg</p>
+                            <p><strong>BURST:</strong> ${reelDetails.burstFactor}</p>
+                            <p><strong>SUPPLIER:</strong> ${reelDetails.supplierName}</p>
+                            <p><strong>TYPE:</strong> ${reelDetails.paperType}</p>
                         </div>
                     </div>
                     <script>
                         window.onload = function() {
-                            window.print();
-                            window.onafterprint = function() { window.close(); };
+                            setTimeout(function() {
+                                window.print();
+                                window.onafterprint = function() { 
+                                    setTimeout(function() { window.close(); }, 100);
+                                };
+                            }, 200);
                         };
                     </script>
                 </body>
@@ -222,7 +239,7 @@ const InventoryHome = () => {
                         onClick={() => navigate("/admin/dashboard/admin/inventory/manipulateReel")}
                     >
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37-2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         Manipulate Reel
@@ -252,7 +269,7 @@ const InventoryHome = () => {
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        Reel Consumption
+                        Reel Usage Search
                     </button>
                 </div>
             </div>
@@ -260,7 +277,7 @@ const InventoryHome = () => {
             {/* Stock Chart */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Stock Overview</h2>
-                <ReelStockChart/>
+                <ReelStockChart />
             </div>
 
             {/* Utility Functions */}

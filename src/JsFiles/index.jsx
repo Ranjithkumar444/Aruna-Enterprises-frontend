@@ -42,6 +42,7 @@ import OrderSummaryDashboard from "./OrderSummaryDashboard";
 import CompletedOrders from "./CompletedOrder";
 import MachineConfigForm from "./MachineConfigForm";
 import QuotationForm from "./QuotationGeneration";
+import DailyReelUsageReport from "./DailyReelUsageReport";
 
 
 const router = createBrowserRouter([
@@ -144,6 +145,10 @@ const router = createBrowserRouter([
                     {
                         path: "admin/inventory/reel-history/:barcodeId",
                         element: <ReelHistoryComponent/>
+                    },
+                    {
+                        path: "admin/inventory/dailyreelusage",
+                        element: <DailyReelUsageReport/>
                     },
                     {
                         path: "admin/contact/contactDetails",

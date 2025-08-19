@@ -123,7 +123,7 @@ const ReelForm = () => {
             .sticker {
               width: 100%;
               height: 100%;
-              padding: 8px; /* Increased padding */
+              padding: 8px;
               box-sizing: border-box;
               display: flex;
               flex-direction: column;
@@ -132,24 +132,24 @@ const ReelForm = () => {
             }
             .company-name {
               font-weight: bold;
-              font-size: 13px; /* Slightly larger font */
+              font-size: 13px;
               margin: 5px 0;
             }
             .barcode-image {
-              width: 100%; /* Stretched to full width */
+              width: 130%;
               height: auto;
-              max-height: 60%; /* Increased max height */
+              max-height: 60%;
               margin: 5px 0;
             }
             .details {
-              font-size: 14px; /* Larger font for readability */
-              line-height: 1.3; /* Adjusted line height */
+              font-size: 14px;
+              line-height: 1.3;
               width: 100%;
               text-align: center;
               padding: 0 5px;
             }
             .details p {
-              margin: 2px 0; /* Adjusted margin */
+              margin: 2px 0;
             }
           </style>
         </head>
@@ -209,11 +209,11 @@ const ReelForm = () => {
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[
-            { label: 'Reel No', name: 'reelNo', type: 'number' },
-            { label: 'GSM', name: 'gsm', type: 'number' },
-            { label: 'Burst Factor', name: 'burstFactor', type: 'number' },
-            { label: 'Deckle', name: 'deckle', type: 'number' },
-            { label: 'Initial Weight (kg)', name: 'initialWeight', type: 'number' },
+            { label: 'Reel No', name: 'reelNo', type: 'text', pattern: '[0-9]*' },
+            { label: 'GSM', name: 'gsm', type: 'text', pattern: '[0-9]*' },
+            { label: 'Burst Factor', name: 'burstFactor', type: 'text', pattern: '[0-9]*' },
+            { label: 'Deckle', name: 'deckle', type: 'text', pattern: '[0-9]*' },
+            { label: 'Initial Weight (kg)', name: 'initialWeight', type: 'text', pattern: '[0-9]*' },
             { label: 'Unit', name: 'unit', type: 'text' },
             { label: 'Paper Type', name: 'paperType', type: 'text' },
             { label: 'Supplier Name', name: 'supplierName', type: 'text' },
@@ -229,6 +229,8 @@ const ReelForm = () => {
                 onChange={handleChange}
                 required
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                pattern={field.pattern}
+                inputMode={field.pattern ? 'numeric' : 'text'}
               />
             </div>
           ))}

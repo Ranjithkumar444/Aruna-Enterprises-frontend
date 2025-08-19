@@ -59,109 +59,116 @@ const InventoryHome = () => {
     console.log(reelDetails);
 
     const handlePrint = () => {
-        if (!barcodeImage || !reelDetails) {
-            setError("Nothing to print");
-            return;
-        }
+    if (!barcodeImage || !reelDetails) {
+        setError("Nothing to print");
+        return;
+    }
 
-        const stickerWidthPx = 2.9 * 203; 
-        const stickerHeightPx = 3.9 * 203; 
+    // 3x5 inch sticker at 203 DPI
+    const stickerWidthPx = 3 * 203;  // 609px
+    const stickerHeightPx = 5 * 203; // 1015px
 
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Print Barcode</title>
-                    <style>
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Print Barcode</title>
+                <style>
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        font-family: sans-serif;
+                    }
+                    .sticker {
+                        width: ${stickerWidthPx}px;
+                        height: ${stickerHeightPx}px;
+                        padding: 10px;
+                        box-sizing: border-box;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        align-items: center;
+                        text-align: center;
+                        overflow: hidden;
+                    }
+                    .company-name {
+                        font-weight: bold;
+                        font-size: 16px;
+                        margin-bottom: 5px;
+                    }
+                    .barcode-container {
+                        width: 100%;
+                        flex-grow: 1;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        margin: 10px 0;
+                    }
+                    .barcode-image {
+                        max-width: 80%;
+                        max-height: 60%;
+                        object-fit: contain;
+                    }
+                    .details {
+                        font-size: 12px;
+                        line-height: 1.3;
+                        width: 100%;
+                        text-align: center;
+                        padding: 5px;
+                        box-sizing: border-box;
+                    }
+                    .details p {
+                        margin: 3px 0;
+                    }
+                    @page {
+                        size: ${3}in ${5}in;
+                        margin: 0;
+                    }
+                    @media print {
                         body {
+                            width: ${3}in;
+                            height: ${5}in;
                             margin: 0;
                             padding: 0;
-                            font-family: sans-serif;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
                         }
                         .sticker {
-                            width: ${stickerWidthPx}px;
-                            height: ${stickerHeightPx}px;
-                            padding: 4px; 
-                            box-sizing: border-box;
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: flex-start;
-                            align-items: center;
-                            text-align: center;
-                            overflow: hidden;
+                            border: none;
                         }
-                        .company-name {
-                            font-weight: bold;
-                            font-size: 11px;
-                            margin-bottom: 3px;
-                            margin-top: 3px;
-                        }
-                        .barcode-image {
-                            max-width: 100%;
-                            height: auto;
-                            max-height: 55%;
-                            object-fit: contain;
-                            margin-bottom: 3px;
-                        }
-                        .details {
-                            font-size: 9px;
-                            line-height: 1.2;
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                            width: 100%;
-                            text-align: left;
-                            padding: 0 5px;
-                            box-sizing: border-box;
-                        }
-                        .details p {
-                            margin: 1.5px 0;
-                        }
-                        @page {
-                            size: ${2.9}in ${3.9}in;
-                            margin: 0;
-                        }
-                        @media print {
-                            body {
-                                width: ${2.9}in;
-                                height: ${3.9}in;
-                                margin: 0;
-                                padding: 0;
-                                display: block;
-                            }
-                            .sticker {
-                                border: none;
-                            }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="sticker">
-                        <div class="company-name">Aruna Enterprises</div>
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="sticker">
+                    <div class="company-name">Aruna Enterprises</div>
+                    <div class="barcode-container">
                         <img src="${barcodeImage}" alt="Barcode" class="barcode-image" />
-                        <div class="details">
-                            <p><strong>Barcode ID:</strong> ${reelDetails.barcodeId}</p>
-                            <p><strong>ReelNo:</strong> ${reelDetails.reelNo || 'N/A'}</p>
-                            <p><strong>GSM:</strong> ${reelDetails.gsm}</p>
-                            <p><strong>Deckle:</strong> ${reelDetails.deckle}</p>
-                            <p><strong>Initial Wt:</strong> ${reelDetails.initialWeight} kg</p>
-                            <p><strong>Current Wt:</strong> ${reelDetails.currentWeight} kg</p>
-                            <p><strong>Burst Factor:</strong> ${reelDetails.burstFactor}</p>
-                            <p><strong>Supplier:</strong> ${reelDetails.supplierName}</p>
-                            <p><strong>Paper Type:</strong> ${reelDetails.paperType}</p>
-                        </div>
                     </div>
-                    <script>
-                        window.onload = function() {
-                            window.print();
-                            window.onafterprint = function() { window.close(); };
-                        };
-                    </script>
-                </body>
-            </html>
-        `);
-        printWindow.document.close();
-    };
+                    <div class="details">
+                        <p><strong>Barcode ID:</strong> ${reelDetails.barcodeId}</p>
+                        <p><strong>ReelNo:</strong> ${reelDetails.reelNo || 'N/A'}</p>
+                        <p><strong>GSM:</strong> ${reelDetails.gsm}</p>
+                        <p><strong>Deckle:</strong> ${reelDetails.deckle}</p>
+                        <p><strong>Initial Wt:</strong> ${reelDetails.initialWeight} kg</p>
+                        <p><strong>Current Wt:</strong> ${reelDetails.currentWeight} kg</p>
+                        <p><strong>Burst Factor:</strong> ${reelDetails.burstFactor}</p>
+                        <p><strong>Supplier:</strong> ${reelDetails.supplierName}</p>
+                        <p><strong>Paper Type:</strong> ${reelDetails.paperType}</p>
+                    </div>
+                </div>
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        window.onafterprint = function() { window.close(); };
+                    };
+                </script>
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+};
 
     const handleSearchHistory = () => {
         if (!searchBarcode.trim()) {
@@ -300,6 +307,7 @@ const InventoryHome = () => {
                                         <div className="flex-1 text-gray-700 text-sm">
                                             <h4 className="font-semibold text-gray-900 mb-2">Reel Details</h4>
                                             <div className="grid grid-cols-1 gap-1">
+                                                <p><span className="font-medium">Barcode ID:</span>{reelDetails.barcodeId || 'N/A'}</p>
                                                 <p><span className="font-medium">REEL NO:</span> {reelDetails.reelNo || 'N/A'}</p>
                                                 <p><span className="font-medium">GSM:</span> {reelDetails.gsm}</p>
                                                 <p><span className="font-medium">Deckle:</span> {reelDetails.deckle}</p>

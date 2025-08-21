@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Container, 
-  Grid, 
-  Paper, 
-  Typography, 
-  Card, 
+import {
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  Card,
   CardContent,
   Divider,
   Select,
@@ -57,7 +57,7 @@ const OrderSummaryDashboard = () => {
   const [startDate, setStartDate] = useState(new Date(new Date().setDate(new Date().getDate() - 7)));
   const [endDate, setEndDate] = useState(new Date());
   const [rangeData, setRangeData] = useState([]);
-  const [hasAccessError, setHasAccessError] = useState(false); 
+  const [hasAccessError, setHasAccessError] = useState(false);
 
   const adminToken = localStorage.getItem('adminToken');
 
@@ -75,10 +75,13 @@ const OrderSummaryDashboard = () => {
       );
       setSummaryData(response.data);
       setError(null);
+      setHasAccessError(false);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch data');
       setSummaryData(null);
-      setHasAccessError(true);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        setHasAccessError(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -97,22 +100,24 @@ const OrderSummaryDashboard = () => {
           }
         }
       );
-      setRangeData(response.data);
+      setRangeData(response.data || []);
       setError(null);
+      setHasAccessError(false);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch data');
       setRangeData([]);
-      setHasAccessError(true);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        setHasAccessError(true);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-
     if (!adminToken) {
-        setHasAccessError(true);
-        return; 
+      setHasAccessError(true);
+      return;
     }
 
     if (timeRange === 'daily') {
@@ -150,25 +155,23 @@ const OrderSummaryDashboard = () => {
     dark: '#212121'
   };
 
-  // Prepare data for charts
+  // Prepare data for charts with safe access
   const prepareClientDistributionData = () => {
-    if (!summaryData) return { labels: [], datasets: [] };
+    if (!summaryData || !summaryData.orderDetails) return { labels: [], datasets: [] };
 
     const clientMap = {};
     summaryData.orderDetails.forEach(order => {
-      if (clientMap[order.client]) {
-        clientMap[order.client] += order.quantity;
-      } else {
-        clientMap[order.client] = order.quantity;
+      if (order && order.client) {
+        if (clientMap[order.client]) {
+          clientMap[order.client] += order.quantity || 0;
+        } else {
+          clientMap[order.client] = order.quantity || 0;
+        }
       }
     });
 
     const labels = Object.keys(clientMap);
     const data = Object.values(clientMap);
-
-    if (hasAccessError) {
-      return <AccessDeniedMessage />;
-    }
 
     return {
       labels,
@@ -191,14 +194,16 @@ const OrderSummaryDashboard = () => {
   };
 
   const prepareProductTypeData = () => {
-    if (!summaryData) return { labels: [], datasets: [] };
+    if (!summaryData || !summaryData.orderDetails) return { labels: [], datasets: [] };
 
     const productMap = {};
     summaryData.orderDetails.forEach(order => {
-      if (productMap[order.productType]) {
-        productMap[order.productType] += order.quantity;
-      } else {
-        productMap[order.productType] = order.quantity;
+      if (order && order.productType) {
+        if (productMap[order.productType]) {
+          productMap[order.productType] += order.quantity || 0;
+        } else {
+          productMap[order.productType] = order.quantity || 0;
+        }
       }
     });
 
@@ -232,9 +237,9 @@ const OrderSummaryDashboard = () => {
         {
           label: 'Amount (₹)',
           data: [
-            summaryData.totalRevenueOfDay,
-            summaryData.totalProfitOfDay,
-            summaryData.totalReelWastageOfDay * 50 // Assuming ₹50/kg wastage cost
+            summaryData.totalRevenueOfDay || 0,
+            summaryData.totalProfitOfDay || 0,
+            (summaryData.totalReelWastageOfDay || 0) * 50 // Assuming ₹50/kg wastage cost
           ],
           backgroundColor: [
             colors.success,
@@ -249,15 +254,15 @@ const OrderSummaryDashboard = () => {
   };
 
   const prepareWastageData = () => {
-    if (!summaryData) return { labels: [], datasets: [] };
+    if (!summaryData || !summaryData.orderDetails) return { labels: [], datasets: [] };
 
     const wastageData = summaryData.orderDetails
-      .filter(order => order.totalReelWastage > 0)
+      .filter(order => order && order.totalReelWastage > 0)
       .map(order => ({
-        orderId: order.orderId,
-        wastage: order.totalReelWastage,
+        orderId: order.orderId || 'N/A',
+        wastage: order.totalReelWastage || 0,
         percentage: parseFloat(order.totalReelWastagePercentage) || 0,
-        client: order.client
+        client: order.client || 'Unknown'
       }));
 
     return {
@@ -284,14 +289,14 @@ const OrderSummaryDashboard = () => {
   };
 
   const prepareTimeSeriesData = () => {
-    if (rangeData.length === 0) return { labels: [], datasets: [] };
+    if (!rangeData || rangeData.length === 0) return { labels: [], datasets: [] };
 
     return {
       labels: rangeData.map(item => format(new Date(item.summaryDate), 'MMM dd')),
       datasets: [
         {
           label: 'Revenue (₹)',
-          data: rangeData.map(item => item.totalRevenueOfDay),
+          data: rangeData.map(item => item.totalRevenueOfDay || 0),
           borderColor: colors.success,
           backgroundColor: `${colors.success}20`,
           tension: 0.3,
@@ -299,7 +304,7 @@ const OrderSummaryDashboard = () => {
         },
         {
           label: 'Profit (₹)',
-          data: rangeData.map(item => item.totalProfitOfDay),
+          data: rangeData.map(item => item.totalProfitOfDay || 0),
           borderColor: colors.primary,
           backgroundColor: `${colors.primary}20`,
           tension: 0.3,
@@ -307,7 +312,7 @@ const OrderSummaryDashboard = () => {
         },
         {
           label: 'Wastage (kg)',
-          data: rangeData.map(item => item.totalReelWastageOfDay),
+          data: rangeData.map(item => item.totalReelWastageOfDay || 0),
           borderColor: colors.error,
           backgroundColor: `${colors.error}20`,
           tension: 0.3,
@@ -318,13 +323,15 @@ const OrderSummaryDashboard = () => {
   };
 
   const prepareProductivityData = () => {
-    if (!summaryData) return { labels: [], datasets: [] };
+    if (!summaryData || !summaryData.orderDetails) return { labels: [], datasets: [] };
 
-    const productivity = summaryData.orderDetails.map(order => ({
-      orderId: order.orderId,
-      client: order.client,
-      efficiency: 100 - (parseFloat(order.totalReelWastagePercentage) || 0)
-    }));
+    const productivity = summaryData.orderDetails
+      .filter(order => order)
+      .map(order => ({
+        orderId: order.orderId || 'N/A',
+        client: order.client || 'Unknown',
+        efficiency: 100 - (parseFloat(order.totalReelWastagePercentage) || 0)
+      }));
 
     return {
       labels: productivity.map(item => `${item.client} (Order ${item.orderId})`),
@@ -332,9 +339,9 @@ const OrderSummaryDashboard = () => {
         {
           label: 'Production Efficiency (%)',
           data: productivity.map(item => item.efficiency),
-          backgroundColor: productivity.map(item => 
-            item.efficiency > 95 ? colors.success : 
-            item.efficiency > 90 ? colors.warning : colors.error
+          backgroundColor: productivity.map(item =>
+            item.efficiency > 95 ? colors.success :
+              item.efficiency > 90 ? colors.warning : colors.error
           ),
           borderColor: theme.palette.background.paper,
           borderWidth: 2,
@@ -365,7 +372,7 @@ const OrderSummaryDashboard = () => {
         borderWidth: 1,
         padding: 12,
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             let label = context.dataset.label || '';
             if (label) {
               label += ': ';
@@ -456,7 +463,7 @@ const OrderSummaryDashboard = () => {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function(value) {
+          callback: function (value) {
             return '₹' + value.toLocaleString();
           }
         }
@@ -488,15 +495,15 @@ const OrderSummaryDashboard = () => {
             </Typography>
           </Stack>
           <Typography variant="h4" sx={{ fontWeight: 600 }}>
-            {typeof value === 'number' ? 
-              value.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }) : 
+            {typeof value === 'number' ?
+              value.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }) :
               value}
           </Typography>
           {percentage && (
             <Stack direction="row" alignItems="center" spacing={1} mt={1}>
-              <TrendingUp sx={{ 
-                color: trendColor, 
-                transform: trend === 'down' ? 'rotate(180deg)' : 'none' 
+              <TrendingUp sx={{
+                color: trendColor,
+                transform: trend === 'down' ? 'rotate(180deg)' : 'none'
               }} />
               <Typography variant="body2" color={trendColor}>
                 {percentage}
@@ -508,15 +515,19 @@ const OrderSummaryDashboard = () => {
     );
   };
 
+  if (hasAccessError) {
+    return <AccessDeniedMessage />;
+  }
+
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 700 }}>
           Order Summary Dashboard
         </Typography>
-        <Chip 
-          label={format(date, 'MMMM yyyy')} 
-          color="primary" 
+        <Chip
+          label={format(date, 'MMMM yyyy')}
+          color="primary"
           variant="outlined"
           sx={{ px: 2, py: 1, fontSize: '0.875rem' }}
         />
@@ -616,37 +627,37 @@ const OrderSummaryDashboard = () => {
           {/* Summary Cards */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} md={3}>
-              <StatCard 
+              <StatCard
                 icon={<LocalShipping />}
-                title="Orders Shipped" 
-                value={summaryData.totalOrdersShipped}
+                title="Orders Shipped"
+                value={summaryData.totalOrdersShipped || 0}
                 trend="up"
               />
             </Grid>
             <Grid item xs={12} md={3}>
-              <StatCard 
+              <StatCard
                 icon={<MonetizationOn />}
-                title="Total Revenue" 
-                value={summaryData.totalRevenueOfDay}
-                percentage={summaryData.totalRevenueOfDayPercentage}
+                title="Total Revenue"
+                value={summaryData.totalRevenueOfDay || 0}
+                percentage={summaryData.totalRevenueOfDayPercentage || '0%'}
                 trend="up"
               />
             </Grid>
             <Grid item xs={12} md={3}>
-              <StatCard 
+              <StatCard
                 icon={<AttachMoney />}
-                title="Total Profit" 
-                value={summaryData.totalProfitOfDay}
-                percentage={summaryData.totalProfitOfDayPercentage}
+                title="Total Profit"
+                value={summaryData.totalProfitOfDay || 0}
+                percentage={summaryData.totalProfitOfDayPercentage || '0%'}
                 trend="up"
               />
             </Grid>
             <Grid item xs={12} md={3}>
-              <StatCard 
+              <StatCard
                 icon={<TrendingDown />}
-                title="Total Wastage" 
-                value={summaryData.totalReelWastageOfDay.toFixed(2.0) + ' kg'}
-                percentage={summaryData.totalReelWastageOfDayPercentage}
+                title="Total Wastage"
+                value={(summaryData.totalReelWastageOfDay || 0).toFixed(2) + ' kg'}
+                percentage={summaryData.totalReelWastageOfDayPercentage || '0%'}
                 trend="down"
               />
             </Grid>
@@ -731,53 +742,53 @@ const OrderSummaryDashboard = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {summaryData.orderDetails.map((order) => (
-                    <TableRow 
+                  {summaryData.orderDetails && summaryData.orderDetails.map((order) => (
+                    <TableRow
                       key={order.orderId}
                       hover
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
-                      <TableCell>{order.orderId}</TableCell>
+                      <TableCell>{order.orderId || 'N/A'}</TableCell>
                       <TableCell>
-                        <Chip 
-                          label={order.client} 
-                          size="small" 
-                          sx={{ 
-                            bgcolor: order.client === 'Kamtech' ? colors.primary + '20' : 
-                                    order.client === 'RBA' ? colors.secondary + '20' : 
-                                    colors.success + '20',
-                            color: order.client === 'Kamtech' ? colors.primary : 
-                                  order.client === 'RBA' ? colors.secondary : 
-                                  colors.success
-                          }} 
+                        <Chip
+                          label={order.client || 'Unknown'}
+                          size="small"
+                          sx={{
+                            bgcolor: order.client === 'Kamtech' ? colors.primary + '20' :
+                              order.client === 'RBA' ? colors.secondary + '20' :
+                                colors.success + '20',
+                            color: order.client === 'Kamtech' ? colors.primary :
+                              order.client === 'RBA' ? colors.secondary :
+                                colors.success
+                          }}
                         />
                       </TableCell>
-                      <TableCell>{order.productType}</TableCell>
-                      <TableCell>{order.quantity}</TableCell>
+                      <TableCell>{order.productType || 'N/A'}</TableCell>
+                      <TableCell>{order.quantity || 0}</TableCell>
                       <TableCell>
-                        <Chip label={order.size} size="small" variant="outlined" />
+                        <Chip label={order.size || 'N/A'} size="small" variant="outlined" />
                       </TableCell>
-                      <TableCell align="right">{order.totalWeightConsumed.toFixed(2)}</TableCell>
-                      <TableCell align="right">₹{order.revenue.toLocaleString()}</TableCell>
+                      <TableCell align="right">{(order.totalWeightConsumed || 0).toFixed(2)}</TableCell>
+                      <TableCell align="right">₹{(order.revenue || 0).toLocaleString()}</TableCell>
                       <TableCell align="right">
-                        <Box sx={{ 
-                          color: order.profitPercentage > 15 ? colors.success : 
-                                order.profitPercentage > 10 ? colors.warning : colors.error
+                        <Box sx={{
+                          color: (order.profitPercentage || 0) > 15 ? colors.success :
+                            (order.profitPercentage || 0) > 10 ? colors.warning : colors.error
                         }}>
-                          ₹{order.profit.toLocaleString()} 
+                          ₹{(order.profit || 0).toLocaleString()}
                           <Typography variant="caption" display="block">
-                            ({order.profitPercentage})
+                            ({order.profitPercentage || '0%'})
                           </Typography>
                         </Box>
                       </TableCell>
                       <TableCell align="right">
-                        <Box sx={{ 
-                          color: parseFloat(order.totalReelWastagePercentage) > 5 ? colors.error : 
-                                parseFloat(order.totalReelWastagePercentage) > 3 ? colors.warning : colors.success
+                        <Box sx={{
+                          color: (parseFloat(order.totalReelWastagePercentage) || 0) > 5 ? colors.error :
+                            (parseFloat(order.totalReelWastagePercentage) || 0) > 3 ? colors.warning : colors.success
                         }}>
-                          {order.totalReelWastage.toFixed(2)} kg
+                          {(order.totalReelWastage || 0).toFixed(2)} kg
                           <Typography variant="caption" display="block">
-                            ({order.totalReelWastagePercentage})
+                            ({order.totalReelWastagePercentage || '0%'})
                           </Typography>
                         </Box>
                       </TableCell>
@@ -823,45 +834,45 @@ const OrderSummaryDashboard = () => {
                 </TableHead>
                 <TableBody>
                   {rangeData.map((summary) => (
-                    <TableRow 
+                    <TableRow
                       key={summary.summaryDate}
                       hover
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
-                      <TableCell>{summary.summaryDate}</TableCell>
-                      <TableCell align="right">{summary.totalOrdersShipped}</TableCell>
-                      <TableCell align="right">{summary.totalWeightConsumed.toFixed(2)}</TableCell>
-                      <TableCell align="right">₹{summary.totalRevenueOfDay.toLocaleString()}</TableCell>
+                      <TableCell>{summary.summaryDate || 'N/A'}</TableCell>
+                      <TableCell align="right">{summary.totalOrdersShipped || 0}</TableCell>
+                      <TableCell align="right">{(summary.totalWeightConsumed || 0).toFixed(2)}</TableCell>
+                      <TableCell align="right">₹{(summary.totalRevenueOfDay || 0).toLocaleString()}</TableCell>
                       <TableCell align="right">
-                        <Box sx={{ 
-                          color: parseFloat(summary.totalProfitOfDayPercentage) > 15 ? colors.success : 
-                                parseFloat(summary.totalProfitOfDayPercentage) > 10 ? colors.warning : colors.error
+                        <Box sx={{
+                          color: (parseFloat(summary.totalProfitOfDayPercentage) || 0) > 15 ? colors.success :
+                            (parseFloat(summary.totalProfitOfDayPercentage) || 0) > 10 ? colors.warning : colors.error
                         }}>
-                          ₹{summary.totalProfitOfDay.toLocaleString()}
+                          ₹{(summary.totalProfitOfDay || 0).toLocaleString()}
                         </Box>
                       </TableCell>
                       <TableCell align="right">
-                        <Box sx={{ 
-                          color: parseFloat(summary.totalProfitOfDayPercentage) > 15 ? colors.success : 
-                                parseFloat(summary.totalProfitOfDayPercentage) > 10 ? colors.warning : colors.error
+                        <Box sx={{
+                          color: (parseFloat(summary.totalProfitOfDayPercentage) || 0) > 15 ? colors.success :
+                            (parseFloat(summary.totalProfitOfDayPercentage) || 0) > 10 ? colors.warning : colors.error
                         }}>
-                          {summary.totalProfitOfDayPercentage}
+                          {summary.totalProfitOfDayPercentage || '0%'}
                         </Box>
                       </TableCell>
                       <TableCell align="right">
-                        <Box sx={{ 
-                          color: parseFloat(summary.totalReelWastageOfDayPercentage) > 5 ? colors.error : 
-                                parseFloat(summary.totalReelWastageOfDayPercentage) > 3 ? colors.warning : colors.success
+                        <Box sx={{
+                          color: (parseFloat(summary.totalReelWastageOfDayPercentage) || 0) > 5 ? colors.error :
+                            (parseFloat(summary.totalReelWastageOfDayPercentage) || 0) > 3 ? colors.warning : colors.success
                         }}>
-                          {summary.totalReelWastageOfDay.toFixed(2)}
+                          {(summary.totalReelWastageOfDay || 0).toFixed(2)}
                         </Box>
                       </TableCell>
                       <TableCell align="right">
-                        <Box sx={{ 
-                          color: parseFloat(summary.totalReelWastageOfDayPercentage) > 5 ? colors.error : 
-                                parseFloat(summary.totalReelWastageOfDayPercentage) > 3 ? colors.warning : colors.success
+                        <Box sx={{
+                          color: (parseFloat(summary.totalReelWastageOfDayPercentage) || 0) > 5 ? colors.error :
+                            (parseFloat(summary.totalReelWastageOfDayPercentage) || 0) > 3 ? colors.warning : colors.success
                         }}>
-                          {summary.totalReelWastageOfDayPercentage}
+                          {summary.totalReelWastageOfDayPercentage || '0%'}
                         </Box>
                       </TableCell>
                     </TableRow>

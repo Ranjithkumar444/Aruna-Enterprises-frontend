@@ -119,6 +119,21 @@ const ClientOrderForm = ({ onSuccess, clientData, isEditMode }) => {
     }
   };
 
+  // List of numeric fields that should have the spinner removed
+  const numericFields = [
+    "deckle", 
+    "cuttingLength", 
+    "topGsm", 
+    "linerGsm", 
+    "fluteGsm", 
+    "oneUps", 
+    "twoUps", 
+    "threeUps", 
+    "fourUps", 
+    "sellingPricePerBox", 
+    "productionCostPerBox"
+  ];
+
   return (
     <div className="max-w-4xl mx-auto p-8 shadow-xl rounded-xl mt-10 bg-white">
       <h1 className="text-2xl font-bold mb-6 text-indigo-600">
@@ -154,12 +169,13 @@ const ClientOrderForm = ({ onSuccess, clientData, isEditMode }) => {
             </label>
             <input
               required
-              type={["deckle", "cuttingLength", "oneUps", "twoUps", "threeUps", "fourUps", "sellingPricePerBox", "productionCostPerBox"].includes(name) ? "number" : "text"}
+              type={numericFields.includes(name) ? "text" : "text"} // All fields as text type
               name={name}
               value={formData[name]}
               onChange={handleChange}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              step={["deckle", "cuttingLength", "oneUps", "twoUps", "threeUps", "fourUps", "sellingPricePerBox", "productionCostPerBox"].includes(name) ? "0.01" : undefined}
+              inputMode={numericFields.includes(name) ? "numeric" : "text"} // Show numeric keyboard for numeric fields
+              pattern={numericFields.includes(name) ? "[0-9.]*" : undefined} // Allow numbers and decimal points
             />
           </div>
         ))}

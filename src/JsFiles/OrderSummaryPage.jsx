@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Table,
   Card,
@@ -11,16 +11,19 @@ import {
   Button,
   Typography,
   Select,
-  Spin
+  Spin,
+  Space,
+  Empty
 } from 'antd';
+// Ensure moment is correctly installed alongside antd
 import moment from 'moment';
 import axios from 'axios';
+import { RiseOutlined, FallOutlined, LineChartOutlined, DollarCircleOutlined, PoundCircleOutlined, TagOutlined, BoxPlotOutlined, WarningOutlined, PercentageOutlined } from '@ant-design/icons';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
-// Configure axios instance
 const api = axios.create({
   baseURL: 'https://arunaenterprises.azurewebsites.net/admin/api',
   headers: {
@@ -28,7 +31,6 @@ const api = axios.create({
   }
 });
 
-// Add request interceptor to include admin token
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('adminToken');
   if (token) {
@@ -44,6 +46,8 @@ const OrderSummaryPage = () => {
   const [startDate, setStartDate] = useState(moment().startOf('week'));
   const [endDate, setEndDate] = useState(moment().endOf('week'));
   const [dailySummary, setDailySummary] = useState(null);
+  const [unitASummary, setUnitASummary] = useState(null); // New state for Unit A
+  const [unitBSummary, setUnitBSummary] = useState(null); // New state for Unit B
   const [rangeSummaries, setRangeSummaries] = useState([]);
   const [reelHistory, setReelHistory] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -60,9 +64,44 @@ const OrderSummaryPage = () => {
     setLoading(true);
     try {
       const response = await api.get(`/order-summaries/daily/${date.format('YYYY-MM-DD')}`);
-      setDailySummary(response.data);
+      const data = response.data;
+      setDailySummary(data);
+
+      // Process data for Unit A and Unit B
+      const unitAOrders = data.orderDetails.filter(order => order.unit === 'A');
+      const unitBOrders = data.orderDetails.filter(order => order.unit === 'B');
+
+      // Helper to calculate summary for a list of orders
+      const calculateUnitSummary = (orders) => {
+        const totalWeight = orders.reduce((sum, order) => sum + order.totalWeightConsumed, 0);
+        const totalRevenue = orders.reduce((sum, order) => sum + (order.revenue || 0), 0);
+        const totalProfit = orders.reduce((sum, order) => sum + (order.profit || 0), 0);
+        const totalWastage = orders.reduce((sum, order) => sum + (order.totalReelWastage || 0), 0);
+        const totalOrders = orders.length;
+
+        const profitPercentage = totalRevenue > 0 ? ((totalProfit / totalRevenue) * 100).toFixed(2) + '%' : '0.00%';
+        const wastagePercentage = totalWeight > 0 ? ((totalWastage / totalWeight) * 100).toFixed(2) + '%' : '0.00%';
+
+        return {
+          totalOrdersShipped: totalOrders,
+          totalWeightConsumed: totalWeight,
+          totalRevenueOfDay: totalRevenue,
+          totalProfitOfDay: totalProfit,
+          totalProfitOfDayPercentage: profitPercentage,
+          totalReelWastageOfDay: totalWastage,
+          totalReelWastageOfDayPercentage: wastagePercentage,
+          orderDetails: orders,
+        };
+      };
+
+      setUnitASummary(calculateUnitSummary(unitAOrders));
+      setUnitBSummary(calculateUnitSummary(unitBOrders));
+
     } catch (error) {
       handleApiError(error, 'Failed to fetch daily summary');
+      setDailySummary(null); // Clear summary on error
+      setUnitASummary(null);
+      setUnitBSummary(null);
     } finally {
       setLoading(false);
     }
@@ -88,6 +127,8 @@ const OrderSummaryPage = () => {
       setReelHistory(historyResponse.data);
     } catch (error) {
       handleApiError(error, 'Failed to fetch range summaries');
+      setRangeSummaries([]);
+      setReelHistory([]);
     } finally {
       setLoading(false);
     }
@@ -107,6 +148,7 @@ const OrderSummaryPage = () => {
       setRangeSummaries(response.data);
     } catch (error) {
       handleApiError(error, 'Failed to fetch month summary');
+      setRangeSummaries([]);
     } finally {
       setCalendarLoading(false);
     }
@@ -123,76 +165,35 @@ const OrderSummaryPage = () => {
     }
   };
 
-  const handleDateChange = (date) => {
-    setDate(date);
-    fetchDailySummary(date);
+  const handleDateChange = (newDate) => {
+    setDate(newDate);
+    fetchDailySummary(newDate);
   };
 
-  const handleStartDateChange = (date) => {
-    const newStartDate = startDate.clone().date(date);
-    setStartDate(newStartDate);
-    if (newStartDate.isAfter(endDate)) {
-      setEndDate(newStartDate.clone().add(1, 'day'));
-      fetchRangeSummaries(newStartDate, newStartDate.clone().add(1, 'day'));
-    } else {
-      fetchRangeSummaries(newStartDate, endDate);
-    }
+  const handleRangeDateSelectChange = (setter) => (value) => {
+    setter(prevDate => prevDate.clone().date(value));
+  };
+  const handleRangeMonthSelectChange = (setter) => (value) => {
+    setter(prevDate => prevDate.clone().month(value - 1));
+  };
+  const handleRangeYearSelectChange = (setter) => (value) => {
+    setter(prevDate => prevDate.clone().year(value));
   };
 
-  const handleEndDateChange = (date) => {
-    const newEndDate = endDate.clone().date(date);
-    setEndDate(newEndDate);
-    if (newEndDate.isBefore(startDate)) {
-      setStartDate(newEndDate.clone().subtract(1, 'day'));
-      fetchRangeSummaries(newEndDate.clone().subtract(1, 'day'), newEndDate);
-    } else {
-      fetchRangeSummaries(startDate, newEndDate);
-    }
-  };
+  // Debounce for range date selectors to avoid excessive API calls
+  const debouncedFetchRangeSummaries = useMemo(() => {
+    let timeout;
+    return (start, end) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        fetchRangeSummaries(start, end);
+      }, 500); // Debounce for 500ms
+    };
+  }, []);
 
-  const handleStartMonthChange = (month) => {
-    const newStartDate = startDate.clone().month(month - 1);
-    setStartDate(newStartDate);
-    if (newStartDate.isAfter(endDate)) {
-      setEndDate(newStartDate.clone().add(1, 'day'));
-      fetchRangeSummaries(newStartDate, newStartDate.clone().add(1, 'day'));
-    } else {
-      fetchRangeSummaries(newStartDate, endDate);
-    }
-  };
-
-  const handleEndMonthChange = (month) => {
-    const newEndDate = endDate.clone().month(month - 1);
-    setEndDate(newEndDate);
-    if (newEndDate.isBefore(startDate)) {
-      setStartDate(newEndDate.clone().subtract(1, 'day'));
-      fetchRangeSummaries(newEndDate.clone().subtract(1, 'day'), newEndDate);
-    } else {
-      fetchRangeSummaries(startDate, newEndDate);
-    }
-  };
-
-  const handleStartYearChange = (year) => {
-    const newStartDate = startDate.clone().year(year);
-    setStartDate(newStartDate);
-    if (newStartDate.isAfter(endDate)) {
-      setEndDate(newStartDate.clone().add(1, 'day'));
-      fetchRangeSummaries(newStartDate, newStartDate.clone().add(1, 'day'));
-    } else {
-      fetchRangeSummaries(newStartDate, endDate);
-    }
-  };
-
-  const handleEndYearChange = (year) => {
-    const newEndDate = endDate.clone().year(year);
-    setEndDate(newEndDate);
-    if (newEndDate.isBefore(startDate)) {
-      setStartDate(newEndDate.clone().subtract(1, 'day'));
-      fetchRangeSummaries(newEndDate.clone().subtract(1, 'day'), newEndDate);
-    } else {
-      fetchRangeSummaries(startDate, newEndDate);
-    }
-  };
+  useEffect(() => {
+    debouncedFetchRangeSummaries(startDate, endDate);
+  }, [startDate, endDate, debouncedFetchRangeSummaries]);
 
   const handleYearChange = (year) => {
     setSelectedYear(year);
@@ -205,57 +206,73 @@ const OrderSummaryPage = () => {
   };
 
   const generateSummary = async () => {
+    setLoading(true); // Set loading for the button click
     try {
+      // The backend should generate/update the daily summary for the selected date
+      // This endpoint usually triggers a computation on the server-side
       await api.post(`/order-summaries/generate/${date.format('YYYY-MM-DD')}`);
       message.success('Daily summary generated successfully');
-      fetchDailySummary(date);
+      fetchDailySummary(date); // Fetch the newly generated summary
     } catch (error) {
       handleApiError(error, 'Failed to generate summary');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const orderColumns = [
-    { title: 'Order ID', dataIndex: 'orderId', key: 'orderId' },
-    { title: 'Client', dataIndex: 'client', key: 'client' },
-    { title: 'Product', dataIndex: 'productType', key: 'productType' },
-    { title: 'Quantity', dataIndex: 'quantity', key: 'quantity' },
-    { title: 'Size', dataIndex: 'size', key: 'size' },
+  const commonTableColumns = [
+    { title: 'Order ID', dataIndex: 'orderId', key: 'orderId', responsive: ['md'] },
+    { title: 'Client', dataIndex: 'client', key: 'client', sorter: (a, b) => a.client.localeCompare(b.client) },
+    { title: 'Product Type', dataIndex: 'productType', key: 'productType', responsive: ['md'] },
+    { title: 'Product Name', dataIndex: 'productName', key: 'productName', responsive: ['lg'] },
+    { title: 'Type of Product', dataIndex: 'typeOfProduct', key: 'typeOfProduct', responsive: ['lg'] },
+    { title: 'Quantity', dataIndex: 'quantity', key: 'quantity', responsive: ['sm'] },
+    { title: 'Size', dataIndex: 'size', key: 'size', responsive: ['md'] },
+    { title: 'Unit', dataIndex: 'unit', key: 'unit', responsive: ['sm'] },
     {
       title: 'Total Weight (kg)',
       dataIndex: 'totalWeightConsumed',
       key: 'totalWeightConsumed',
-      render: val => (val).toFixed(2)
+      render: val => (val).toFixed(2),
+      sorter: (a, b) => a.totalWeightConsumed - b.totalWeightConsumed
     },
     {
       title: 'Revenue (₹)',
       dataIndex: 'revenue',
       key: 'revenue',
-      render: val => val ? `₹${val.toFixed(2)}` : '-'
+      render: val => val ? `₹${val.toFixed(2)}` : '₹0.00',
+      sorter: (a, b) => a.revenue - b.revenue,
+      responsive: ['md']
     },
     {
       title: 'Profit (₹)',
       dataIndex: 'profit',
       key: 'profit',
-      render: val => val ? `₹${val.toFixed(2)}` : '-'
+      render: val => val ? `₹${val.toFixed(2)}` : '₹0.00',
+      sorter: (a, b) => a.profit - b.profit,
+      responsive: ['md']
     },
     {
       title: 'Profit %',
       dataIndex: 'profitPercentage',
       key: 'profitPercentage',
-      render: val => val || '-'
+      render: val => val || '0.00%',
+      responsive: ['lg']
     },
     {
       title: 'Wastage (kg)',
       dataIndex: 'totalReelWastage',
       key: 'totalReelWastage',
-      render: val => val ? val.toFixed(2) : '-'
+      render: val => val ? val.toFixed(2) : '0.00',
+      responsive: ['md']
     }
   ];
 
   const reelColumns = [
     { title: 'Reel No', dataIndex: 'reelNo', key: 'reelNo' },
     { title: 'Barcode', dataIndex: 'barcodeId', key: 'barcode' },
-    { title: 'Usage Type', dataIndex: 'usageType', key: 'usageType' },
+    { title: 'Reel Set', dataIndex: 'reelSet', key: 'reelSet', responsive: ['sm'] },
+    { title: 'Usage Type', dataIndex: 'usageType', key: 'usageType', responsive: ['sm'] },
     {
       title: 'Weight Used (kg)',
       dataIndex: 'weightConsumed',
@@ -299,30 +316,35 @@ const OrderSummaryPage = () => {
       title: 'Date',
       dataIndex: 'summaryDate',
       key: 'summaryDate',
-      render: date => moment(date).format('LL')
+      render: date => moment(date).format('LL'),
+      sorter: (a, b) => moment(a.summaryDate).unix() - moment(b.summaryDate).unix()
     },
     {
       title: 'Orders Shipped',
       dataIndex: 'totalOrdersShipped',
-      key: 'totalOrdersShipped'
+      key: 'totalOrdersShipped',
+      sorter: (a, b) => a.totalOrdersShipped - b.totalOrdersShipped
     },
     {
       title: 'Total Weight (kg)',
       dataIndex: 'totalWeightConsumed',
       key: 'totalWeightConsumed',
-      render: val => (val).toFixed(2)
+      render: val => (val).toFixed(2),
+      sorter: (a, b) => a.totalWeightConsumed - b.totalWeightConsumed
     },
     {
       title: 'Revenue (₹)',
       dataIndex: 'totalRevenueOfDay',
       key: 'totalRevenueOfDay',
-      render: val => val ? `₹${val.toFixed(2)}` : '-'
+      render: val => val ? `₹${val.toFixed(2)}` : '₹0.00',
+      sorter: (a, b) => (a.totalRevenueOfDay || 0) - (b.totalRevenueOfDay || 0)
     },
     {
       title: 'Profit (₹)',
       dataIndex: 'totalProfitOfDay',
       key: 'totalProfitOfDay',
-      render: val => val ? `₹${val.toFixed(2)}` : '-'
+      render: val => val ? `₹${val.toFixed(2)}` : '₹0.00',
+      sorter: (a, b) => (a.totalProfitOfDay || 0) - (b.totalProfitOfDay || 0)
     },
     {
       title: 'Profit %',
@@ -333,7 +355,8 @@ const OrderSummaryPage = () => {
       title: 'Wastage (kg)',
       dataIndex: 'totalReelWastageOfDay',
       key: 'totalReelWastageOfDay',
-      render: val => val ? val.toFixed(2) : '-'
+      render: val => val ? val.toFixed(2) : '0.00',
+      sorter: (a, b) => (a.totalReelWastageOfDay || 0) - (b.totalReelWastageOfDay || 0)
     }
   ];
 
@@ -342,333 +365,417 @@ const OrderSummaryPage = () => {
     if (!summary) return null;
     
     return (
-      <div style={{ background: '#f0f0f0', padding: '4px', borderRadius: '4px' }}>
-        <div>Orders: {summary.totalOrdersShipped}</div>
-        <div>Weight: {summary.totalWeightConsumed.toFixed(1)}kg</div>
-        {summary.totalRevenueOfDay && <div>Revenue: ₹{summary.totalRevenueOfDay.toFixed(1)}</div>}
+      <div style={{ background: '#e6f7ff', padding: '4px', borderRadius: '4px', border: '1px solid #91d5ff', fontSize: '10px' }}>
+        <div><Text strong>Orders:</Text> {summary.totalOrdersShipped}</div>
+        <div><Text strong>Weight:</Text> {summary.totalWeightConsumed.toFixed(1)}kg</div>
+        {summary.totalRevenueOfDay && <div><Text strong>Rev:</Text> ₹{summary.totalRevenueOfDay.toFixed(1)}</div>}
       </div>
     );
   };
 
-  return (
-    <div className="order-summary-page" style={{ padding: '20px' }}>
-      <Title level={2} style={{ marginBottom: '20px' }}>Order Summaries</Title>
+  const renderSummaryCards = (summary, titlePrefix = "") => (
+    <Row gutter={[16, 16]} style={{ marginBottom: '30px' }}>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <Card className="summary-card">
+          <Statistic
+            title={`${titlePrefix} Orders Shipped`}
+            value={summary.totalOrdersShipped}
+            prefix={<BoxPlotOutlined style={{ color: '#1890ff' }} />}
+          />
+        </Card>
+      </Col>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <Card className="summary-card">
+          <Statistic
+            title={`${titlePrefix} Total Weight (kg)`}
+            value={summary.totalWeightConsumed.toFixed(2)}
+            prefix={<LineChartOutlined style={{ color: '#52c41a' }} />}
+          />
+        </Card>
+      </Col>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <Card className="summary-card">
+          <Statistic
+            title={`${titlePrefix} Total Revenue (₹)`}
+            value={summary.totalRevenueOfDay ? summary.totalRevenueOfDay.toFixed(2) : '0.00'}
+            prefix={<DollarCircleOutlined style={{ color: '#faad14' }} />}
+          />
+        </Card>
+      </Col>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <Card className="summary-card">
+          <Statistic
+            title={`${titlePrefix} Total Profit (₹)`}
+            value={summary.totalProfitOfDay ? summary.totalProfitOfDay.toFixed(2) : '0.00'}
+            prefix={<PoundCircleOutlined style={{ color: '#f5222d' }} />}
+          />
+        </Card>
+      </Col>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <Card className="summary-card">
+          <Statistic
+            title={`${titlePrefix} Profit Margin`}
+            value={summary.totalProfitOfDayPercentage || '0.00%'}
+            prefix={<PercentageOutlined style={{ color: '#eb2f96' }} />}
+          />
+        </Card>
+      </Col>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <Card className="summary-card">
+          <Statistic
+            title={`${titlePrefix} Total Wastage (kg)`}
+            value={summary.totalReelWastageOfDay ? summary.totalReelWastageOfDay.toFixed(2) : '0.00'}
+            prefix={<WarningOutlined style={{ color: '#ff4d4f' }} />}
+          />
+        </Card>
+      </Col>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <Card className="summary-card">
+          <Statistic
+            title={`${titlePrefix} Wastage %`}
+            value={summary.totalReelWastageOfDayPercentage || '0.00%'}
+            prefix={<PercentageOutlined style={{ color: '#d43808' }} />}
+          />
+        </Card>
+      </Col>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <Card className="summary-card">
+          <Statistic
+            title={`${titlePrefix} Avg Weight/Order (kg)`}
+            value={
+              summary.totalOrdersShipped > 0
+                ? (summary.totalWeightConsumed / summary.totalOrdersShipped).toFixed(2)
+                : '0.00'
+            }
+            prefix={<TagOutlined style={{ color: '#722ed1' }} />}
+          />
+        </Card>
+      </Col>
+    </Row>
+  );
 
-      <Tabs defaultActiveKey="1">
+
+  return (
+    <div className="order-summary-page-container" style={{ padding: '20px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
+      <Title level={2} style={{ marginBottom: '30px', textAlign: 'center', color: '#001529' }}>📊 Order Summaries & Analytics</Title>
+
+      <Tabs defaultActiveKey="1" size="large" centered>
         <TabPane tab="Daily Summary" key="1">
-          <Card>
-            <Row gutter={16} style={{ marginBottom: '20px' }}>
-              <Col span={8}>
-                <div style={{ display: 'flex', gap: '8px' }}>
+          <Card className="summary-card-lg">
+            <Row gutter={[16, 16]} justify="center" align="middle" style={{ marginBottom: '30px' }}>
+              <Col xs={24} sm={18} md={12} lg={10} xl={8}>
+                <Space direction="horizontal" size="middle" style={{ width: '100%', justifyContent: 'center' }}>
                   <Select
-                    style={{ width: '120px' }}
+                    style={{ minWidth: '90px' }}
                     value={date.year()}
-                    onChange={(year) => {
-                      const newDate = date.clone().year(year);
-                      setDate(newDate);
-                      fetchDailySummary(newDate);
-                    }}
+                    onChange={(year) => handleDateChange(date.clone().year(year))}
                   >
                     {Array.from({ length: 10 }, (_, i) => moment().year() - 5 + i).map(year => (
                       <Option key={year} value={year}>{year}</Option>
                     ))}
                   </Select>
                   <Select
-                    style={{ width: '120px' }}
+                    style={{ minWidth: '120px' }}
                     value={date.month() + 1}
-                    onChange={(month) => {
-                      const newDate = date.clone().month(month - 1);
-                      setDate(newDate);
-                      fetchDailySummary(newDate);
-                    }}
+                    onChange={(month) => handleDateChange(date.clone().month(month - 1))}
                   >
                     {moment.months().map((month, index) => (
                       <Option key={index + 1} value={index + 1}>{month}</Option>
                     ))}
                   </Select>
                   <Select
-                    style={{ width: '120px' }}
+                    style={{ minWidth: '80px' }}
                     value={date.date()}
-                    onChange={(day) => {
-                      const newDate = date.clone().date(day);
-                      setDate(newDate);
-                      fetchDailySummary(newDate);
-                    }}
+                    onChange={(day) => handleDateChange(date.clone().date(day))}
                   >
                     {Array.from({ length: date.daysInMonth() }, (_, i) => i + 1).map(day => (
                       <Option key={day} value={day}>{day}</Option>
                     ))}
                   </Select>
-                </div>
+                </Space>
               </Col>
-              <Col span={8}>
+              <Col xs={24} sm={6} md={4} lg={3}>
                 <Button
                   type="primary"
                   onClick={generateSummary}
                   loading={loading}
+                  block
+                  size="large"
+                  icon={<RiseOutlined />}
+                  style={{ borderRadius: '8px' }}
                 >
                   Generate Summary
                 </Button>
               </Col>
             </Row>
 
-            {dailySummary && (
-              <>
-                <Row gutter={16} style={{ marginBottom: '20px' }}>
-                  <Col span={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Orders Shipped"
-                        value={dailySummary.totalOrdersShipped}
-                      />
-                    </Card>
-                  </Col>
-                  <Col span={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Weight (kg)"
-                        value={(dailySummary.totalWeightConsumed).toFixed(2)}
-                      />
-                    </Card>
-                  </Col>
-                  <Col span={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Revenue (₹)"
-                        value={dailySummary.totalRevenueOfDay ? dailySummary.totalRevenueOfDay.toFixed(2) : 0}
-                      />
-                    </Card>
-                  </Col>
-                  <Col span={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Profit (₹)"
-                        value={dailySummary.totalProfitOfDay ? dailySummary.totalProfitOfDay.toFixed(2) : 0}
-                      />
-                    </Card>
-                  </Col>
-                </Row>
+            <Spin spinning={loading} size="large" tip="Loading Daily Summary...">
+              {dailySummary ? (
+                <Tabs defaultActiveKey="combined" type="card" size="middle">
+                  <TabPane tab="Combined Summary" key="combined">
+                    <Title level={4} style={{ textAlign: 'center', margin: '20px 0', color: '#001529' }}>Overall Daily Performance - {date.format('LL')}</Title>
+                    {renderSummaryCards(dailySummary, "Overall")}
+                    <Title level={4} style={{ margin: '20px 0 16px 0', color: '#001529' }}>Combined Order Details</Title>
+                    <Table
+                      columns={commonTableColumns}
+                      dataSource={dailySummary.orderDetails}
+                      rowKey={record => record.orderId}
+                      pagination={{ pageSize: 10 }}
+                      scroll={{ x: 1300 }} // Enable horizontal scroll for many columns
+                      expandable={{
+                        expandedRowRender: record => (
+                          <Table
+                            columns={reelColumns}
+                            dataSource={record.reelUsages}
+                            rowKey="reelNo"
+                            pagination={false}
+                            size="small"
+                            scroll={{ x: 800 }}
+                          />
+                        ),
+                        rowExpandable: record => record.reelUsages && record.reelUsages.length > 0,
+                      }}
+                    />
+                  </TabPane>
 
-                <Row gutter={16} style={{ marginBottom: '20px' }}>
-                  <Col span={6}>
-                    <Card>
-                      <Statistic
-                        title="Profit Margin"
-                        value={dailySummary.totalProfitOfDayPercentage || '0%'}
-                      />
-                    </Card>
-                  </Col>
-                  <Col span={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Wastage (kg)"
-                        value={dailySummary.totalReelWastageOfDay ? dailySummary.totalReelWastageOfDay.toFixed(2) : 0}
-                      />
-                    </Card>
-                  </Col>
-                  <Col span={6}>
-                    <Card>
-                      <Statistic
-                        title="Wastage %"
-                        value={dailySummary.totalReelWastageOfDayPercentage || '0%'}
-                      />
-                    </Card>
-                  </Col>
-                  <Col span={6}>
-                    <Card>
-                      <Statistic
-                        title="Avg Weight/Order (kg)"
-                        value={
-                          dailySummary.totalOrdersShipped > 0
-                            ? (dailySummary.totalWeightConsumed / dailySummary.totalOrdersShipped).toFixed(2)
-                            : 0
-                        }
-                      />
-                    </Card>
-                  </Col>
-                </Row>
+                  <TabPane tab="Unit A Summary" key="unitA">
+                    <Title level={4} style={{ textAlign: 'center', margin: '20px 0', color: '#001529' }}>Unit A Performance - {date.format('LL')}</Title>
+                    {unitASummary && unitASummary.totalOrdersShipped > 0 ? (
+                      <>
+                        {renderSummaryCards(unitASummary, "Unit A")}
+                        <Title level={4} style={{ margin: '20px 0 16px 0', color: '#001529' }}>Unit A Order Details</Title>
+                        <Table
+                          columns={commonTableColumns}
+                          dataSource={unitASummary.orderDetails}
+                          rowKey={record => record.orderId}
+                          pagination={{ pageSize: 10 }}
+                          scroll={{ x: 1300 }}
+                          expandable={{
+                            expandedRowRender: record => (
+                              <Table
+                                columns={reelColumns}
+                                dataSource={record.reelUsages}
+                                rowKey="reelNo"
+                                pagination={false}
+                                size="small"
+                                scroll={{ x: 800 }}
+                              />
+                            ),
+                            rowExpandable: record => record.reelUsages && record.reelUsages.length > 0,
+                          }}
+                        />
+                      </>
+                    ) : (
+                      <Empty description="No Unit A orders for this day" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                    )}
+                  </TabPane>
 
-                <h3 style={{ marginBottom: '16px' }}>Order Details</h3>
-                <Table
-                  columns={orderColumns}
-                  dataSource={dailySummary.orderDetails}
-                  rowKey={record => record.orderId}
-                  loading={loading}
-                  expandable={{
-                    expandedRowRender: record => (
-                      <Table
-                        columns={reelColumns}
-                        dataSource={record.reelUsages}
-                        rowKey="reelNo"
-                        pagination={false}
-                      />
-                    )
-                  }}
-                />
-              </>
-            )}
+                  <TabPane tab="Unit B Summary" key="unitB">
+                    <Title level={4} style={{ textAlign: 'center', margin: '20px 0', color: '#001529' }}>Unit B Performance - {date.format('LL')}</Title>
+                    {unitBSummary && unitBSummary.totalOrdersShipped > 0 ? (
+                      <>
+                        {renderSummaryCards(unitBSummary, "Unit B")}
+                        <Title level={4} style={{ margin: '20px 0 16px 0', color: '#001529' }}>Unit B Order Details</Title>
+                        <Table
+                          columns={commonTableColumns}
+                          dataSource={unitBSummary.orderDetails}
+                          rowKey={record => record.orderId}
+                          pagination={{ pageSize: 10 }}
+                          scroll={{ x: 1300 }}
+                          expandable={{
+                            expandedRowRender: record => (
+                              <Table
+                                columns={reelColumns}
+                                dataSource={record.reelUsages}
+                                rowKey="reelNo"
+                                pagination={false}
+                                size="small"
+                                scroll={{ x: 800 }}
+                              />
+                            ),
+                            rowExpandable: record => record.reelUsages && record.reelUsages.length > 0,
+                          }}
+                        />
+                      </>
+                    ) : (
+                      <Empty description="No Unit B orders for this day" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                    )}
+                  </TabPane>
+                </Tabs>
+              ) : (
+                <Empty description="No daily summary data available for the selected date. Generate one!" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              )}
+            </Spin>
           </Card>
         </TabPane>
 
         <TabPane tab="Range Summary" key="2">
-          <Card>
-            <Row gutter={16} style={{ marginBottom: '20px' }}>
-              <Col span={24}>
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ marginBottom: '8px', fontWeight: '500' }}>Start Date</div>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <Select
-                        style={{ width: '100px' }}
-                        value={startDate.year()}
-                        onChange={handleStartYearChange}
-                      >
-                        {Array.from({ length: 10 }, (_, i) => moment().year() - 5 + i).map(year => (
-                          <Option key={year} value={year}>{year}</Option>
-                        ))}
-                      </Select>
-                      <Select
-                        style={{ width: '120px' }}
-                        value={startDate.month() + 1}
-                        onChange={handleStartMonthChange}
-                      >
-                        {moment.months().map((month, index) => (
-                          <Option key={index + 1} value={index + 1}>{month}</Option>
-                        ))}
-                      </Select>
-                      <Select
-                        style={{ width: '80px' }}
-                        value={startDate.date()}
-                        onChange={handleStartDateChange}
-                      >
-                        {Array.from({ length: startDate.daysInMonth() }, (_, i) => i + 1).map(day => (
-                          <Option key={day} value={day}>{day}</Option>
-                        ))}
-                      </Select>
-                    </div>
+          <Card className="summary-card-lg">
+            <Row gutter={[16, 16]} justify="center" align="middle" style={{ marginBottom: '30px' }}>
+              <Col xs={24} sm={18} md={12} lg={10} xl={8}>
+                <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <Text strong>Start:</Text>
+                    <Select
+                      style={{ minWidth: '90px' }}
+                      value={startDate.year()}
+                      onChange={handleRangeYearSelectChange(setStartDate)}
+                    >
+                      {Array.from({ length: 10 }, (_, i) => moment().year() - 5 + i).map(year => (
+                        <Option key={year} value={year}>{year}</Option>
+                      ))}
+                    </Select>
+                    <Select
+                      style={{ minWidth: '120px' }}
+                      value={startDate.month() + 1}
+                      onChange={handleRangeMonthSelectChange(setStartDate)}
+                    >
+                      {moment.months().map((month, index) => (
+                        <Option key={index + 1} value={index + 1}>{month}</Option>
+                      ))}
+                    </Select>
+                    <Select
+                      style={{ minWidth: '80px' }}
+                      value={startDate.date()}
+                      onChange={handleRangeDateSelectChange(setStartDate)}
+                    >
+                      {Array.from({ length: startDate.daysInMonth() }, (_, i) => i + 1).map(day => (
+                        <Option key={day} value={day}>{day}</Option>
+                      ))}
+                    </Select>
                   </div>
                   
-                  <div style={{ fontSize: '20px', paddingTop: '20px' }}>to</div>
-                  
-                  <div>
-                    <div style={{ marginBottom: '8px', fontWeight: '500' }}>End Date</div>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <Select
-                        style={{ width: '100px' }}
-                        value={endDate.year()}
-                        onChange={handleEndYearChange}
-                      >
-                        {Array.from({ length: 10 }, (_, i) => moment().year() - 5 + i).map(year => (
-                          <Option key={year} value={year}>{year}</Option>
-                        ))}
-                      </Select>
-                      <Select
-                        style={{ width: '120px' }}
-                        value={endDate.month() + 1}
-                        onChange={handleEndMonthChange}
-                      >
-                        {moment.months().map((month, index) => (
-                          <Option key={index + 1} value={index + 1}>{month}</Option>
-                        ))}
-                      </Select>
-                      <Select
-                        style={{ width: '80px' }}
-                        value={endDate.date()}
-                        onChange={handleEndDateChange}
-                      >
-                        {Array.from({ length: endDate.daysInMonth() }, (_, i) => i + 1).map(day => (
-                          <Option key={day} value={day}>{day}</Option>
-                        ))}
-                      </Select>
-                    </div>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <Text strong>End:</Text>
+                    <Select
+                      style={{ minWidth: '90px' }}
+                      value={endDate.year()}
+                      onChange={handleRangeYearSelectChange(setEndDate)}
+                    >
+                      {Array.from({ length: 10 }, (_, i) => moment().year() - 5 + i).map(year => (
+                        <Option key={year} value={year}>{year}</Option>
+                      ))}
+                    </Select>
+                    <Select
+                      style={{ minWidth: '120px' }}
+                      value={endDate.month() + 1}
+                      onChange={handleRangeMonthSelectChange(setEndDate)}
+                    >
+                      {moment.months().map((month, index) => (
+                        <Option key={index + 1} value={index + 1}>{month}</Option>
+                      ))}
+                    </Select>
+                    <Select
+                      style={{ minWidth: '80px' }}
+                      value={endDate.date()}
+                      onChange={handleRangeDateSelectChange(setEndDate)}
+                    >
+                      {Array.from({ length: endDate.daysInMonth() }, (_, i) => i + 1).map(day => (
+                        <Option key={day} value={day}>{day}</Option>
+                      ))}
+                    </Select>
                   </div>
-                </div>
+                </Space>
               </Col>
             </Row>
 
-            {rangeSummaries.length > 0 && (
-              <>
-                <Row gutter={16} style={{ marginBottom: '20px' }}>
-                  <Col span={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Orders"
-                        value={rangeSummaries.reduce((sum, s) => sum + s.totalOrdersShipped, 0)}
-                      />
-                    </Card>
-                  </Col>
-                  <Col span={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Weight (kg)"
-                        
-                        value={rangeSummaries.reduce((sum, s) => sum + s.totalWeightConsumed, 0).toFixed(2)}
-                      />
-                    </Card>
-                  </Col>
-                  <Col span={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Revenue (₹)"
-                        value={rangeSummaries.reduce((sum, s) => sum + (s.totalRevenueOfDay || 0), 0).toFixed(2)}
-                      />
-                    </Card>
-                  </Col>
-                  <Col span={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Profit (₹)"
-                        value={rangeSummaries.reduce((sum, s) => sum + (s.totalProfitOfDay || 0), 0).toFixed(2)}
-                      />
-                    </Card>
-                  </Col>
-                </Row>
+            <Spin spinning={loading} size="large" tip="Loading Range Summary...">
+              {rangeSummaries.length > 0 ? (
+                <>
+                  <Row gutter={[16, 16]} style={{ marginBottom: '30px' }}>
+                    <Col xs={24} sm={12} md={8} lg={6}>
+                      <Card className="summary-card">
+                        <Statistic
+                          title="Total Orders"
+                          value={rangeSummaries.reduce((sum, s) => sum + s.totalOrdersShipped, 0)}
+                          prefix={<BoxPlotOutlined style={{ color: '#1890ff' }} />}
+                        />
+                      </Card>
+                    </Col>
+                    <Col xs={24} sm={12} md={8} lg={6}>
+                      <Card className="summary-card">
+                        <Statistic
+                          title="Total Weight (kg)"
+                          value={rangeSummaries.reduce((sum, s) => sum + s.totalWeightConsumed, 0).toFixed(2)}
+                          prefix={<LineChartOutlined style={{ color: '#52c41a' }} />}
+                        />
+                      </Card>
+                    </Col>
+                    <Col xs={24} sm={12} md={8} lg={6}>
+                      <Card className="summary-card">
+                        <Statistic
+                          title="Total Revenue (₹)"
+                          value={rangeSummaries.reduce((sum, s) => sum + (s.totalRevenueOfDay || 0), 0).toFixed(2)}
+                          prefix={<DollarCircleOutlined style={{ color: '#faad14' }} />}
+                        />
+                      </Card>
+                    </Col>
+                    <Col xs={24} sm={12} md={8} lg={6}>
+                      <Card className="summary-card">
+                        <Statistic
+                          title="Total Profit (₹)"
+                          value={rangeSummaries.reduce((sum, s) => sum + (s.totalProfitOfDay || 0), 0).toFixed(2)}
+                          prefix={<PoundCircleOutlined style={{ color: '#f5222d' }} />}
+                        />
+                      </Card>
+                    </Col>
+                  </Row>
 
-                <h3 style={{ marginBottom: '16px' }}>Summary by Day</h3>
-                <Table
-                  columns={rangeSummaryColumns}
-                  dataSource={rangeSummaries}
-                  rowKey="id"
-                  loading={loading}
-                  expandable={{
-                    expandedRowRender: record => (
-                      <Table
-                        columns={orderColumns}
-                        dataSource={record.orderDetails}
-                        rowKey={r => r.orderId}
-                        pagination={false}
-                      />
-                    )
-                  }}
-                />
+                  <Title level={4} style={{ margin: '20px 0 16px 0', color: '#001529' }}>Summary by Day</Title>
+                  <Table
+                    columns={rangeSummaryColumns}
+                    dataSource={rangeSummaries}
+                    rowKey="id"
+                    pagination={{ pageSize: 7 }}
+                    loading={loading}
+                    scroll={{ x: 1000 }}
+                    expandable={{
+                      expandedRowRender: record => (
+                        <Table
+                          columns={commonTableColumns}
+                          dataSource={record.orderDetails}
+                          rowKey={r => r.orderId}
+                          pagination={false}
+                          size="small"
+                          scroll={{ x: 1300 }}
+                        />
+                      ),
+                      rowExpandable: record => record.orderDetails && record.orderDetails.length > 0,
+                    }}
+                  />
 
-                <h3 style={{ margin: '20px 0 16px 0' }}>Reel Usage History</h3>
-                <Table
-                  columns={historyColumns}
-                  dataSource={reelHistory}
-                  rowKey="id"
-                  loading={loading}
-                />
-              </>
-            )}
+                  <Title level={4} style={{ margin: '30px 0 16px 0', color: '#001529' }}>Reel Usage History</Title>
+                  <Table
+                    columns={historyColumns}
+                    dataSource={reelHistory}
+                    rowKey="id"
+                    pagination={{ pageSize: 10 }}
+                    loading={loading}
+                    scroll={{ x: 800 }}
+                  />
+                </>
+              ) : (
+                <Empty description="No range summary data available for the selected period." image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              )}
+            </Spin>
           </Card>
         </TabPane>
 
         <TabPane tab="Calendar View" key="3">
-          <Card>
-            <Row gutter={16} style={{ marginBottom: '20px' }}>
-              <Col span={6}>
+          <Card className="summary-card-lg">
+            <Row gutter={[16, 16]} style={{ marginBottom: '20px' }}>
+              <Col xs={24} sm={12} md={8} lg={6}>
                 <Select
                   style={{ width: '100%' }}
                   value={selectedYear}
                   onChange={handleYearChange}
                 >
-                  {[2023, 2024, 2025, 2026].map(year => (
+                  {Array.from({ length: 10 }, (_, i) => moment().year() - 5 + i).map(year => (
                     <Option key={year} value={year}>{year}</Option>
                   ))}
                 </Select>
               </Col>
-              <Col span={6}>
+              <Col xs={24} sm={12} md={8} lg={6}>
                 <Select
                   style={{ width: '100%' }}
                   value={selectedMonth}
@@ -683,12 +790,14 @@ const OrderSummaryPage = () => {
               </Col>
             </Row>
 
-            <Spin spinning={calendarLoading}>
+            <Spin spinning={calendarLoading} size="large" tip="Loading Calendar Data...">
               <Calendar
                 mode="month"
-                validRange={[moment().year(selectedYear).month(selectedMonth - 1).startOf('month'), 
-                            moment().year(selectedYear).month(selectedMonth - 1).endOf('month')]}
-                dateFullCellRender={renderCalendarCell}
+                validRange={[
+                  moment().year(selectedYear).month(selectedMonth - 1).startOf('month'), 
+                  moment().year(selectedYear).month(selectedMonth - 1).endOf('month')
+                ]}
+                dateCellRender={renderCalendarCell} // Use dateCellRender for a more flexible cell content
                 onPanelChange={(date, mode) => {
                   if (mode === 'month') {
                     setSelectedYear(date.year());
@@ -696,6 +805,7 @@ const OrderSummaryPage = () => {
                     fetchMonthSummary(date.year(), date.month() + 1);
                   }
                 }}
+                className="custom-calendar" // Custom class for potential styling
               />
             </Spin>
           </Card>

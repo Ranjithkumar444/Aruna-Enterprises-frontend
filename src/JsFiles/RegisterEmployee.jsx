@@ -10,7 +10,7 @@ const RegisterEmployee = () => {
   const [isError, setIsError] = useState(false);
   const [barcodeData, setBarcodeData] = useState(null); 
   const [hasAccessError, setHasAccessError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false); // New loading state for all operations
 
   const token = localStorage.getItem("adminToken");
 
@@ -20,7 +20,7 @@ const RegisterEmployee = () => {
     setIsLoading(true);
 
     try {
-      
+      // This endpoint is just for permission check, any endpoint requiring admin role would work
       await axios.get(
         "https://arunaenterprises.azurewebsites.net/admin/get-admins", 
         {
@@ -61,7 +61,7 @@ const RegisterEmployee = () => {
       return;
     }
     setHasAccessError(false);
-    setMessage(""); 
+    setMessage(""); // Clear previous message
     setIsError(false);
     setIsLoading(true);
 
@@ -78,8 +78,8 @@ const RegisterEmployee = () => {
 
       setMessage(response.data || "Employee deactivated successfully");
       setIsError(false);
-      setBarcodeId(""); 
-      setBarcodeData(null); 
+      setBarcodeId(""); // Clear input after successful deactivation
+      setBarcodeData(null); // Clear barcode display
     } catch (error) {
       console.error("Deactivate error:", error);
       const errorMessage =
@@ -118,7 +118,7 @@ const RegisterEmployee = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          responseType: "blob", 
+          responseType: "blob", // Important for image data
         }
       );
       
@@ -169,7 +169,7 @@ const RegisterEmployee = () => {
       return;
     }
 
-    
+    // Convert inches to pixels (1 inch = 96 pixels) for screen preview accuracy
     const stickerWidthIn = 2.9;
     const stickerHeightIn = 3.9;
     const pxPerInch = 96;
@@ -294,7 +294,7 @@ const RegisterEmployee = () => {
           Employee Management
         </h2>
 
-        
+        {/* Action Buttons Section */}
         <div className="flex flex-col sm:flex-row justify-center gap-6 mb-10">
           <button
             onClick={handleCreateEmployeeClick}
@@ -319,7 +319,7 @@ const RegisterEmployee = () => {
           </button>
         </div>
 
-        
+        {/* Barcode Operations Section */}
         <div className="flex flex-col items-center gap-6 p-8 bg-gray-50 rounded-xl shadow-inner border border-gray-200">
           <h3 className="text-2xl font-bold text-gray-700 mb-4">
             Employee Barcode Operations
@@ -359,7 +359,7 @@ const RegisterEmployee = () => {
             </button>
           </div>
 
-          
+          {/* Barcode Display Area */}
           {barcodeData && (
             <div className="mt-8 text-center p-6 border border-dashed border-gray-300 rounded-xl bg-white shadow-lg flex flex-col items-center">
               <div className="text-xl font-bold text-gray-800 mb-4 break-words">
@@ -391,7 +391,7 @@ const RegisterEmployee = () => {
             </div>
           )}
 
-          
+          {/* Message Display */}
           {message && (
             <div
               className={`mt-6 p-4 rounded-lg text-center font-medium w-full max-w-sm ${

@@ -122,7 +122,7 @@ const ReelForm = () => {
             }
             .sticker {
               width: 100%;
-              height: 100%;
+              height: 60%;
               padding: 8px;
               box-sizing: border-box;
               display: flex;
@@ -136,7 +136,7 @@ const ReelForm = () => {
               margin: 5px 0;
             }
             .barcode-image {
-              width: 130%;
+              width: 120%;
               height: auto;
               max-height: 60%;
               margin: 5px 0;

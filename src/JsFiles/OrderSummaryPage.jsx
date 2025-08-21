@@ -13,7 +13,27 @@ import {
   Select,
   Spin
 } from 'antd';
-import moment from 'moment';
+// Importing specific functions from date-fns for better modularity and tree-shaking
+import {
+  format,
+  parseISO, // Used for parsing ISO date strings from the backend
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  getYear,
+  getMonth,
+  getDate,
+  getDaysInMonth,
+  isSameDay,
+  isAfter,
+  isBefore,
+  addDays, // For adding days, replacing moment().add(1, 'day')
+  subDays, // For subtracting days, replacing moment().subtract(1, 'day')
+  setYear, // For setting the year
+  setMonth, // For setting the month
+  setDate as setDayOfMonth // For setting the day of the month
+} from 'date-fns';
 import axios from 'axios';
 
 const { TabPane } = Tabs;
@@ -40,29 +60,35 @@ api.interceptors.request.use(config => {
 });
 
 const OrderSummaryPage = () => {
-  const [date, setDate] = useState(moment());
-  const [startDate, setStartDate] = useState(moment().startOf('week'));
-  const [endDate, setEndDate] = useState(moment().endOf('week'));
+  // State variables for managing dates and data. Initialize with native Date objects.
+  const [date, setDate] = useState(new Date()); // Currently selected date for daily summary
+  const [startDate, setStartDate] = useState(startOfWeek(new Date())); // Start date for range summary
+  const [endDate, setEndDate] = useState(endOfWeek(new Date())); // End date for range summary
   const [dailySummary, setDailySummary] = useState(null);
   const [rangeSummaries, setRangeSummaries] = useState([]);
   const [reelHistory, setReelHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [calendarLoading, setCalendarLoading] = useState(false);
-  const [selectedYear, setSelectedYear] = useState(moment().year());
-  const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
+  const [selectedYear, setSelectedYear] = useState(getYear(new Date())); // Selected year for calendar view
+  const [selectedMonth, setSelectedMonth] = useState(getMonth(new Date()) + 1); // Selected month for calendar view (1-indexed)
 
   useEffect(() => {
     fetchDailySummary(date);
     fetchRangeSummaries(startDate, endDate);
   }, []);
 
-  const fetchDailySummary = async (date) => {
+  const fetchDailySummary = async (selectedDate) => {
     setLoading(true);
     try {
-      const response = await api.get(`/order-summaries/daily/${date.format('YYYY-MM-DD')}`);
+      const response = await api.get(`/order-summaries/daily/${format(selectedDate, 'yyyy-MM-dd')}`);
       setDailySummary(response.data);
     } catch (error) {
-      handleApiError(error, 'Failed to fetch daily summary');
+      if (error.response?.status === 404) {
+        setDailySummary(null);
+        message.info(`No summary found for ${format(selectedDate, 'PPP')}. You can generate it if orders were shipped.`);
+      } else {
+        handleApiError(error, 'Failed to fetch daily summary');
+      }
     } finally {
       setLoading(false);
     }
@@ -73,21 +99,21 @@ const OrderSummaryPage = () => {
     try {
       const response = await api.get(`/order-summaries/range`, {
         params: {
-          start: start.format('YYYY-MM-DD'),
-          end: end.format('YYYY-MM-DD')
+          start: format(start, 'yyyy-MM-dd'),
+          end: format(end, 'yyyy-MM-dd')
         }
       });
       setRangeSummaries(response.data);
 
       const historyResponse = await api.get(`/order-summaries/reel-history`, {
         params: {
-          start: start.format('YYYY-MM-DD'),
-          end: end.format('YYYY-MM-DD')
+          start: format(start, 'yyyy-MM-dd'),
+          end: format(end, 'yyyy-MM-dd')
         }
       });
       setReelHistory(historyResponse.data);
     } catch (error) {
-      handleApiError(error, 'Failed to fetch range summaries');
+      handleApiError(error, 'Failed to fetch range summaries or reel history');
     } finally {
       setLoading(false);
     }
@@ -96,99 +122,109 @@ const OrderSummaryPage = () => {
   const fetchMonthSummary = async (year, month) => {
     setCalendarLoading(true);
     try {
-      const start = moment().year(year).month(month - 1).startOf('month');
-      const end = moment().year(year).month(month - 1).endOf('month');
+      // Create new Date objects for start/end of month
+      const tempDate = setMonth(setYear(new Date(), year), month - 1);
+      const start = startOfMonth(tempDate);
+      const end = endOfMonth(tempDate);
+      
       const response = await api.get(`/order-summaries/range`, {
         params: {
-          start: start.format('YYYY-MM-DD'),
-          end: end.format('YYYY-MM-DD')
+          start: format(start, 'yyyy-MM-dd'),
+          end: format(end, 'yyyy-MM-dd')
         }
       });
       setRangeSummaries(response.data);
     } catch (error) {
-      handleApiError(error, 'Failed to fetch month summary');
+      handleApiError(error, 'Failed to fetch month summary for calendar');
     } finally {
       setCalendarLoading(false);
     }
   };
 
   const handleApiError = (error, defaultMessage) => {
-    console.error(error);
+    console.error("API Error:", error);
     if (error.response?.status === 401) {
-      message.error('Session expired. Please login again.');
+      message.error('Session expired or authentication required. Please ensure you are logged in.');
       localStorage.removeItem('adminToken');
-      window.location.href = '/login';
+    } else if (error.response?.data?.message) {
+      message.error(error.response.data.message);
     } else {
-      message.error(error.response?.data?.message || defaultMessage);
+      message.error(defaultMessage);
     }
   };
 
-  const handleDateChange = (date) => {
-    setDate(date);
-    fetchDailySummary(date);
+  const handleDateChange = (selectedDate) => {
+    setDate(selectedDate);
+    fetchDailySummary(selectedDate);
   };
 
-  const handleStartDateChange = (date) => {
-    const newStartDate = startDate.clone().date(date);
+  const handleStartDateChange = (day) => {
+    const newStartDate = setDayOfMonth(startDate, day);
     setStartDate(newStartDate);
-    if (newStartDate.isAfter(endDate)) {
-      setEndDate(newStartDate.clone().add(1, 'day'));
-      fetchRangeSummaries(newStartDate, newStartDate.clone().add(1, 'day'));
+    if (isAfter(newStartDate, endDate)) {
+      const newEndDate = addDays(newStartDate, 1);
+      setEndDate(newEndDate);
+      fetchRangeSummaries(newStartDate, newEndDate);
     } else {
       fetchRangeSummaries(newStartDate, endDate);
     }
   };
 
-  const handleEndDateChange = (date) => {
-    const newEndDate = endDate.clone().date(date);
+  const handleEndDateChange = (day) => {
+    const newEndDate = setDayOfMonth(endDate, day);
     setEndDate(newEndDate);
-    if (newEndDate.isBefore(startDate)) {
-      setStartDate(newEndDate.clone().subtract(1, 'day'));
-      fetchRangeSummaries(newEndDate.clone().subtract(1, 'day'), newEndDate);
+    if (isBefore(newEndDate, startDate)) {
+      const newStartDate = subDays(newEndDate, 1);
+      setStartDate(newStartDate);
+      fetchRangeSummaries(newStartDate, newEndDate);
     } else {
       fetchRangeSummaries(startDate, newEndDate);
     }
   };
 
   const handleStartMonthChange = (month) => {
-    const newStartDate = startDate.clone().month(month - 1);
+    const newStartDate = setMonth(startDate, month - 1);
     setStartDate(newStartDate);
-    if (newStartDate.isAfter(endDate)) {
-      setEndDate(newStartDate.clone().add(1, 'day'));
-      fetchRangeSummaries(newStartDate, newStartDate.clone().add(1, 'day'));
+    if (isAfter(newStartDate, endDate)) {
+      const newEndDate = addDays(newStartDate, 1);
+      setEndDate(newEndDate);
+      fetchRangeSummaries(newStartDate, newEndDate);
     } else {
       fetchRangeSummaries(newStartDate, endDate);
     }
   };
 
   const handleEndMonthChange = (month) => {
-    const newEndDate = endDate.clone().month(month - 1);
+    const newEndDate = setMonth(endDate, month - 1);
     setEndDate(newEndDate);
-    if (newEndDate.isBefore(startDate)) {
-      setStartDate(newEndDate.clone().subtract(1, 'day'));
-      fetchRangeSummaries(newEndDate.clone().subtract(1, 'day'), newEndDate);
+    if (isBefore(newEndDate, startDate)) {
+      const newStartDate = subDays(newEndDate, 1);
+      setStartDate(newStartDate);
+      fetchRangeSummaries(newStartDate, newEndDate);
     } else {
       fetchRangeSummaries(startDate, newEndDate);
     }
   };
 
   const handleStartYearChange = (year) => {
-    const newStartDate = startDate.clone().year(year);
+    const newStartDate = setYear(startDate, year);
     setStartDate(newStartDate);
-    if (newStartDate.isAfter(endDate)) {
-      setEndDate(newStartDate.clone().add(1, 'day'));
-      fetchRangeSummaries(newStartDate, newStartDate.clone().add(1, 'day'));
+    if (isAfter(newStartDate, endDate)) {
+      const newEndDate = addDays(newStartDate, 1);
+      setEndDate(newEndDate);
+      fetchRangeSummaries(newStartDate, newEndDate);
     } else {
       fetchRangeSummaries(newStartDate, endDate);
     }
   };
 
   const handleEndYearChange = (year) => {
-    const newEndDate = endDate.clone().year(year);
+    const newEndDate = setYear(endDate, year);
     setEndDate(newEndDate);
-    if (newEndDate.isBefore(startDate)) {
-      setStartDate(newEndDate.clone().subtract(1, 'day'));
-      fetchRangeSummaries(newEndDate.clone().subtract(1, 'day'), newEndDate);
+    if (isBefore(newEndDate, startDate)) {
+      const newStartDate = subDays(newEndDate, 1);
+      setStartDate(newStartDate);
+      fetchRangeSummaries(newStartDate, newEndDate);
     } else {
       fetchRangeSummaries(startDate, newEndDate);
     }
@@ -205,12 +241,15 @@ const OrderSummaryPage = () => {
   };
 
   const generateSummary = async () => {
+    setLoading(true);
     try {
-      await api.post(`/order-summaries/generate/${date.format('YYYY-MM-DD')}`);
-      message.success('Daily summary generated successfully');
+      await api.post(`/order-summaries/generate/${format(date, 'yyyy-MM-dd')}`);
+      message.success(`Daily summary generated successfully for ${format(date, 'PPP')}`);
       fetchDailySummary(date);
     } catch (error) {
       handleApiError(error, 'Failed to generate summary');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -288,7 +327,8 @@ const OrderSummaryPage = () => {
       title: 'Used At',
       dataIndex: 'usedAt',
       key: 'usedAt',
-      render: date => moment(date).format('LLL')
+      // Ensure the value is a valid Date object before formatting
+      render: isoDateString => isoDateString ? format(parseISO(isoDateString), 'PPPp') : '-'
     },
     { title: 'Reel Set', dataIndex: 'reelSet', key: 'reelSet' },
     { title: 'Box Details', dataIndex: 'boxDetails', key: 'boxDetails' }
@@ -299,7 +339,7 @@ const OrderSummaryPage = () => {
       title: 'Date',
       dataIndex: 'summaryDate',
       key: 'summaryDate',
-      render: date => moment(date).format('LL')
+      render: isoDateString => isoDateString ? format(parseISO(isoDateString), 'PPP') : '-'
     },
     {
       title: 'Orders Shipped',
@@ -337,10 +377,11 @@ const OrderSummaryPage = () => {
     }
   ];
 
-  const renderCalendarCell = (date) => {
-    const summary = rangeSummaries.find(s => moment(s.summaryDate).isSame(date, 'day'));
+  const renderCalendarCell = (currentDate) => {
+    // Find if there's a summary for the current calendar date
+    const summary = rangeSummaries.find(s => isSameDay(parseISO(s.summaryDate), currentDate));
     if (!summary) return null;
-    
+
     return (
       <div style={{ background: '#f0f0f0', padding: '4px', borderRadius: '4px' }}>
         <div>Orders: {summary.totalOrdersShipped}</div>
@@ -357,45 +398,42 @@ const OrderSummaryPage = () => {
       <Tabs defaultActiveKey="1">
         <TabPane tab="Daily Summary" key="1">
           <Card>
-            <Row gutter={16} style={{ marginBottom: '20px' }}>
-              <Col span={8}>
+            <Row gutter={16} style={{ marginBottom: '20px', alignItems: 'flex-end' }}>
+              <Col span={16}>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <Select
                     style={{ width: '120px' }}
-                    value={date.year()}
+                    value={getYear(date)}
                     onChange={(year) => {
-                      const newDate = date.clone().year(year);
-                      setDate(newDate);
-                      fetchDailySummary(newDate);
+                      const newDate = setYear(date, year);
+                      handleDateChange(newDate);
                     }}
                   >
-                    {Array.from({ length: 10 }, (_, i) => moment().year() - 5 + i).map(year => (
+                    {Array.from({ length: 10 }, (_, i) => getYear(new Date()) - 5 + i).map(year => (
                       <Option key={year} value={year}>{year}</Option>
                     ))}
                   </Select>
                   <Select
                     style={{ width: '120px' }}
-                    value={date.month() + 1}
+                    value={getMonth(date) + 1}
                     onChange={(month) => {
-                      const newDate = date.clone().month(month - 1);
-                      setDate(newDate);
-                      fetchDailySummary(newDate);
+                      const newDate = setMonth(date, month - 1);
+                      handleDateChange(newDate);
                     }}
                   >
-                    {moment.months().map((month, index) => (
-                      <Option key={index + 1} value={index + 1}>{month}</Option>
+                    {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                      <Option key={month} value={month}>{format(setMonth(new Date(), month - 1), 'MMMM')}</Option>
                     ))}
                   </Select>
                   <Select
                     style={{ width: '120px' }}
-                    value={date.date()}
+                    value={getDate(date)}
                     onChange={(day) => {
-                      const newDate = date.clone().date(day);
-                      setDate(newDate);
-                      fetchDailySummary(newDate);
+                      const newDate = setDayOfMonth(date, day);
+                      handleDateChange(newDate);
                     }}
                   >
-                    {Array.from({ length: date.daysInMonth() }, (_, i) => i + 1).map(day => (
+                    {Array.from({ length: getDaysInMonth(date) }, (_, i) => i + 1).map(day => (
                       <Option key={day} value={day}>{day}</Option>
                     ))}
                   </Select>
@@ -412,7 +450,7 @@ const OrderSummaryPage = () => {
               </Col>
             </Row>
 
-            {dailySummary && (
+            {dailySummary ? (
               <>
                 <Row gutter={16} style={{ marginBottom: '20px' }}>
                   <Col span={6}>
@@ -506,6 +544,12 @@ const OrderSummaryPage = () => {
                   }}
                 />
               </>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '50px' }}>
+                <Spin spinning={loading} size="large" tip="Loading daily summary...">
+                  {!loading && <p>No daily summary data available for this date. Please select another date or generate the summary.</p>}
+                </Spin>
+              </div>
             )}
           </Card>
         </TabPane>
@@ -520,28 +564,28 @@ const OrderSummaryPage = () => {
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <Select
                         style={{ width: '100px' }}
-                        value={startDate.year()}
+                        value={getYear(startDate)}
                         onChange={handleStartYearChange}
                       >
-                        {Array.from({ length: 10 }, (_, i) => moment().year() - 5 + i).map(year => (
+                        {Array.from({ length: 10 }, (_, i) => getYear(new Date()) - 5 + i).map(year => (
                           <Option key={year} value={year}>{year}</Option>
                         ))}
                       </Select>
                       <Select
                         style={{ width: '120px' }}
-                        value={startDate.month() + 1}
+                        value={getMonth(startDate) + 1}
                         onChange={handleStartMonthChange}
                       >
-                        {moment.months().map((month, index) => (
-                          <Option key={index + 1} value={index + 1}>{month}</Option>
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                          <Option key={month} value={month}>{format(setMonth(new Date(), month - 1), 'MMMM')}</Option>
                         ))}
                       </Select>
                       <Select
                         style={{ width: '80px' }}
-                        value={startDate.date()}
+                        value={getDate(startDate)}
                         onChange={handleStartDateChange}
                       >
-                        {Array.from({ length: startDate.daysInMonth() }, (_, i) => i + 1).map(day => (
+                        {Array.from({ length: getDaysInMonth(startDate) }, (_, i) => i + 1).map(day => (
                           <Option key={day} value={day}>{day}</Option>
                         ))}
                       </Select>
@@ -555,28 +599,28 @@ const OrderSummaryPage = () => {
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <Select
                         style={{ width: '100px' }}
-                        value={endDate.year()}
+                        value={getYear(endDate)}
                         onChange={handleEndYearChange}
                       >
-                        {Array.from({ length: 10 }, (_, i) => moment().year() - 5 + i).map(year => (
+                        {Array.from({ length: 10 }, (_, i) => getYear(new Date()) - 5 + i).map(year => (
                           <Option key={year} value={year}>{year}</Option>
                         ))}
                       </Select>
                       <Select
                         style={{ width: '120px' }}
-                        value={endDate.month() + 1}
+                        value={getMonth(endDate) + 1}
                         onChange={handleEndMonthChange}
                       >
-                        {moment.months().map((month, index) => (
-                          <Option key={index + 1} value={index + 1}>{month}</Option>
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                          <Option key={month} value={month}>{format(setMonth(new Date(), month - 1), 'MMMM')}</Option>
                         ))}
                       </Select>
                       <Select
                         style={{ width: '80px' }}
-                        value={endDate.date()}
+                        value={getDate(endDate)}
                         onChange={handleEndDateChange}
                       >
-                        {Array.from({ length: endDate.daysInMonth() }, (_, i) => i + 1).map(day => (
+                        {Array.from({ length: getDaysInMonth(endDate) }, (_, i) => i + 1).map(day => (
                           <Option key={day} value={day}>{day}</Option>
                         ))}
                       </Select>
@@ -586,7 +630,7 @@ const OrderSummaryPage = () => {
               </Col>
             </Row>
 
-            {rangeSummaries.length > 0 && (
+            {rangeSummaries.length > 0 ? (
               <>
                 <Row gutter={16} style={{ marginBottom: '20px' }}>
                   <Col span={6}>
@@ -650,6 +694,12 @@ const OrderSummaryPage = () => {
                   loading={loading}
                 />
               </>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '50px' }}>
+                 <Spin spinning={loading} size="large" tip="Loading range summaries...">
+                  {!loading && <p>No range summary data available for this period. Please adjust the dates.</p>}
+                </Spin>
+              </div>
             )}
           </Card>
         </TabPane>
@@ -663,7 +713,7 @@ const OrderSummaryPage = () => {
                   value={selectedYear}
                   onChange={handleYearChange}
                 >
-                  {[2023, 2024, 2025, 2026].map(year => (
+                  {Array.from({ length: 10 }, (_, i) => getYear(new Date()) - 5 + i).map(year => (
                     <Option key={year} value={year}>{year}</Option>
                   ))}
                 </Select>
@@ -674,9 +724,9 @@ const OrderSummaryPage = () => {
                   value={selectedMonth}
                   onChange={handleMonthChange}
                 >
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(month => (
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
                     <Option key={month} value={month}>
-                      {moment().month(month - 1).format('MMMM')}
+                      {format(setMonth(new Date(), month - 1), 'MMMM')}
                     </Option>
                   ))}
                 </Select>
@@ -686,14 +736,15 @@ const OrderSummaryPage = () => {
             <Spin spinning={calendarLoading}>
               <Calendar
                 mode="month"
-                validRange={[moment().year(selectedYear).month(selectedMonth - 1).startOf('month'), 
-                            moment().year(selectedYear).month(selectedMonth - 1).endOf('month')]}
+                // Construct Date objects for validRange
+                validRange={[startOfMonth(setMonth(setYear(new Date(), selectedYear), selectedMonth - 1)), 
+                            endOfMonth(setMonth(setYear(new Date(), selectedYear), selectedMonth - 1))]}
                 dateFullCellRender={renderCalendarCell}
-                onPanelChange={(date, mode) => {
+                onPanelChange={(newCalendarDate, mode) => {
                   if (mode === 'month') {
-                    setSelectedYear(date.year());
-                    setSelectedMonth(date.month() + 1);
-                    fetchMonthSummary(date.year(), date.month() + 1);
+                    setSelectedYear(getYear(newCalendarDate));
+                    setSelectedMonth(getMonth(newCalendarDate) + 1);
+                    fetchMonthSummary(getYear(newCalendarDate), getMonth(newCalendarDate) + 1);
                   }
                 }}
               />

@@ -135,22 +135,37 @@ const KanbanBoard = () => {
   const handleSplitSubmit = async () => {
     setIsLoading(true);
     try {
-      await axios.post(`https://arunaenterprises.azurewebsites.net/admin/order/${selectedOrderId}/split`, {
-        firstPartQuantity: splitQuantity
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setShowSplitModal(false);
-      setSelectedOrderId(null);
-      setSplitQuantity(0);
-      fetchOrders();
+        const originalOrder = orders.find(o => o.id.toString() === selectedOrderId);
+        if (!originalOrder) {
+            throw new Error("Original order not found in state.");
+        }
+
+        // Calculate the second quantity
+        const secondPartQuantity = originalOrder.quantity - splitQuantity;
+
+        await axios.post(
+            `https://arunaenterprises.azurewebsites.net/admin/order/${selectedOrderId}/split`,
+            {
+                // Ensure these field names match the backend DTO exactly
+                firstOrderQuantity: splitQuantity,
+                secondOrderQuantity: secondPartQuantity
+            },
+            {
+                headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+            }
+        );
+
+        setShowSplitModal(false);
+        setSelectedOrderId(null);
+        setSplitQuantity(0);
+        fetchOrders();
     } catch (err) {
-      console.error("Error splitting order:", err);
-      alert(`Failed to split order: ${err.response?.data?.message || err.message}`);
+        console.error("Error splitting order:", err);
+        alert(`Failed to split order: ${err.response?.data?.message || err.message}`);
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
 
   const getOrdersByStatus = (status) => {
     return orders.filter(order => {
